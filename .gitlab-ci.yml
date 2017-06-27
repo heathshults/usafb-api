@@ -1,0 +1,34 @@
+image: edbizarro/gitlab-ci-pipeline-php:7.1-alpine
+
+before_script:
+  - set -xe
+  - apk add --update php7-simplexml
+
+stages:
+  - setup
+  - test
+
+setup:
+  type: setup
+  script:
+    - composer install --quiet --no-interaction
+    - cp .env.testing .env
+  cache:
+    key: ${CI_BUILD_REF_NAME}
+    paths:
+      - vendor/
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - vendor/
+      - .env
+
+test:
+  type: test
+  script:
+    - composer test
+
+lint:
+  type: test
+  script:
+    - composer lint

@@ -2,30 +2,32 @@ version: "3.1"
 services:
     mailhog:
       image: mailhog/mailhog:latest
-      container_name: ussf-mailhog
+      container_name: usafb-mailhog
       ports:
         - "8081:8025"
 
     redis:
       image: redis:alpine
-      container_name: ussf-redis
+      container_name: usafb-redis
 
     postgres:
       image: postgres:9.6-alpine
-      container_name: ussf-postgres
+      container_name: usafb-postgres
       working_dir: /application
+      ports:
+        - "5432:5432"
       environment:
         - POSTGRES_USER=root
         - POSTGRES_PASSWORD=root
-        - POSTGRES_DB=npdb-ussf
+        - POSTGRES_DB=npdb-usafb
 
     elasticsearch:
       image: elasticsearch:5.3-alpine
-      container_name: ussf-elasticsearch
+      container_name: usafb-elasticsearch
 
     nginx:
       image: nginx:alpine
-      container_name: ussf-nginx
+      container_name: usafb-nginx
       working_dir: /application
       volumes:
           - .:/application
@@ -39,7 +41,7 @@ services:
       build:
         context: .
         dockerfile: docker/php-fpm/Dockerfile
-      container_name: ussf-php-fpm
+      container_name: usafb-php-fpm
       working_dir: /application
       volumes:
         - .:/application

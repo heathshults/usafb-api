@@ -1,4 +1,4 @@
-# National Player Database (USSF)
+# National Player Database (USAFB)
 
 This project is for the national player database API.
 
