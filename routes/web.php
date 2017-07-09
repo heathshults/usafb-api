@@ -11,6 +11,31 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-    return $app->version();
-});
+$app->group(
+    ['prefix' => 'rest'],
+    function () use ($app) {
+        $app->group(
+            ['prefix' => 'auth'],
+            function () use ($app) {
+                $app->post(
+                    '/login', [
+                        'uses' => 'AuthenticationController@login'
+                    ]
+                );
+                $app->get(
+                    '/user', [
+                        'uses' => 'AuthenticationController@getUser'
+                    ]
+                );
+            }
+        );
+    }
+);
+
+$app->get(
+    '/', function () use ($app) {
+        return $app->version();
+    }
+);
+
+
