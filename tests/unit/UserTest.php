@@ -16,7 +16,9 @@ class UserTest extends \TestCase
      */
     public function testSuccefullTokenHeader()
     {
+        $mockAuth = Mockery::mock(\Auth0\SDK\API\Authentication::class);
         $service = new AuthService();
+        $service->setAuthentication($mockAuth);
         $headers = [
             'Authorization' => ['Bearer token123']
         ];
@@ -35,7 +37,9 @@ class UserTest extends \TestCase
      */
     public function testMissingTokenHeader()
     {
+        $mockAuth = Mockery::mock(\Auth0\SDK\API\Authentication::class);
         $service = new AuthService();
+        $service->setAuthentication($mockAuth);
         $headers = [];
         $this->expectException(UnauthorizedHttpException::class);
         $service->getHeaderToken($headers);
