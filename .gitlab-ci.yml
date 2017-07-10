@@ -7,6 +7,7 @@ before_script:
 stages:
   - setup
   - test
+  #  - testsanity
 
 setup:
   type: setup
@@ -27,6 +28,12 @@ test:
   type: test
   script:
     - composer test
+
+#testsanity:
+#  type: testsanity
+#  script:
+#    - composer testsanity
+
 
 lint:
   type: test

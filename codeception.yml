@@ -1,0 +1,36 @@
+# suite config
+suites:
+    USAFBAutomationApi:
+        actor: ApiTester
+        path: features
+        modules:
+            enabled:
+                 - Asserts
+                 - REST:
+                     url: http://localhost:8000
+                     depends: PhpBrowser
+                 - \Helper\Api
+
+
+extensions:
+    enabled:
+            - Codeception\Extension\RunFailed # default extension
+            - Codeception\Extension\Logger: # enabled extension
+                max_files: 3 # logger configuration
+
+params:
+    - env
+
+gherkin: []
+
+# additional paths
+paths:
+    tests: tests/automationtests
+    output: tests/automationtests/_output
+    data: tests/automationtests/_data
+    support: tests/automationtests/_support
+    envs: tests/automationtests/_envs
+
+settings:
+    shuffle: false
+    lint: true
