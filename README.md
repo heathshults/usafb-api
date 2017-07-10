@@ -23,6 +23,7 @@ To install all application dependencies:
 ```BASH
 composer setup
 ```
+composer update
 
 ### Start Application
 
