@@ -4,10 +4,12 @@ before_script:
   - set -xe
   - apk add --update php7-simplexml
 
+after_script:
+  - killall php
+
 stages:
   - setup
   - test
-  #  - testsanity
 
 setup:
   type: setup
@@ -29,13 +31,13 @@ test:
   script:
     - composer test
 
-#testsanity:
-#  type: testsanity
-#  script:
-#    - composer testsanity
-
-
 lint:
   type: test
   script:
     - composer lint
+
+automation:
+  type: test
+  script:
+    - php -S localhost:8000 -t public 1>/dev/null &
+    - composer test:sanity

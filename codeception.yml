@@ -25,11 +25,11 @@ gherkin: []
 
 # additional paths
 paths:
-    tests: tests/automationtests
-    output: tests/automationtests/_output
-    data: tests/automationtests/_data
-    support: tests/automationtests/_support
-    envs: tests/automationtests/_envs
+    tests: tests/automationscripts
+    output: tests/automationscripts/_output
+    data: tests/automationscripts/_data
+    support: tests/automationscripts/_support
+    envs: tests/automationscripts/_envs
 
 settings:
     shuffle: false
