@@ -41,7 +41,7 @@ class LoginTest extends \TestCase
      */
     public function testMissingEmailLogin()
     {
-        $this->json('post', '/rest/auth/login', ['password' => 'supersecure'])
+        $this->json('post', '/login', ['password' => 'supersecure'])
             ->seeJson([
                 'title' => 'Invalid Email',
             ]);
@@ -56,7 +56,7 @@ class LoginTest extends \TestCase
      */
     public function testMissingPasswordLogin()
     {
-        $this->json('post', '/rest/auth/login', ['email' => 'test@test.com'])
+        $this->json('post', '/login', ['email' => 'test@test.com'])
             ->seeJson([
                 'title' => 'Invalid Password',
             ]);
@@ -66,7 +66,7 @@ class LoginTest extends \TestCase
 
     public function testMissingEmail()
     {
-        $this->json('post', '/rest/auth/login', [])
+        $this->json('post', '/login', [])
             ->seeJson([
                 'title' => 'Invalid Email',
             ])

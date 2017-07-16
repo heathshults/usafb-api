@@ -11,23 +11,18 @@
 |
 */
 
+$app->post(
+    '/login', [
+        'uses' => 'AuthenticationController@login'
+    ]
+);
 $app->group(
-    ['prefix' => 'rest'],
+    ['middleware' => 'auth'],
     function () use ($app) {
-        $app->group(
-            ['prefix' => 'auth'],
-            function () use ($app) {
-                $app->post(
-                    '/login', [
-                        'uses' => 'AuthenticationController@login'
-                    ]
-                );
-                $app->get(
-                    '/user', [
-                        'uses' => 'AuthenticationController@getUser'
-                    ]
-                );
-            }
+        $app->get(
+            '/auth/user', [
+                'uses' => 'AuthenticationController@getUser'
+            ]
         );
     }
 );

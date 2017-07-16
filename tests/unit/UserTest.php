@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Mockery;
 use App\Http\Services\AuthService;
 use \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Models\Enums\Role;
 
 class UserTest extends \TestCase
 {
@@ -16,16 +17,9 @@ class UserTest extends \TestCase
      */
     public function testSuccefullTokenHeader()
     {
-        $mockAuth = Mockery::mock(\Auth0\SDK\API\Authentication::class);
         $service = new AuthService();
-        $service->setAuthentication($mockAuth);
         $headers = [
             'Authorization' => ['Bearer token123']
-        ];
-        $this->assertEquals('token123', $service->getHeaderToken($headers));
-
-        $headers = [
-            'Authorization' => ['token123']
         ];
         $this->assertEquals('token123', $service->getHeaderToken($headers));
     }
@@ -37,9 +31,7 @@ class UserTest extends \TestCase
      */
     public function testMissingTokenHeader()
     {
-        $mockAuth = Mockery::mock(\Auth0\SDK\API\Authentication::class);
         $service = new AuthService();
-        $service->setAuthentication($mockAuth);
         $headers = [];
         $this->expectException(UnauthorizedHttpException::class);
         $service->getHeaderToken($headers);
@@ -69,7 +61,7 @@ class UserTest extends \TestCase
                         "city" => "Frisco",
                         "state" => "TX",
                         "postalCode" => "70000",
-                        "role" => "USSF Staff"
+                        'roles' => [Role::USAFB_ADMIN]
                     )
                 ]
             );
@@ -93,7 +85,7 @@ class UserTest extends \TestCase
                 "city" => "Frisco",
                 "state" => "TX",
                 "postalCode" => "70000",
-                "role" => "USSF Staff"
+                "roles" => [Role::USAFB_ADMIN]
             ),
             $data['http://ussfb.com/metadata']
         );
