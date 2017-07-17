@@ -43,6 +43,14 @@ class UserCest
 
     }
 
+   //Set Auth0 Credentials
+
+    protected function setEnvParms()
+    {
+        $this->common->setAuth0Credentials();
+    }
+
+
     /**
      * @group release
      * @group sanity
@@ -55,6 +63,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $I->setEnvParms();
         $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
@@ -82,6 +91,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $I->setEnvParms();
         $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];

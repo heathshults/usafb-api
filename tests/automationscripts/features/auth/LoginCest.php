@@ -32,6 +32,7 @@ class LoginCest
 
     }
 
+
     /**
      * @group release
      * @group sanity
@@ -44,6 +45,7 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $I->setEnvParms();
         $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
@@ -63,6 +65,7 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $I->setEnvParms();
         $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
