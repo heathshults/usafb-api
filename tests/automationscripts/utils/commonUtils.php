@@ -48,7 +48,7 @@ class CommonUtils
 
     // Method for generating new random number to append to entities created
 
-    public function random()
+    public function randomNumber()
     {
         $mt = explode(' ', microtime());
         return ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));

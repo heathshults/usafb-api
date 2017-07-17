@@ -10,7 +10,7 @@ class LoginHelper
     // Reusable method for Login Post Call
     // To be called for other tests
 
-    public function postLoginCall(ApiTester $I, $url, $postBody)
+    public function postLogin(ApiTester $I, $url, $postBody)
     {
 
         $I->setHeaders();
