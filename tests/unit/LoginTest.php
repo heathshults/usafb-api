@@ -64,9 +64,62 @@ class LoginTest extends \TestCase
         $this->assertEquals(400, $this->response->status());
     }
 
-    public function testMissingEmail()
+    /**
+     * Test failed on login endpoint when password and email are missing
+     *
+     * @return void
+     */
+    public function testMissingEmailAndPassword()
     {
         $this->json('post', '/login', [])
+            ->seeJson([
+                'title' => 'Invalid Email',
+            ])
+            ->seeJson([
+                'title' => 'Invalid Password',
+            ]);
+
+        $this->assertEquals(400, $this->response->status());
+    }
+
+    /**
+     * Test failed on login endpoint when email is blank
+     *
+     * @return void
+     */
+    public function testBlankEmail()
+    {
+        $this->json('post', '/login', ['password' => 'supersecure', 'email' => ''])
+            ->seeJson([
+                'title' => 'Invalid Email',
+            ]);
+
+        $this->assertEquals(400, $this->response->status());
+    }
+
+    /**
+     * Test failed on login endpoint when password is blank
+     *
+     * @return void
+     */
+    public function testBlankPassword()
+    {
+        $this->json('post', '/login', ['email' => 'test@test.com', 'password' => ''])
+            ->seeJson([
+                'title' => 'Invalid Password',
+            ]);
+
+        $this->assertEquals(400, $this->response->status());
+    }
+
+    /**
+     * Test failed on login endpoint when password and email are blank
+     *
+     * @return void
+     */
+    public function testBlankEmailAndPassword()
+    {
+        $this->json('post', '/login', ['email' => '', 'password' => ''])
             ->seeJson([
                 'title' => 'Invalid Email',
             ])

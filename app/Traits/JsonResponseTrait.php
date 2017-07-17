@@ -26,19 +26,29 @@ trait JsonResponseTrait
         switch (true) {
             case $this->isValidationException($e):
                 return $this->badRequest($e->getResponse()->getData(true));
+                break;
             case $this->isModelNotFoundException($e):
             case $this->isNotFoundException($e):
                 return $this->modelNotFound();
+                break;
             case $this->isUnauthorizedException($e):
                 return $this->errorMessage($e->getMessage(), 401);
+                break;
             case $this->isAccessDeniedHttpException($e):
                 return $this->errorMessage($e->getMessage(), 403);
+                break;
             case $this->isConflictHttpException($e):
                 return $this->errorMessage($e->getMessage(), 409);
+                break;
             case $this->isClientException($e):
-                return $this->clientExceptionMessage($e->getResponse(), $e->getResponse()->getStatusCode());
+                return $this->clientExceptionMessage(
+                    $e->getResponse(),
+                    $e->getResponse()->getStatusCode()
+                );
+                break;
             default:
                 return $this->errorMessage("Bad Request", 400);
+                break;
         }
     }
 
@@ -72,7 +82,7 @@ trait JsonResponseTrait
      */
     protected function errorMessage($message = "", $statusCode = 400)
     {
-        return $this->jsonResponse($message, $statusCode);
+        return $this->buildJsonResponse($message, $statusCode);
     }
 
     /**
@@ -84,7 +94,7 @@ trait JsonResponseTrait
      */
     protected function badRequest($errors = [], $statusCode = 400)
     {
-        return $this->jsonResponse($this->getJsonErrorObjects($errors), $statusCode);
+        return $this->buildJsonResponse($this->getJsonErrorObjects($errors), $statusCode);
     }
 
     /**
@@ -117,7 +127,7 @@ trait JsonResponseTrait
      */
     protected function modelNotFound($message = 'Record not found', $statusCode = 404)
     {
-        return $this->jsonResponse($message, $statusCode);
+        return $this->buildJsonResponse($message, $statusCode);
     }
 
     /**
@@ -127,7 +137,7 @@ trait JsonResponseTrait
      * @param int $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function jsonResponse($response = null, $statusCode = 404)
+    protected function buildJsonResponse($response = null, $statusCode = 404)
     {
         $response = is_string($response) ? [['error' => $response]] : $response;
         $payload = ['errors' => $response];

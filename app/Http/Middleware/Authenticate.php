@@ -15,13 +15,10 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        try {
-            $headers = $request->headers->all();
-            app('Auth')->authenticate($headers);
+        $headers = $request->headers->all();
+        app('Auth')->authenticate($headers);
 
-            return $next($request);
-        } catch (\Exception $e) {
-            return response()->json($e->getMessage(), 400);
-        }
+        return $next($request);
+
     }
 }
