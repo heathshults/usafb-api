@@ -19,6 +19,5 @@ class Authenticate
         app('Auth')->authenticate($headers);
 
         return $next($request);
-
     }
 }
