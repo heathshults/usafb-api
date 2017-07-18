@@ -34,7 +34,6 @@ class UserCest
     protected $common;
 
 
-
     protected function _inject(validators\auth\UserValidator $validator, helper\auth\UserHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
@@ -57,7 +56,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $I->setEnvParms();
+
         $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
@@ -73,9 +72,7 @@ class UserCest
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
 
-
     /**
-
      * @group regression
      * @dataprovider userdetailsErr
      */
@@ -85,7 +82,6 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $I->setEnvParms();
         $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
@@ -97,10 +93,8 @@ class UserCest
 
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
-
 
 
     /**

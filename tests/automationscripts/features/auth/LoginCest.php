@@ -50,7 +50,6 @@ class LoginCest
 
     public function verifyValidLogin(ApiTester $I, \Codeception\Example $dataBuilder)
     {
-        $I->assertEquals("hello",getenv("AUTH_CLIENT_ID"));
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
         $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
