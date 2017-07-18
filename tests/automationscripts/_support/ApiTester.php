@@ -24,6 +24,8 @@ class ApiTester extends \Codeception\Actor
     * Define custom actions here
     */
 
+   // Set HTTP Headers
+
     public function setHeaders()
     {
         $this->haveHttpHeader('Content-Type', 'application/json');
@@ -32,6 +34,7 @@ class ApiTester extends \Codeception\Actor
 
     }
 
+    //Clear Http Headers
 
     public function clearHeaders()
     {

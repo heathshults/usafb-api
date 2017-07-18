@@ -33,6 +33,14 @@ class LoginCest
     }
 
     /**
+     * @group prereq
+     */
+    public function setEnvParam(ApiTester $I)
+    {
+        $this->common->setAuth0Credentials();
+    }
+
+    /**
      * @group release
      * @group sanity
      * @group regression
@@ -44,7 +52,7 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postLoginCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         if ($dataBuilder['key'] == 'errors') {   //Sanity for Invalid Password with Valid Login
@@ -63,7 +71,7 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postLoginCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->validateErrResponse($response, $dataBuilder['expResponse'], $I, $this->common);
@@ -71,7 +79,6 @@ class LoginCest
 
 
 //     Data Providers for the Tests to be provided within Cest Classes
-
 
     /**
      * @return array

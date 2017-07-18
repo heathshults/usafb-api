@@ -19,7 +19,7 @@ extensions:
                 max_files: 3 # logger configuration
 
 params:
-    - env
+    - .env
 
 gherkin: []
 
