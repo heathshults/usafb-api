@@ -40,4 +40,7 @@ automation:
   type: test
   script:
     - php -S localhost:8000 -t public 1>/dev/null &
+    - composer test:env
+    - killall php
+    - php -S localhost:8000 -t public 1>/dev/null &
     - composer test:sanity

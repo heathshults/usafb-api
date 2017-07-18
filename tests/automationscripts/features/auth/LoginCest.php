@@ -32,6 +32,13 @@ class LoginCest
 
     }
 
+    /**
+     * @group prereq
+     */
+    public function setEnvParam(ApiTester $I)
+    {
+        $this->common->setAuth0Credentials();
+    }
 
     /**
      * @group release
@@ -43,9 +50,9 @@ class LoginCest
 
     public function verifyValidLogin(ApiTester $I, \Codeception\Example $dataBuilder)
     {
+        $I->assertEquals("hello",getenv("AUTH_CLIENT_ID"));
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $I->setEnvParms();
         $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
@@ -65,7 +72,6 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $I->setEnvParms();
         $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
@@ -74,7 +80,6 @@ class LoginCest
 
 
 //     Data Providers for the Tests to be provided within Cest Classes
-
 
     /**
      * @return array

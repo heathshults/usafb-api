@@ -34,6 +34,7 @@ class UserCest
     protected $common;
 
 
+
     protected function _inject(validators\auth\UserValidator $validator, helper\auth\UserHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
@@ -41,13 +42,6 @@ class UserCest
         $this->loginhelper = $loginhelper;
         $this->common = $common;
 
-    }
-
-   //Set Auth0 Credentials
-
-    protected function setEnvParms()
-    {
-        $this->common->setAuth0Credentials();
     }
 
 

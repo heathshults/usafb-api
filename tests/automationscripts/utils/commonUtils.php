@@ -54,5 +54,20 @@ class CommonUtils
         return ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));
     }
 
+    // Method for setting the Env Paramters at runtime
+
+    public function setAuth0Credentials()
+    {
+        putenv("AUTH_CLIENT_ID=ZE6CFuU1opzEeZ5WpDzl1CZZOFrpU3T7");
+        putenv("AUTH_CLIENT_SECRET=NuCNaHRUMci8OZFKCKjvZXtAq5j14NZikKLlT - Uz1UE64acsCe7y3_o3tgsAk2Y5");
+        putenv("AUTH_AUDIENCE=https://daylen.auth0.com/api/v2/");
+        putenv("AUTH_ISS=https://daylen.auth0.com/");
+        putenv("AUTH_DOMAIN=daylen . auth0 . com");
+        putenv("AUTH_METADATA=http://soccer.com/metadata");
+        putenv("AUTH_CONNECTION=Username - Password - Authentication");
+
+    }
+
+
 
 }
