@@ -13,7 +13,7 @@ class UserHelper
 
 
 
-    public function getUserCall(ApiTester $I,$url,$token,$common)
+    public function getUserCallByToken(ApiTester $I,$url,$token)
     {
         $I->clearHeaders();
         $I->setHeaders();

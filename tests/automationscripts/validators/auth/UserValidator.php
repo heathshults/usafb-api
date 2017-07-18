@@ -14,7 +14,8 @@ class UserValidator
     public function verifyUserProfile(ApiTester $I, $actualResponse, $expectedResponse, CommonUtils $common)
     {
         $actualResponseArr = $common->convertJsonToArray($actualResponse);
-        $common->assertObjects($actualResponseArr, $expectedResponse,$I);
+        $expectedResponseArr = $common->convertJsonToArray($expectedResponse);
+        $common->assertObjects($actualResponseArr, $expectedResponseArr, $I);
 
     }
 }

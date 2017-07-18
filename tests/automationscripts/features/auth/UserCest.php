@@ -1,8 +1,16 @@
 <?php
 
+// Test covers the end points
+// "/auth/user"   - Get User Profile for logged in user
+
+//Test Scenerios covered 401  ,200
 
 class UserCest
 {
+    //define End points used in the tests globally
+
+    public $getLoginUrl = '/login';
+    public $getUserProfileUrl = "/auth/user";
 
     /**
      * @var helper\auth\loginHelper
@@ -45,14 +53,21 @@ class UserCest
 
     public function verifyUserProfile(ApiTester $I, \Codeception\Example $dataBuilder)
     {
-        $getLoginUrl = "/rest/auth/login";
-        $loginResponse = $this->loginhelper->postLoginCall($I, $getLoginUrl, $dataBuilder['postBody']);
+        $I->wantToTest($dataBuilder['TestCase']);
+        $I->comment($dataBuilder['TestCase']);
+        $loginResponse = $this->loginhelper->postLoginCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
-        $getUserUrl = "/rest/auth/user";
-        $UserProfileResponse = $this->helper->getUserCall($I, $getUserUrl, $token[0], $this->common);
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
+        $userProfileResponse = $this->helper->getUserCallByToken($I, $this->getUserProfileUrl, $tokenParam);
+        codecept_debug($userProfileResponse);
+
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->verifyUserProfile($I, $UserProfileResponse, $dataBuilder['expResponse'], $this->common);
+
+        $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
 
 
@@ -62,8 +77,10 @@ class UserCest
     protected function userdetails()
     {
         return [
-            ['TestCase' => 'verifyUserProfile', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => array('name' => 'autouser@gmail.com', 'nickname' => 'autouser', 'email' => 'autouser@gmail.com', 'email_verified' => true)]
+            ['TestCase' => 'verifyUserProfile', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"name\": \"autouser@gmail.com\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true, \"http://soccer.com/metadata\":{ \"firstName\": \"\", \"lastName\": \"\", \"city\": \"\", \"state\": \"\", \"postalCode\": \"\", \"competition\": \"\", \"verification_email_sent\": true, \"roles\":[ 1, 3 ] } }", 'key' => 'authorized'],
+            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
         ];
     }
+
 
 }
