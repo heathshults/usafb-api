@@ -7,6 +7,7 @@ import os
 
 class LoginTaskSet(TaskSet):
 
+# PerfTest Login  /login
 
     @task(1)
     def login(self):

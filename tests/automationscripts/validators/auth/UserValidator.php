@@ -9,7 +9,9 @@ use utils\CommonUtils;
 class UserValidator
 {
 
-    // This method is used to validate user profile compare Expected Response vc Actual Response
+    /*
+      * Validator for user profile scenarios
+      */
 
     public function verifyUserProfile(ApiTester $I, $actualResponse, $expectedResponse, CommonUtils $common)
     {
@@ -18,4 +20,6 @@ class UserValidator
         $common->assertObjects($actualResponseArr, $expectedResponseArr, $I);
 
     }
+
+
 }

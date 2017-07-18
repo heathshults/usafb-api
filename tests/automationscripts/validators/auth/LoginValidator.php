@@ -8,7 +8,9 @@ use utils\CommonUtils;
 
 class LoginValidator
 {
-    // This method is used to validate error response
+    /*
+     * Validator for ErrorResponse of Login
+     */
 
     public function validateErrResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
     {
@@ -21,10 +23,9 @@ class LoginValidator
     }
 
 
-    /* This method is used to validate the key and value sent from Auth0
-
+    /*
+    *Validator for SuccessResponse of Login
     */
-
     public function validateSuccResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
     {
 

@@ -7,8 +7,9 @@ use ApiTester;
 class LoginHelper
 {
 
-    // Reusable method for Login Post Call
-    // To be called for other tests
+    /*
+     * helper call postLogin
+    */
 
     public function postLogin(ApiTester $I, $url, $postBody)
     {

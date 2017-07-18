@@ -7,7 +7,9 @@ use ApiTester;
 class CommonUtils
 {
 
-    //Method for converting Json Object to a Array Object
+    /*
+     *Method to converting JSON to Array
+     */
 
     public function convertJsonToArray($jsonObject)
     {
@@ -17,9 +19,9 @@ class CommonUtils
     }
 
 
-    // Method to store the Key /Value Data
-    //This function can be used for comparing Expected and Actual outputs
-
+    /*
+    * Method to store Key and Value in Array
+   */
     public function getArrayOfValue($arrayObject)
     {
         $arrayList = array();
@@ -34,11 +36,12 @@ class CommonUtils
     }
 
 
-    // Assert Method to compare Key & Values in 2 Array Objects (Actual vs Expected)
-
-
+    /*
+   *  Method  to assert actual vs expected
+   */
     public function assertObjects($actualObj, $expectedObj, ApiTester $I)
     {
+
         foreach ($actualObj as $key => $val)
 
             if (array_key_exists($key, $expectedObj)) {
@@ -46,16 +49,21 @@ class CommonUtils
             }
     }
 
-    // Method for generating new random number to append to entities created
+
+    /*
+    * Method for generating random number
+    */
 
     public function randomNumber()
     {
         $mt = explode(' ', microtime());
         return ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));
-
     }
 
-    // Method for setting the Env Paramters at runtime
+
+    /*
+   * Method for setting env Paramters
+   */
 
     public function setAuth0Credentials()
     {
@@ -69,21 +77,22 @@ class CommonUtils
 
     }
 
-    // Function to replace .env file parameters
+
+    /*
+     * Method to write env params to Env file
+     */
 
     public function changeEnvironmentVariable($key, $value)
     {
-
-
-        $path = getcwd();
-        $path = getcwd() . '/.env';
-
+        $path = getcwd().'/.env';
 
         if (file_exists($path)) {
+
             file_put_contents($path, str_replace(
-                "$key=" . getenv($key), "$key=" . $value, file_get_contents($path)
+                "$key=".getenv($key), "$key=".$value, file_get_contents($path)
             ));
         }
     }
+
 
 }

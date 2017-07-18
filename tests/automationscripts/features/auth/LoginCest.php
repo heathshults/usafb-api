@@ -1,5 +1,8 @@
 <?php
 
+// Test covers the end points
+// "/login"
+//Covers 200,400,401 codes
 
 class LoginCest
 {
