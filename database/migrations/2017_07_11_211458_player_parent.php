@@ -18,12 +18,12 @@ class PlayerParent extends Migration
                 $table->increments('id');
                 $table->integer('player_registration_id')->unsigned();
                 $table->foreign('player_registration_id')->references('id')->on('player_registration');
-                $table->string('first_name', 128);
-                $table->string('last_name', 128);
+                $table->string('first_name', 40);
+                $table->string('last_name', 80);
                 $table->string('email');
                 $table->string('cell_phone');
                 $table->string('home_phone');
-                $table->string('work_phone'); // Why is this field in both tables?
+                $table->string('work_phone');
                 $table->timestamps();
             });
         }

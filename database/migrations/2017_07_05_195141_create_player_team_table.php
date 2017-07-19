@@ -21,8 +21,8 @@ class CreatePlayerTeamTable extends Migration
                 $table->string('team_name', 128);
                 $table->string('school', 128);
                 $table->string('school_state');
-                $table->integer('team_age_group');
-                $table->string('team_gender', 6); // Why is this field in both tables?
+                $table->string('team_age_group', 120);
+                $table->string('team_gender', 6);
                 $table->timestamps();
             });
         }
