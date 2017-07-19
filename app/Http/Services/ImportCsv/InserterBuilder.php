@@ -16,11 +16,14 @@ class InserterBuilder
     }
     /*
         Creates a builder instance for the model passed as param
+        @param String: Containg full namespace class name
+        @return new instance
     */
     public static function createInserterForClass($className)
     {
         return new self($className);
     }
+
     /*
      Will return a new modal instance
      parsing values according to rules array, 
@@ -32,38 +35,83 @@ class InserterBuilder
         $modelInstance = new $classToCreate;
         $fields = $this->extractFields();
         $fieldKeys = array_keys($fields);
-
+        // Array<Rules>:: => $this->clazzName::Model with attributes
         $modelWithAttributes = array_reduce($fieldKeys, function ($model, $item) use ($fields) {
             $hashTable = $fields[$item];
             $itemType = $hashTable['type'];
             $value = $hashTable['value'];
             
-            if (strpos($itemType, '?') == false && (trim($value) == '' || is_null($value))) {
-                throw new \Exception('Required Value not present item '. $item);
-            } else {
-                $itemType = str_replace('?', '', $itemType);
-            } //Field is required
-
-            // Will mutate original value
-            if ($itemType == 'date') {
-                $value = date('Y-m-d H:i:s', strtotime($value));
-            } elseif ($itemType == 'bool') {
-                $value = strtoupper($value) === 'TRUE' || $value === '1'? true : false;
-            } else {
-                settype($value, $itemType);
-            }
-
-            $item = array_key_exists('attr_name', $hashTable) ? $hashTable['attr_name'] : $item;
+            $parsedValue = $this->parseToSpecifiedType($item, $value, $itemType);
+            $attributeName = array_key_exists('attr_name', $hashTable) ? $hashTable['attr_name'] : $item;
             
-            $model->setAttribute($item, $value);
+            $model->setAttribute($attributeName, $parsedValue);
             return $model;
         }, $modelInstance);
 
         return $modelWithAttributes;
     }
+
+    /*
+     Will parse the type field in our rules array. Returning value
+     Will through exception =>
+     If type definition contains a '?' then that field is allowed to be null or empty. 
+     If it doesnt then it should contain a value.
+     Or parsing value accoring to rule cant be done
+     @param $item : String Item name 
+     @param $value : Value as read from csv file
+     @param $expectedType: Type set in rules array the value should be parsed to
+    */
+    private function parseToSpecifiedType($item, $value, $expectedType)
+    {
+        if (strpos($expectedType, '?') == false && (trim($value) == '' || is_null($value))) {
+            throw new \Exception('Required Value not present for item '. $item);
+        } else {
+            $type = str_replace('?', '', $expectedType);
+        }
+
+        // Will mutate original value
+        if ($type == 'date') {
+            $value = $this->parseToDate($value);
+        } elseif ($type == 'bool') {
+            $value = $this->parseToBoolean($value);
+        } else {
+            settype($value, $type);
+        }
+
+        return $value;
+    }
+
+    /*
+     Will return pased value to date
+    @param $value? as read from csv file
+    @return Date parsed date
+    */
+    private function parseToDate($value)
+    {
+        $parsedDate = strtotime($value);
+        if ($parsedDate) {
+            return date('Y-m-d H:i:s', strtotime($value));
+        } else {
+            throw new \Exception('Cant parse that date '.$value);
+        }
+    }
+
+    /*
+     Will return pased value converted to boolean
+     @param $value? as read from csv file
+     @return Boolean parsed value
+    */
+    private function parseToBoolean($value)
+    {
+        return (strtoupper($value) == 'TRUE' || $value == '1');
+    }
+
+
     /*
     Builder method will return instance with hashTable
     hashtable will be filtered to only use clazz rules and values
+    @param $hashTable An array with parsing rules
+    @return self : instance
     */
     public function usingHashTable(array $hashTable)
     {
@@ -73,6 +121,8 @@ class InserterBuilder
     /*
     Builder method, will return instance applying extra filter to 
     table, allowing to devide one builder in two builders
+    @param Function a function that returns a boolean
+    @return Generator function yielding the two sides of the condition for every yield
     */
     public function partitionBy($condition)
     {
@@ -96,23 +146,38 @@ class InserterBuilder
     }
     /*
     Builder method will return instance of self attaching a before hook Clojure
+    @param Function a function that returns a Model
+    @return self : instance
     */
     public function applyingBeforeSaveHook($funcClojure)
     {
         $this->hookFunction = $funcClojure;
         return $this;
     }
-    /*
+
+     /*
     Runs the builder instance returning a saved model
     according to rules in hash table
+    @return Model
     */
-    public function buildAndSave()
+    public function build()
     {
         $modelInstance = $this->insertValuesForFields();
         if (!is_null($this->hookFunction)) {
             $hook = $this->hookFunction;
             $modelInstance = $hook($modelInstance);
         }
+        return $modelInstance;
+    }
+
+    /*
+    Runs the builder instance returning a saved model
+    according to rules in hash table
+    @return Model
+    */
+    public function buildAndSave()
+    {
+        $modelInstance = $this->build();
        
         $modelInstance->save();
 
