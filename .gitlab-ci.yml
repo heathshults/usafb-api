@@ -41,4 +41,4 @@ automation:
   script:
     - composer env:prereq
     - php -S localhost:8000 -t public 1>/dev/null &
-    - composer test:sanity
+    - composer test:reg
