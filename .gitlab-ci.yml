@@ -16,7 +16,6 @@ setup:
   script:
     - composer install --quiet --no-interaction
     - cp .env.testing .env
-    - php artisan migrate:refresh --seed
   cache:
     key: ${CI_BUILD_REF_NAME}
     paths:
@@ -28,8 +27,15 @@ setup:
       - .env
 
 test:
+  services:
+    - postgres:9.6-alpine
+  environment:
+    - POSTGRES_USER=root
+    - POSTGRES_PASSWORD=root
+    - POSTGRES_DB=npdb-usafb
   type: test
   script:
+    - php artisan migrate:refresh --seed
     - composer test
 
 lint:
