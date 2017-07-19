@@ -23,7 +23,7 @@ $app->group(
                 'uses' => 'AuthenticationController@getUser'
             ]
         );
-        $app->post('/upload', 'UploadController@processFileUpload');
+        $app->post('/player/upload', 'UploadController@processFileUpload');
     }
 );
 
