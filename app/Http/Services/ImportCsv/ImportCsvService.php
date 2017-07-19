@@ -15,14 +15,16 @@ use Illuminate\Support\Facades\DB;
 class ImportCsvService
 {
     
-    // public function __construct(){}
-    
     /*
-     Returns an array(
+     Will process the file and return an array with the result
+     Will show increment erros if line is not as big as expected (not the required amount of commas),
+     On parsing errors,
+     On Required fields missing
+     @param File: file to process
+     @returns array(
        processed ::Integer, ; Amount of items processed and inserted successfully
        errors ::Integer ; Amount of errors found
      );
-     
     */
     public function importCsvFile($file)
     {
@@ -52,7 +54,7 @@ class ImportCsvService
 
     /*
        Returns a bollean to show if the line was procesed correctly
-     
+       @param array representing csv line
     */
     private function processLine(array $line_of_text)
     {
@@ -95,7 +97,7 @@ class ImportCsvService
                 array('value' => $line_of_text[12], 'type' => 'string', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'graduation_year' =>
-                array('value' => $line_of_text[13], 'type' => 'int', 'tables' =>
+                array('value' => $line_of_text[13], 'type' => 'string', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'instagram_handle' =>
                 array('value' => $line_of_text[14], 'type' => 'int?', 'tables' =>
@@ -187,7 +189,7 @@ class ImportCsvService
                 array('value' => $line_of_text[44], 'type' => 'string', 'tables' =>
                     array('App\Models\PlayerTeam', 'App\Models\PlayerRegistration')),
             'team_age_group' =>
-                array('value' => $line_of_text[45], 'type' => 'int', 'tables' =>
+                array('value' => $line_of_text[45], 'type' => 'string', 'tables' =>
                     array('App\Models\PlayerTeam', 'App\Models\PlayerRegistration')),
             'team_gender' =>
                 array('value' => $line_of_text[46], 'type' => 'string', 'tables' =>
