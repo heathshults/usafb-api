@@ -6,9 +6,11 @@ use Mockery;
 use org\bovigo\vfs\vfsStream;
 use App\Http\Services\ImportCsv\InserterBuilder;
 
-class InserterBuilderTest extends \TestCase {
+class InserterBuilderTest extends \TestCase
+{
 
-    public function testOnBuildShouldTryToPersistEloquentModel() {
+    public function testOnBuildShouldTryToPersistEloquentModel()
+    {
         try {
             InserterBuilder::createInserterForClass('App\Models\GameType')->buildAndSave();
         } catch(\Exception $ex){
@@ -16,7 +18,8 @@ class InserterBuilderTest extends \TestCase {
         }
     }
 
-    public function testOnBuildShouldInsertAndReturnModelToDbWhenFieldsProvided() {
+    public function testOnBuildShouldInsertAndReturnModelToDbWhenFieldsProvided()
+    {
         $fields = array(
             'name' => array('value' => 'A VALUE', 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
         );
@@ -28,7 +31,8 @@ class InserterBuilderTest extends \TestCase {
         $this->assertFalse(is_null($someInstance->id));
     }
 
-    public function testOnBuildShouldCallApplyBeforeSaveHookBeforeSaving(){
+    public function testOnBuildShouldCallApplyBeforeSaveHookBeforeSaving()
+    {
          $fields = array(
             'name' => array('value' => 'A VALUE', 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
         );
@@ -47,7 +51,8 @@ class InserterBuilderTest extends \TestCase {
         $this->assertTrue($someFlag); // variable was modified so function was called
     }
 
-    public function testOnBuildShouldFavorAttrNameOverKeyIfProvided() {
+    public function testOnBuildShouldFavorAttrNameOverKeyIfProvided()
+    {
         $nameValue = 'name_value';
         $fields = array(
             'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => $nameValue, 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
@@ -60,7 +65,8 @@ class InserterBuilderTest extends \TestCase {
         $this->assertTrue($someInstance->name == $nameValue); 
     }
 
-    public function testShouldThrowExceptionIsRequiredFieldNotPresent() {
+    public function testShouldThrowExceptionIsRequiredFieldNotPresent()
+    {
         $nameValue = '';
         $fields = array(
             'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => $nameValue, 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
@@ -74,7 +80,8 @@ class InserterBuilderTest extends \TestCase {
        
     }
 
-    public function testOnBuildShouldPartitionByConditionAndReturnABuilderGenerator() {
+    public function testOnBuildShouldPartitionByConditionAndReturnABuilderGenerator() 
+    {
         $nameValue = 'name_value';
         $fields = array(
             'some_1' => array('attr_name' => 'name', 'value' => $nameValue, 'type' => 'string', 'tables' => array( 'App\Models\GameType')),
@@ -93,6 +100,59 @@ class InserterBuilderTest extends \TestCase {
             $instance = $value->buildAndSave();
            $this->assertFalse(is_null($instance->id));
         }
+    }
+
+    public function testOnBuildShouldFailIfDateFieldAintParsable() 
+    {
+        $nameValue = 'lalalalala';
+        $fields = array(
+            'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => $nameValue, 'type' => 'date', 'tables' => array( 'App\Models\GameType'))
+        );
+        $this->setExpectedException('\Exception');
+        
+        $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
+                        ->usingHashTable($fields)
+                        ->buildAndSave();
+
+    }
+
+    public function testOnBuildShouldParseBooleanAsTrueIfValueIsTRUE() 
+    {
+        $fields = array(
+            'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => 'TRUE', 'type' => 'boolean', 'tables' => array( 'App\Models\GameType'))
+        );
+       
+        
+        $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
+                        ->usingHashTable($fields)
+                        ->build();
+        
+        $this->assertTrue($someInstance->name);
+    }
+
+    public function testOnBuildShouldParseBooleanAsFalseIfValueIsNotTRUEnor1() 
+    {
+        $fields = array(
+            'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => 'false', 'type' => 'bool', 'tables' => array( 'App\Models\GameType'))
+        );
+        
+        $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
+                        ->usingHashTable($fields)
+                        ->build();
+        
+        $this->assertFalse($someInstance->name);
+    }
+    public function testOnBuildShouldParseBooleanAsTrueIfValueIs1() 
+    {
+        $fields = array(
+            'some_non_existing_attribute' => array('attr_name' => 'name', 'value' => '1', 'type' => 'bool', 'tables' => array( 'App\Models\GameType'))
+        );
+        
+        $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
+                        ->usingHashTable($fields)
+                        ->build();
+        
+        $this->assertTrue($someInstance->name);
     }
 
     
