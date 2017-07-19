@@ -29,10 +29,10 @@ setup:
 test:
   services:
     - postgres:9.6-alpine
-  environment:
-    - POSTGRES_USER=root
-    - POSTGRES_PASSWORD=root
-    - POSTGRES_DB=npdb-usafb
+  variables:
+    POSTGRES_USER: root
+    POSTGRES_PASSWORD: root
+    POSTGRES_DB: npdb-usafb
   type: test
   script:
     - php artisan migrate:refresh --seed
