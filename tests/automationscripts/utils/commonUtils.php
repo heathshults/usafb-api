@@ -7,10 +7,10 @@ use ApiTester;
 class CommonUtils
 {
 
-    /*
-     *Method to converting JSON to Array
+    /**
+     * @param $jsonObject
+     * @return mixed
      */
-
     public function convertJsonToArray($jsonObject)
     {
         $decodedText = html_entity_decode($jsonObject);
@@ -18,10 +18,10 @@ class CommonUtils
         return $myArray;
     }
 
-
-    /*
-    * Method to store Key and Value in Array
-   */
+    /**
+     * @param $arrayObject
+     * @return array
+     */
     public function getArrayOfValue($arrayObject)
     {
         $arrayList = array();
@@ -36,9 +36,12 @@ class CommonUtils
     }
 
 
-    /*
-   *  Method  to assert actual vs expected
-   */
+    /**
+     * assert actual vs expected
+     * @param $actualObj
+     * @param $expectedObj
+     * @param ApiTester $I
+     */
     public function assertObjects($actualObj, $expectedObj, ApiTester $I)
     {
 
@@ -49,11 +52,10 @@ class CommonUtils
             }
     }
 
-
-    /*
-    * Method for generating random number
-    */
-
+    /**
+     * random number generation
+     * @return int
+     */
     public function randomNumber()
     {
         $mt = explode(' ', microtime());
@@ -61,10 +63,9 @@ class CommonUtils
     }
 
 
-    /*
-   * Method for setting env Paramters
-   */
-
+    /**
+     * Set Credentials for Env File
+     */
     public function setAuth0Credentials()
     {
         $this->changeEnvironmentVariable("AUTH_CLIENT_ID", "ZE6CFuU1opzEeZ5WpDzl1CZZOFrpU3T7");
@@ -77,11 +78,10 @@ class CommonUtils
 
     }
 
-
-    /*
-     * Method to write env params to Env file
+    /**
+     * @param $key
+     * @param $value
      */
-
     public function changeEnvironmentVariable($key, $value)
     {
         $path = getcwd().'/.env';
@@ -93,6 +93,5 @@ class CommonUtils
             ));
         }
     }
-
 
 }

@@ -65,4 +65,7 @@ services:
         command: "--master-host=locust-master"
         volumes:
           - ./tests/performancescripts:/scripts
+        links:
+          - locust-master
+          - nginx
 

@@ -7,7 +7,6 @@ import csv
 import random
 
 #Method to read CSV data for data driven
-
 def read_csv(filename):
     csvfile = list(csv.reader(open(filename)))
     csvdics = []
@@ -22,14 +21,12 @@ def read_csv(filename):
 class LoginTaskSet(TaskSet):
 
 # PerfTest Login  End Point Url /login
-
     @task(1)
     def login(self):
         userDataList=read_csv(os.path.dirname(os.path.realpath(__file__))+"/_Data/User_Data.csv")
         userName = [d.get('column_0') for d in userDataList]
         password = [d.get('column_1') for d in userDataList]
-        response = self.client.post("/login", {"username":random.choice(userName),"password":random.choice(password)},headers={'Content-Type': 'application/json', 'Accept': 'application/json','Accept-Encoding':'gzip'})
-
+        response = self.client.post("/login", {"email":random.choice(userName),"password":random.choice(password)},headers={'Content-Type': 'application/json', 'Accept': 'application/json','Accept-Encoding':'gzip'})
 
 class Auth_Login(HttpLocust):
      min_wait=5000

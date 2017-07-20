@@ -27,7 +27,6 @@ class UserCest
      */
     protected $helper;
 
-
     /**
      * @var utils\CommonUtils
      */
@@ -40,9 +39,7 @@ class UserCest
         $this->validator = $validator;
         $this->loginhelper = $loginhelper;
         $this->common = $common;
-
     }
-
 
     /**
      * @group release
@@ -56,7 +53,6 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-
         $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
@@ -65,10 +61,8 @@ class UserCest
         }
         $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
         codecept_debug($userProfileResponse);
-
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
 
@@ -90,12 +84,10 @@ class UserCest
         }
         $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
         codecept_debug($userProfileResponse);
-
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
-
 
     /**
      * @return array
