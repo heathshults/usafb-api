@@ -3,18 +3,35 @@ from locust import TaskSet
 from locust import task
 from locust import HttpLocust
 import os
+import csv
+import random
 
+#Method to read CSV data for data driven
+
+def read_csv(filename):
+    csvfile = list(csv.reader(open(filename)))
+    csvdics = []
+    for row in csvfile:
+        row_dict = {}
+        for i in range(len(row)):
+            row_dict['column_%s' % i] = row[i]
+        csvdics.append(row_dict)
+    csvdics.pop(0)
+    return csvdics
 
 class LoginTaskSet(TaskSet):
 
-# PerfTest Login  /login
+# PerfTest Login  End Point Url /login
 
     @task(1)
     def login(self):
-        response = self.client.post("/login", {"username":"autouser@gmail.com","password":"password123"},headers={'Content-Type': 'application/json', 'Accept': 'application/json','Accept-Encoding':'gzip'})
+        userDataList=read_csv(os.path.dirname(os.path.realpath(__file__))+"/_Data/User_Data.csv")
+        userName = [d.get('column_0') for d in userDataList]
+        password = [d.get('column_1') for d in userDataList]
+        response = self.client.post("/login", {"username":random.choice(userName),"password":random.choice(password)},headers={'Content-Type': 'application/json', 'Accept': 'application/json','Accept-Encoding':'gzip'})
 
 
-class auth/Login(HttpLocust):
+class Auth_Login(HttpLocust):
      min_wait=5000
      max_wait=15000
      users = [{'login_name': "autouser@gmail.com", 'password': "password123"}, {'login_name': "lolo@gmail.com", 'password': "lolo"}]

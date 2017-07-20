@@ -1,5 +1,5 @@
 {
 
   "target": "http://localhost:8080",
-  "locusts": ["auth/Login"]
+  "locusts": ["Auth_Login"]
 }
