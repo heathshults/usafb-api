@@ -27,6 +27,9 @@ $app->group(
     }
 );
 
+
+$app->get('/player/download', 'UploadController@exportPlayers');
+
 $app->get(
     '/', function () use ($app) {
         return $app->version();
