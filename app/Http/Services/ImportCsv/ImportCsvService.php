@@ -60,57 +60,57 @@ class ImportCsvService
     {
         $lineItem = array(
             'sport_years' =>
-                array('value' => $line_of_text[0], 'type' => 'int', 'tables' =>
+                array('value' => $line_of_text[0], 'type' => 'int?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'address_first_line' =>
-                array('value' => $line_of_text[1], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[1], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'birth_certificate' =>
                 array('value' => $line_of_text[2], 'type' => 'bool?', 'tables' =>
                     array('App\Models\PlayerRegistration')),
             'phone' =>
-                array('value' => $line_of_text[3], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[3], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'city' =>
-                array('value' => $line_of_text[4], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[4], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
-            'country' =>
-                array('value' => $line_of_text[5], 'type' => 'string', 'tables' =>
+            'county' =>
+                array('value' => $line_of_text[5], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'grade' =>
-                array('value' => $line_of_text[6], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[6], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'birth_date' =>
-                array('value' => $line_of_text[7], 'type' => 'date', 'tables' =>
+                array('value' => $line_of_text[7], 'type' => 'date?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'email' =>
-                array('value' => $line_of_text[8], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[8], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'first_name' =>
-                array('value' => $line_of_text[9], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[9], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')) ,
             'game_type' => $line_of_text[10],
             'gender'=>
-                array('value' => $line_of_text[11], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[11], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'height' =>
-                array('value' => $line_of_text[12], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[12], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'graduation_year' =>
-                array('value' => $line_of_text[13], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[13], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'instagram_handle' =>
                 array('value' => $line_of_text[14], 'type' => 'int?', 'tables' =>
                     array( 'App\Models\PlayerRegistration')),
             'last_name' =>
-                array('value' => $line_of_text[15], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[15], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'league' =>
                 array('value' => $line_of_text[16], 'type' => 'string', 'tables' =>
                     array( 'App\Models\PlayerRegistration')),
             'level'=> $line_of_text[17],
             'middle_name' =>
-                array('value' => $line_of_text[18], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[18], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player','App\Models\PlayerRegistration')),
             'org_name' =>
                 array('value' => $line_of_text[19], 'type' => 'string', 'tables' =>
@@ -119,7 +119,7 @@ class ImportCsvService
                 array('value' => $line_of_text[20], 'type' => 'string', 'tables' =>
                     array('App\Models\PlayerRegistration')),
             'sports' =>
-                array('value' => $line_of_text[21], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[21], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'guardian_1_cell' =>
                 array('value' =>  $line_of_text[22], 'attr_name' => 'cell_phone', 'type' => 'string', 'tables' =>
@@ -165,10 +165,10 @@ class ImportCsvService
                     array('App\Models\Player')),
             'usadfb_id' => $line_of_text[36],
             'positions' =>
-                array('value' => $line_of_text[37], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[37], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'player_last_updated' =>
-                array('value' => $line_of_text[38], 'type' => 'date', 'tables' =>
+                array('value' => $line_of_text[38], 'type' => 'date?', 'tables' =>
                     array('App\Models\Player')),
             'school' =>
                 array('value' => $line_of_text[39], 'type' => 'string', 'tables' =>
@@ -201,10 +201,10 @@ class ImportCsvService
                 array('value' => $line_of_text[48], 'type' => 'bool?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'weight' =>
-                array('value' => $line_of_text[49], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[49], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration')),
             'zip_code' =>
-                array('value' => $line_of_text[50], 'type' => 'string', 'tables' =>
+                array('value' => $line_of_text[50], 'type' => 'string?', 'tables' =>
                     array('App\Models\Player', 'App\Models\PlayerRegistration'))
         );
             
@@ -230,53 +230,11 @@ class ImportCsvService
                         ->usingHashTable($lineItem)
                         ->applyingBeforeSaveHook($usafbId)
                         ->buildAndSave();
-            
-            $playerToPlayerTeam = function ($pt) use ($player) {
-                $pt->setAttribute('player_id', $player->id);
-                return $pt;
-            };
-            
-            $playerTeam = InserterBuilder::createInserterForClass('App\Models\PlayerTeam')
-                            ->usingHashTable($lineItem)
-                            ->applyingBeforeSaveHook($playerToPlayerTeam)
-                            ->buildAndSave();
-
-            $gameType = GameType::where('name', strtoupper($lineItem['game_type']))->first();
-            $playerLevel = PlayerLevel::where('name', strtoupper($lineItem['level']))->first();
-            
-            $playerRegistrationExternalIds = function ($pr) use ($player, $gameType, $playerLevel) {
-                $pr->setAttribute('player_id', $player->id);
-                $pr->setAttribute('game_type_id', $gameType->id);
-                $pr->setAttribute('level_id', $gameType->id);
-                return $pr;
-            };
-
-            $playerRegistration = InserterBuilder::createInserterForClass('App\Models\PlayerRegistration')
-                                    ->usingHashTable($lineItem)
-                                    ->applyingBeforeSaveHook($playerRegistrationExternalIds)
-                                    ->buildAndSave();
-
-            $partitionCondition = function ($fieldMetaKey, $fieldMetaValue) {
-                return strpos($fieldMetaKey, '1') !== false; // if the key contains the number one
-            };
-
-            $playerParentExternalId = function ($pp) use ($playerRegistration) {
-                $pp->setAttribute('player_registration_id', $playerRegistration->id);
-                return $pp;
-            };
-
-            $playerParentBuilderGenerator = InserterBuilder::createInserterForClass('App\Models\PlayerParent')
-                                                ->usingHashTable($lineItem)
-                                                ->applyingBeforeSaveHook($playerParentExternalId)
-                                                ->partitionBy($partitionCondition);
-
-            foreach ($playerParentBuilderGenerator as $value) {
-                $value->buildAndSave();
-            }
             DB::commit();
             $success = true;
         } catch (\Exception $e) {
             $success = false;
+            echo "Exception ".$e->getMessage();
             DB::rollback();
         }
         return $success;
