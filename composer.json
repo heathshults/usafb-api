@@ -52,7 +52,7 @@
 		"test:all" : "@php vendor/bin/codecept run --steps --xml TestXMLExecutionReport-$(date '+%FT%T').xml  --html  TestHTMLExecutionReport-$(date '+%FT%T').html",
 		"test:sanity" : "@php vendor/bin/codecept run -g sanity --steps --xml TestSanityXMLExecutionReport-$(date '+%FT%T').xml  --html  TestSanityHTMLExecutionReport-$(date '+%FT%T').html",
 		"test:rel" : "@php vendor/bin/codecept run -g release --steps --xml TestRelXMLExecutionReport-$(date '+%FT%T').xml  --html  TestRelHTMLExecutionReport-$(date '+%FT%T').html",
-		"test:reg" : "@php vendor/bin/codecept run -g regression --steps --xml TestRegXMLExecutionReport-$(date '+%FT%T').xml  --html  TestRegHTMLExecutionReport-$(date '+%FT%T').html",
+		"test:reg" : "@php vendor/bin/codecept run -g regression --steps --xml TestRegXMLExecutionReport-$(date '+%FT%T').xml  --html  TestRegHTMLExecutionReport-$(date '+%FT%T').html -d",
 		"post-root-package-install" : "php -r \"copy('.env.example', '.env');\""
 	},
 	"minimum-stability" : "dev",

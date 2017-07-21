@@ -1,11 +1,13 @@
 <?php
 
+// Test covers the end points
+// "/login"
+//Covers 200,400,401 codes
 
 class LoginCest
 {
 
     //Define End point URL's
-
     public $getLoginUrl = '/login';
 
     /**
@@ -23,13 +25,11 @@ class LoginCest
      */
     protected $common;
 
-
     protected function _inject(validators\auth\LoginValidator $validator, helper\auth\LoginHelper $helper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
         $this->validator = $validator;
         $this->common = $common;
-
     }
 
     /**
@@ -60,7 +60,6 @@ class LoginCest
         } else {
             $this->validator->validateSuccResponse($response, $dataBuilder['expResponse'], $I, $this->common);
         }
-
     }
 
     /**
@@ -77,9 +76,7 @@ class LoginCest
         $this->validator->validateErrResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
-
 //     Data Providers for the Tests to be provided within Cest Classes
-
     /**
      * @return array
      */
@@ -90,7 +87,6 @@ class LoginCest
             ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Wrong email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
         ];
     }
-
 
     /**
      * @return array
@@ -105,5 +101,4 @@ class LoginCest
             ['TestCase' => 'verifyLoginWithInvalidEmail', 'code' => "400", "postBody" => ['email' => 'test@', 'password' => 'test'], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email must be a valid email address.\" } ] }", "key" => 'errors'] // Invalid Email
         ];
     }
-
 }

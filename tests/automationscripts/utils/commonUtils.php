@@ -7,8 +7,10 @@ use ApiTester;
 class CommonUtils
 {
 
-    //Method for converting Json Object to a Array Object
-
+    /**
+     * @param $jsonObject
+     * @return mixed
+     */
     public function convertJsonToArray($jsonObject)
     {
         $decodedText = html_entity_decode($jsonObject);
@@ -16,10 +18,10 @@ class CommonUtils
         return $myArray;
     }
 
-
-    // Method to store the Key /Value Data
-    //This function can be used for comparing Expected and Actual outputs
-
+    /**
+     * @param $arrayObject
+     * @return array
+     */
     public function getArrayOfValue($arrayObject)
     {
         $arrayList = array();
@@ -34,11 +36,15 @@ class CommonUtils
     }
 
 
-    // Assert Method to compare Key & Values in 2 Array Objects (Actual vs Expected)
-
-
+    /**
+     * assert actual vs expected
+     * @param $actualObj
+     * @param $expectedObj
+     * @param ApiTester $I
+     */
     public function assertObjects($actualObj, $expectedObj, ApiTester $I)
     {
+
         foreach ($actualObj as $key => $val)
 
             if (array_key_exists($key, $expectedObj)) {
@@ -46,17 +52,20 @@ class CommonUtils
             }
     }
 
-    // Method for generating new random number to append to entities created
-
+    /**
+     * random number generation
+     * @return int
+     */
     public function randomNumber()
     {
         $mt = explode(' ', microtime());
         return ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));
-
     }
 
-    // Method for setting the Env Paramters at runtime
 
+    /**
+     * Set Credentials for Env File
+     */
     public function setAuth0Credentials()
     {
         $this->changeEnvironmentVariable("AUTH_CLIENT_ID", "ZE6CFuU1opzEeZ5WpDzl1CZZOFrpU3T7");
@@ -69,19 +78,18 @@ class CommonUtils
 
     }
 
-    // Function to replace .env file parameters
-
+    /**
+     * @param $key
+     * @param $value
+     */
     public function changeEnvironmentVariable($key, $value)
     {
-
-
-        $path = getcwd();
-        $path = getcwd() . '/.env';
-
+        $path = getcwd().'/.env';
 
         if (file_exists($path)) {
+
             file_put_contents($path, str_replace(
-                "$key=" . getenv($key), "$key=" . $value, file_get_contents($path)
+                "$key=".getenv($key), "$key=".$value, file_get_contents($path)
             ));
         }
     }

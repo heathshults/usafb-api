@@ -7,16 +7,18 @@ use ApiTester;
 class LoginHelper
 {
 
-    // Reusable method for Login Post Call
-    // To be called for other tests
-
+    /**
+     * @param ApiTester $I
+     * @param $url
+     * @param $postBody
+     * @return string
+     *
+     */
     public function postLogin(ApiTester $I, $url, $postBody)
     {
-
         $I->setHeaders();
         $I->sendPOST($url, $postBody);
         return $I->grabResponse();
-
     }
 
 }

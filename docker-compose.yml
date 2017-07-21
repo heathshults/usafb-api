@@ -43,6 +43,8 @@ services:
         dockerfile: docker/php-fpm/Dockerfile
       container_name: usafb-php-fpm
       working_dir: /application
+      ports:
+       - "9000:9000"
       volumes:
         - .:/application
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
@@ -52,3 +54,21 @@ services:
         - postgres
         - redis
         - elasticsearch
+
+    locust-master:
+        image: swernst/locusts
+        volumes:
+          - ./tests/performancescripts:/scripts
+        ports:
+          - "8089:8089"
+
+    locust-worker:
+        image: swernst/locusts
+        command: "--master-host=locust-master"
+        volumes:
+          - ./tests/performancescripts:/scripts
+        links:
+          - locust-master
+          - nginx
+          - php-fpm
+

@@ -8,15 +8,18 @@ use Codeception\Module\REST;
 class UserHelper
 {
 
-    // Reusable method for user Profile Call
-    // To be called for other tests
-
-
+    /**
+     * @param ApiTester $I
+     * @param $url
+     * @param $token
+     * @param $key
+     * @return string
+     */
     public function getUserByToken(ApiTester $I, $url, $token, $key)
     {
         $I->clearHeaders();
         $I->setHeaders();
-        if (! ($key == "NoHeader" or  $key == "NoBearer")) {
+        if (!($key == "NoHeader" or $key == "NoBearer")) {
             $I->amBearerAuthenticated($token);
         }
 
@@ -28,7 +31,4 @@ class UserHelper
         $I->sendGET($url);
         return $I->grabResponse();
     }
-
-
-
 }

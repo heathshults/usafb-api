@@ -1,0 +1,5 @@
+{
+
+  "target": "http://nginx",
+  "locusts": ["Auth_Login"]
+}
