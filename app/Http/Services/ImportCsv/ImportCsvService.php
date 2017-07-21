@@ -212,17 +212,12 @@ class ImportCsvService
         try {
             DB::beginTransaction();
             $usafbId = function ($v) use ($lineItem) {
-                if (is_null($lineItem['usadfb_id']) || trim($lineItem['usadfb_id']) == '') {
-                    // TODO choose a better hashing algorithm
-                    $maxPlayerId = DB::table('player')
-                        ->find(DB::table('player')->max('id'));
-                    $newSequence = is_null($maxPlayerId) ? 0 : $maxPlayerId->id + 1;
-                    $uniqueId = date('Y', time()).str_pad($newSequence, 16, '0', STR_PAD_LEFT);
+                $maxPlayerId = DB::table('player')
+                    ->find(DB::table('player')->max('id'));
+                $newSequence = is_null($maxPlayerId) ? 0 : $maxPlayerId->id + 1;
+                $uniqueId = date('Y', time()).str_pad($newSequence, 16, '0', STR_PAD_LEFT);
 
-                    $v->setAttribute('usadfb_id', $uniqueId);
-                } else {
-                    throw  new \Exception('usadfb_id is present expected empty will fail');
-                }
+                $v->setAttribute('usadfb_id', $uniqueId);
                 return $v;
             };
             
