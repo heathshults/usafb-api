@@ -1,14 +1,15 @@
 <?php
 
 // Test covers the end points
-// "/login"
-//Covers 200,400,401 codes
+// "/login -Covers 200,400,401 codes
+// /forgot-password  -Covers 200,404
 
 class LoginCest
 {
 
     //Define End point URL's
     public $getLoginUrl = '/login';
+    public $getForgotPasswordUrl = '/forgot-password';
 
     /**
      * @var validators\auth\LoginValidator
@@ -52,11 +53,11 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $response = $this->helper->postCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         if ($dataBuilder['key'] == 'errors') {   //Sanity for Invalid Password with Valid Login
-            $this->validator->validateErrResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+            $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
         } else {
             $this->validator->validateSuccResponse($response, $dataBuilder['expResponse'], $I, $this->common);
         }
@@ -70,11 +71,30 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $response = $this->helper->postCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateErrResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
+
+
+    /**
+     * @group release
+     * @group sanity
+     * @group regression
+     * @dataprovider forgotPasswordScenarios
+     */
+
+    public function verifyForgotPassword(ApiTester $I, \Codeception\Example $dataBuilder)
+    {
+        $I->wantToTest($dataBuilder['TestCase']);
+        $I->comment($dataBuilder['TestCase']);
+        $response = $this->helper->postCall($I, $this->getForgotPasswordUrl, $dataBuilder['postBody']);
+        $I->seeResponseCodeIs($dataBuilder['code']);
+        $I->seeResponseIsJson();
+        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+    }
+
 
 //     Data Providers for the Tests to be provided within Cest Classes
     /**
@@ -101,4 +121,16 @@ class LoginCest
             ['TestCase' => 'verifyLoginWithInvalidEmail', 'code' => "400", "postBody" => ['email' => 'test@', 'password' => 'test'], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email must be a valid email address.\" } ] }", "key" => 'errors'] // Invalid Email
         ];
     }
+
+    /**
+     * @return array
+     */
+    protected function forgotPasswordScenarios()
+    {
+        return [
+            ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
+            ['TestCase' => 'verifyForgotPasswordWithInValidEmail', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
+              ];
+    }
+
 }

@@ -53,7 +53,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -76,7 +76,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "EmptyToken") {

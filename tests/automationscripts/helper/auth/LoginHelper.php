@@ -14,11 +14,14 @@ class LoginHelper
      * @return string
      *
      */
-    public function postLogin(ApiTester $I, $url, $postBody)
+    public function postCall(ApiTester $I, $url, $postBody)
     {
+        $I->clearHeaders();
         $I->setHeaders();
         $I->sendPOST($url, $postBody);
         return $I->grabResponse();
     }
+
+
 
 }
