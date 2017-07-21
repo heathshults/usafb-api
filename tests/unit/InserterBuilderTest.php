@@ -18,19 +18,6 @@ class InserterBuilderTest extends \TestCase
         }
     }
 
-    public function testOnBuildShouldInsertAndReturnModelToDbWhenFieldsProvided()
-    {
-        $fields = array(
-            'name' => array('value' => 'A VALUE', 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
-        );
-        
-        $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
-                        ->usingHashTable($fields)
-                        ->buildAndSave();
-                        
-        $this->assertFalse(is_null($someInstance->id));
-    }
-
     public function testOnBuildShouldCallApplyBeforeSaveHookBeforeSaving()
     {
          $fields = array(
@@ -46,7 +33,7 @@ class InserterBuilderTest extends \TestCase
         $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
                         ->usingHashTable($fields)
                         ->applyingBeforeSaveHook($spyFunction)
-                        ->buildAndSave();
+                        ->build();
                         
         $this->assertTrue($someFlag); // variable was modified so function was called
     }
@@ -60,7 +47,7 @@ class InserterBuilderTest extends \TestCase
         
         $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
                         ->usingHashTable($fields)
-                        ->buildAndSave();
+                        ->build();
                         
         $this->assertTrue($someInstance->name == $nameValue); 
     }
@@ -75,31 +62,9 @@ class InserterBuilderTest extends \TestCase
         
         $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
                         ->usingHashTable($fields)
-                        ->buildAndSave();
+                        ->build();
                         
        
-    }
-
-    public function testOnBuildShouldPartitionByConditionAndReturnABuilderGenerator() 
-    {
-        $nameValue = 'name_value';
-        $fields = array(
-            'some_1' => array('attr_name' => 'name', 'value' => $nameValue, 'type' => 'string', 'tables' => array( 'App\Models\GameType')),
-            'name_2' => array('attr_name' => 'name', 'value' => 'some_other', 'type' => 'string', 'tables' => array( 'App\Models\GameType'))
-        );
-        $partitionCondition = function($fieldMetaKey, $fieldMetaValue){
-                return strpos($fieldMetaKey,'1') !== false;
-            };
-        
-
-        $someGenerator = InserterBuilder::createInserterForClass('App\Models\GameType')
-                        ->usingHashTable($fields)
-                        ->partitionBy($partitionCondition);
-        
-        foreach ($someGenerator as $value) {
-            $instance = $value->buildAndSave();
-           $this->assertFalse(is_null($instance->id));
-        }
     }
 
     public function testOnBuildShouldFailIfDateFieldAintParsable() 
@@ -112,7 +77,7 @@ class InserterBuilderTest extends \TestCase
         
         $someInstance = InserterBuilder::createInserterForClass('App\Models\GameType')
                         ->usingHashTable($fields)
-                        ->buildAndSave();
+                        ->build();
 
     }
 
