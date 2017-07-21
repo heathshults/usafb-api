@@ -27,8 +27,15 @@ setup:
       - .env
 
 test:
+  services:
+    - postgres:9.6-alpine
+  variables:
+    POSTGRES_USER: root
+    POSTGRES_PASSWORD: root
+    POSTGRES_DB: npdb-usafb
   type: test
   script:
+    - php artisan migrate:refresh --seed
     - composer test
 
 lint:
