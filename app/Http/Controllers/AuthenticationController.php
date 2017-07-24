@@ -67,5 +67,4 @@ class AuthenticationController extends Controller
         );
         return app('Auth')->forgotPassword($request->input('email'));
     }
-
 }

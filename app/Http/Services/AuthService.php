@@ -128,7 +128,7 @@ class AuthService
                 )
             );
         } catch (ClientException $e) {
-            throw new UnauthorizedHttpException('Authentication', 'Wrong email or password.');
+            throw new UnauthorizedHttpException('Authentication', 'Invalid email or password.');
         }
     }
 
