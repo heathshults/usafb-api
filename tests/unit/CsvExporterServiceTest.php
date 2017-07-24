@@ -5,7 +5,7 @@ use App\Models\Player;
 /*
 This file was only created for demo purposes. not to be used in prod
 */
-class InserterBuilderTest extends \TestCase
+class CsvExporterServiceTest extends \TestCase
 {
     public function testShouldReturnArrayAsStringSeparatedByLines()
     {
