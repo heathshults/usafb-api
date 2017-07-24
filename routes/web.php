@@ -15,6 +15,13 @@ $app->post(
         'uses' => 'AuthenticationController@login'
     ]
 );
+
+$app->post(
+    '/forgot-password', [
+        'uses' => 'AuthenticationController@forgotPassword'
+    ]
+);
+
 $app->group(
     ['middleware' => 'auth'],
     function () use ($app) {
