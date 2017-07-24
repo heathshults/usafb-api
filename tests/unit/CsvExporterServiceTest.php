@@ -11,8 +11,10 @@ class CsvExporterServiceTest extends \TestCase
     {
          $players = App\Models\Player::all();
          $amountOfRows = count($players->toArray());
-         $exporter = new CsvExporter;
-         $csv = $exporter -> arrayToCsv($players->toArray());
-         $this->assertTrue(substr_count($csv, "\n") == $amountOfRows + 1);
+         if ($amountOfRows > 0) {
+            $exporter = new CsvExporter;
+            $csv = $exporter -> arrayToCsv($players->toArray());
+            $this->assertTrue(substr_count($csv, "\n") == $amountOfRows + 1);
+         }
     }
 }
