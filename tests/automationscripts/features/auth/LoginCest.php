@@ -95,6 +95,21 @@ class LoginCest
         $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
+    /**
+
+     * @group regression
+     * @dataprovider forgotPasswordErrScenarios
+     */
+
+    public function verifyForgotPasswordInvalid(ApiTester $I, \Codeception\Example $dataBuilder)
+    {
+        $I->wantToTest($dataBuilder['TestCase']);
+        $I->comment($dataBuilder['TestCase']);
+        $response = $this->helper->postCall($I, $this->getForgotPasswordUrl, $dataBuilder['postBody']);
+        $I->seeResponseCodeIs($dataBuilder['code']);
+        $I->seeResponseIsJson();
+        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+    }
 
 //     Data Providers for the Tests to be provided within Cest Classes
     /**
@@ -104,7 +119,7 @@ class LoginCest
     {
         return [
             ['TestCase' => 'verifyValidLogin', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"expires_in\": 86400, \"scope\": \"openid profile email address phone\", \"token_type\": \"Bearer\" }", "key" => ''],   // Valid UserName/Password
-            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Wrong email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
+            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Invalid email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
         ];
     }
 
@@ -133,4 +148,14 @@ class LoginCest
               ];
     }
 
+  /**
+     * @return array
+     */
+    protected function forgotPasswordErrScenarios()
+    {
+        return [
+            ['TestCase' => 'verifyForgotPasswordWithInValidEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required.\"}]}"],
+            ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => 'random'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"}]}"],
+              ];
+    }
 }
