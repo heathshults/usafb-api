@@ -15,6 +15,7 @@ basePath: /v1
 
 produces:
   - application/json
+  - application/force-download
 
 securityDefinitions:
   Bearer:
@@ -35,40 +36,45 @@ responses:
     schema:
       $ref: '#/definitions/UsersDefinition'
       
-  PlayerUploadResponse:
+  UploadResponse:
     description: Returns a report of the number of successful and failed records imported into the database from the CSV file.
     schema:
       $ref: '#/definitions/UploadReportDefinition'
-      
+  
+  DownloadResponse:
+    description: Downloads registrant information to a CSV file.
+    schema: 
+      type: file
+  
   BadRequestError: # 400
     description: Malformed request
     schema:
-      $ref: '#/definitions/Error'
+      $ref: '#/definitions/MessageResponse'
     
   UnauthorizedError: # 401
     description: Authorization required - missing login information
     schema:
-      $ref: '#/definitions/Error'
+      $ref: '#/definitions/MessageResponse'
     
   ForbiddenError: # 403
     description: Access denied - additional privileges/rights required to retrieve item
     schema:
-      $ref: '#/definitions/Error'
+      $ref: '#/definitions/MessageResponse'
       
   DuplicateUser: # 409
     description: User already exists.
     schema:
-      $ref: '#/definitions/Error' 
+      $ref: '#/definitions/MessageResponse' 
       
   NotFoundError: # 404
     description: Item not found
     schema:
-      $ref: '#/definitions/Error'
+      $ref: '#/definitions/MessageResponse'
       
   GeneralError: # 500
     description: Unrecoverable error - something really bad happened
     schema:
-      $ref: '#/definitions/Error'
+      $ref: '#/definitions/MessageResponse'
       
 paths:
 
@@ -341,7 +347,7 @@ paths:
         404:
            $ref: '#/responses/NotFoundError'
 
-  /Players/Upload:
+  /registrants/upload:
     post:
       summary: Uploads player information.
       description: Uploads player information from a CSV file.
@@ -365,11 +371,35 @@ paths:
         
       responses:
         200:
-          $ref: '#/responses/PlayerUploadResponse'
+          $ref: '#/responses/UploadResponse'
         400:
           $ref: '#/responses/BadRequestError'
         401:
           $ref: '#/responses/UnauthorizedError'
+
+  /registrants/download:
+    get:
+      summary: Download player information to an CSV file
+      description: Download player information to an CSV file
+    
+      security:
+        - Bearer: []
+      
+      consumes:
+        - application/force-download
+
+      tags:
+        - Download
+        - Players
+      
+      responses:
+        200:
+          $ref: '#/responses/DownloadResponse'
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+          
 
 definitions:
 
@@ -433,13 +463,7 @@ definitions:
           postal_code: '09016',
           role: 'Admin',
         }
-        
-  MessageResponse:
-    type: object
-    properties:
-      mesage:
-        type: string
-        
+  
   UploadReportDefinition:
     type: object
     
@@ -459,8 +483,8 @@ definitions:
           processed: 150,
           errors: 12
         }
-  
-  Error:
+
+  MessageResponse:
     type: object
     properties:
       message:
