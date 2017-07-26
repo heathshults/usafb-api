@@ -1,7 +1,4 @@
 /vendor
 /testresults
 /.scannerwork
-/.idea
-Homestead.json
-Homestead.yaml
 .env
