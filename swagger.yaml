@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: NPDB National Player Database
   
-  description: The npdb-usafb-api, is an API for the National Player Datbase which is a unified database of athleets, and competitions.
+  description: The npdb-usafb-api, is an API for the National Player Database which is a unified database of players and coaches.
   
   version: "1.0.0"
 
