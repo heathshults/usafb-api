@@ -53,7 +53,7 @@ class LoginCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postCall($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $response = $this->helper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest($dataBuilder,$this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         if ($dataBuilder['key'] == 'errors') {   //Sanity for Invalid Password with Valid Login
@@ -118,8 +118,8 @@ class LoginCest
     protected function loginValidScenarios()
     {
         return [
-            ['TestCase' => 'verifyValidLogin', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"expires_in\": 86400, \"scope\": \"openid profile email address phone\", \"token_type\": \"Bearer\" }", "key" => ''],   // Valid UserName/Password
-            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Invalid email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
+            ['TestCase' => 'verifyValidLogin', 'code' => "200", "postBody" => null, "expResponse" => "{ \"expires_in\": 86400, \"scope\": \"openid profile email address phone\", \"token_type\": \"Bearer\" }", "key" => ''],   // Valid UserName/Password
+            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Wrong email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
         ];
     }
 

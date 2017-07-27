@@ -10,6 +10,14 @@ suites:
                      url: http://localhost:8000
                      depends: PhpBrowser
                  - \Helper\Api
+#                 - Db
+#            config:
+#                 Db:
+#                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+#                      user: 'root'
+#                      password: 'root'
+#                      enabled:
+#                           - Codeception\Lib\Driver\Db
 
 
 extensions:
