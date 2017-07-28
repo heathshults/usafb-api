@@ -9,6 +9,9 @@ use Datetime;
 
 class ImportCsvUtilsTest extends \TestCase
 {
+    /**
+    * Should test filter
+    */
     public function testShouldReturnOnlyElementsContainingTablePassedAsParam()
     {   
         $rulesArrayExample = array(
@@ -20,7 +23,10 @@ class ImportCsvUtilsTest extends \TestCase
         $result = ImportCsvUtils::filterModel($rulesArrayExample, 'App\Models\Registrant');
         $this->assertEquals(count($result), 1);
     }
-
+    
+    /**
+    * Should test that if the `table` key is missing it just ignores it
+    */
     public function testShouldNotFailIfTableKeyIsMissing()
     {   
         $rulesArrayExample = array(
@@ -33,6 +39,9 @@ class ImportCsvUtilsTest extends \TestCase
         $this->assertEquals(count($result), 0);
     }
 
+    /**
+    * Should test that instance reducer works
+    */
     public function testShouldReduceArrayToModelInstanceWithAttributes()
     {
         $rulesArrayExample = array(
@@ -47,6 +56,9 @@ class ImportCsvUtilsTest extends \TestCase
         $this->assertEquals($result->other, $rulesArrayExample['other']['value']);
     }
 
+    /**
+    * Should test that that testRequired throughs exception if value not present
+    */
     public function testShouldThroghExceptionIfValueIsEmpty()
     {
         $testValue = '';
@@ -56,7 +68,9 @@ class ImportCsvUtilsTest extends \TestCase
         
         $this->assertEquals($result, $testValue);
     }
-    
+    /**
+    * Should test that that testRequired throughs exception if value not present
+    */    
     public function testShouldThroughExceptionIfValueIsNull()
     {
         $testValue = null;
@@ -65,6 +79,9 @@ class ImportCsvUtilsTest extends \TestCase
         $result = ImportCsvUtils::testRequired($testValue);
     }
 
+    /**
+    * Should test that that testNotRequired throughs exception if value is present
+    */
     public function testShouldThroughExceptionIfValueIsPresent()
     {
         $testValue = 'notNullValue';
@@ -72,7 +89,10 @@ class ImportCsvUtilsTest extends \TestCase
         
         $result = ImportCsvUtils::testNotRequired($testValue);
     }
-    
+
+    /**
+    * Should test that that testNotRequired returns null if not present
+    */
     public function testShouldReturnNullIfValueIsNotPresent()
     {
         $testValue = null;
@@ -81,6 +101,9 @@ class ImportCsvUtilsTest extends \TestCase
         $this->assertTrue(is_null($result));
     }
 
+    /**
+    * Should test correct parsing of date
+    */
     public function testShouldParseStringToDate()
     {
         $dateFormat = 'Y-m-d';
@@ -90,7 +113,10 @@ class ImportCsvUtilsTest extends \TestCase
         $d = DateTime::createFromFormat($dateFormat, $result);
         $this->assertTrue($d && $d->format($dateFormat));
     }
-
+    
+    /**
+    * Should test incorrect parsing of date
+    */
     public function testShouldThroughExceptionIfDateIsWrongFormat()
     {
         $testValue = 'thisAintADate';

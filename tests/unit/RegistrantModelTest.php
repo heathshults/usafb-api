@@ -8,6 +8,10 @@ use App\Models\Registrant;
 
 class RegistrantModelTest extends \TestCase {
     use DatabaseMigrations;
+  
+    /**
+    * Should test that an ussf_id is generated on create
+    */
     public function testShouldGenerateAnUssfIdAfterSaving() {
         $entity = new Registrant;
         $entity->type = 'PLAYER' ;

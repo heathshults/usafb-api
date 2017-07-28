@@ -9,7 +9,10 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UploadControllerTest extends \TestCase
 {
-use DatabaseMigrations;
+    use DatabaseMigrations;
+    /**
+    * Helper function to mock file for file upload
+    */
     protected function createCsvUploadFile($structure)
     {
         $root = vfsStream::setup('root', null, $structure);
@@ -24,6 +27,9 @@ use DatabaseMigrations;
         );
     }
 
+    /**
+    * Should test file was uploaded successfuly
+    */
     public function testSuccessfulUploadingCsv()
     {
         $structure = [
@@ -43,7 +49,9 @@ use DatabaseMigrations;
 
         $this->assertEquals(200, $response->status());
     }
-    
+    /**
+    * Should test EndPoint responds expected json
+    */
     public function testShouldReturnAmountOfProcesedAndErrors()
     {
         $structure = [

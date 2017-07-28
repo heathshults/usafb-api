@@ -10,6 +10,9 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 class ImportCsvServiceTest extends \TestCase
 {
     use DatabaseMigrations;
+    /**
+    * Should test that service returns array 
+    */
     public function testShouldReturnArray() {
         $structure = [
             'csv' => [
@@ -26,7 +29,10 @@ class ImportCsvServiceTest extends \TestCase
         $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
         $this->assertTrue(is_array($response));
     }
-
+    
+    /**
+    * Should test a successfull process 
+    */
     public function testShouldReturnOneProcesedCeroErrors()
     {
         $structure = [
@@ -43,7 +49,10 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertEquals($response['processed'], 1);
         $this->assertEquals($response['errors'], 0);
     }
-
+    
+    /**
+    * Should test that required fields are taken into account
+    */
     public function testShouldReturnOneErrorIfRequiredFieldIsNotPresent()
     {
         $structure = [
@@ -62,6 +71,9 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertEquals($response['errors'], 1);
     }
 
+    /**
+    * Should test that the line has the appropiate number of fields
+    */
     public function testShouldReturnOneErrorIfLineIsInconsistent()
     {
         $structure = [
@@ -82,6 +94,9 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertEquals($response['errors'], 1);
     }
     
+    /**
+    * Should test that process returns error if UssfId is present
+    */
     public function testShouldFailIfUssfbIsPresent()
     {
         $structureWithUssfPresent = [
