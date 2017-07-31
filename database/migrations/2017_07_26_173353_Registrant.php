@@ -18,7 +18,7 @@ class Registrant extends Migration
             $table->string('type'); 
             $table->string('usadfb_id', 32); 
             $table->string('first_name', 40);
-            $table->string('middle_name', 40);
+            $table->string('middle_name', 40)->nullable();
             $table->string('last_name', 80);
             $table->string('email');
             $table->string('gender', 10);
@@ -30,6 +30,7 @@ class Registrant extends Migration
             $table->string('level_of_play');
             $table->string('state');
             $table->string('address_first_line', 128);
+            $table->string('address_second_line', 128)->nullable();
             $table->string('county', 100);
             $table->timestamps();
         });

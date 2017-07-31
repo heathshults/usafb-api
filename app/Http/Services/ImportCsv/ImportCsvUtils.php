@@ -29,7 +29,7 @@ class ImportCsvUtils
     public static function testRequired($value)
     {
         if ((trim($value) == '' || is_null($value))) {
-            throw new \Exception('Required Value not present for item '. $item);
+            throw new \Exception('Required Value not present for item ');
         } else {
             return $value;
         }
