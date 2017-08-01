@@ -16,12 +16,12 @@ class UploadPlayerCest
     protected $loginhelper;
 
     /**
-     * @var validators\auth\UserValidator
+     * @var validators\uploadplayer\UploadPlayerValidator
      */
     protected $validator;
 
     /**
-     * @var helper\auth\UserHelper
+     * @var helper\uploadplayer\UploadPlayerHelper
      */
     protected $helper;
 
