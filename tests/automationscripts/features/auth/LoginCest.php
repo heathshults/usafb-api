@@ -81,7 +81,7 @@ class LoginCest
     /**
      * @group release
      * @group sanity
-     * @group regression
+     * @group regression_norun
      * @dataprovider forgotPasswordScenarios
      */
 
@@ -97,7 +97,7 @@ class LoginCest
 
     /**
 
-     * @group regression
+     * @group regression_norun
      * @dataprovider forgotPasswordErrScenarios
      */
 
