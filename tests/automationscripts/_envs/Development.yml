@@ -2,12 +2,12 @@ modules:
   config:
     REST:
       url: "http://localhost:8000"
-#    Db:
-#      dsn: 'pgsql:host=127.0.0.1;dbname=npdb-ussf'
-#      user: 'root'
-#      password: 'root'
-#      enabled:
-#           - Codeception\Lib\Driver\Db
+    Db:
+      dsn: 'pgsql:host=127.0.0.1;dbname=npdb-usafb'
+      user: 'root'
+      password: 'root'
+      enabled:
+           - Codeception\Lib\Driver\Db
 
 login:
    email : "autouser@gmail.com"
