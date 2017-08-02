@@ -95,7 +95,7 @@ class UserCest
     protected function userdetails()
     {
         return [
-            ['TestCase' => 'verifyUserProfile', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"name\": \"autouser autouser\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true}", 'key' => 'authorized'],
+            ['TestCase' => 'verifyUserProfile', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"name\": \"autouser@gmail.com\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true}", 'key' => 'authorized'],
             ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
         ];
     }
