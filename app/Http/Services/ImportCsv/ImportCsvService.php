@@ -4,6 +4,7 @@ namespace App\Http\Services\ImportCsv;
 use App\Http\Services\ImportCsv\ImportCsvUtils;
 use App\Models\Registrant;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\FunctionalHelper;
 
 /*
     ImportCSV Service
@@ -18,25 +19,42 @@ class ImportCsvService
      * On parsing errors,
      * On Required fields missing
      * @param File: file to process
-     * @returns array(
-     *  processed ::Integer, ; Amount of items processed and inserted successfully
-     *  errors ::Integer ; Amount of errors found
-     * );
+     * @return array of processed rules and error
     */
     public function importCsvFile($file, $type)
     {
         $fd = fopen($file, 'r');
-        // Discard first line
-        $line_of_text = fgetcsv($fd);
+        
+        $header = fgetcsv($fd);
+        
+        if (!ImportCsvUtils::isLineAsExpected($header)) {
+            return array(
+                'processed' => 0,
+                'error' => 1
+            );
+        }
+        
+        $indexMapperArray = ImportCsvUtils::columnToIndexMapper($header);
         $linesProcessed = 0;
         $errors = 0;
         while (!feof($fd)) {
-             $line_of_text = fgetcsv($fd);
-            if (!is_array($line_of_text) ||  (sizeof($line_of_text) != 52)) {
+            $fileLine = fgetcsv($fd);
+            if (!ImportCsvUtils::isLineAsExpected($fileLine)) {
                 $errors ++;
             } else {
                 try {
-                    $this->processLine($line_of_text, $type);
+                    $model = ImportCsvUtils::reduceKeyValueToModel(
+                        ImportCsvUtils::mapRulesToArrayOfKeyValue(
+                            ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Registrant'),
+                            $indexMapperArray,
+                            $fileLine
+                        ),
+                        new Registrant
+                    );
+
+                    $model->type = $type;
+                    $model->save();
+    
                     $linesProcessed++;
                 } catch (\Exception $e) {
                     $errors++;
@@ -49,141 +67,65 @@ class ImportCsvService
     }
 
     /**
-     *  Returns a bollean to show if the line was procesed correctly
-     *  Will through an Exception if line did not got processed correctly
-     *  @param array representing csv line
-     *  @return bool if line was processed successfully
+    * Returns rules to process a Registrent row
+    * @return array of rules
     */
-    private function processLine(array $line_of_text, $type)
+    public function getRules()
     {
-            $lineItem = array(
-                'type' =>
-                    array('value' => ImportCsvUtils::testRequired($type),
+        $testRequired = ImportCsvUtils::toClojure('testRequired');
+        $parseToDate = ImportCsvUtils::toClojure('parseToDate');
+        $testNotRequired = ImportCsvUtils::toClojure('testNotRequired');
+        $identity = FunctionalHelper::toClojure('App\Helpers\FunctionalHelper', 'identity');
+        $rules = array(
+                'address' => array('rule' => $testRequired,
+                    'field_name' => 'address_first_line',
                     'tables' => array('App\Models\Registrant')),
-                'sport_years' =>
-                    array('value' => $line_of_text[0]),
-                'address_first_line' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[1]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'address_second_line' =>
-                    array('value' => $line_of_text[2], 'tables' =>
-                        array('App\Models\Registrant')),
-                'birth_certificate' =>
-                    array('value' => $line_of_text[3]),
-                'phone_number' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[4]), 'tables' =>
-                        array( 'App\Models\Registrant')),
-                'city' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[5]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'county' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[6]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'grade' =>
-                    array('value' => $line_of_text[7]),
-                'birth_date' =>
-                    array('value' => ImportCsvUtils::parseToDate(
-                        ImportCsvUtils::testRequired($line_of_text[8])
-                    ), 'tables' => array('App\Models\Registrant')),
-                'email' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[9]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'first_name' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[10]), 'tables' =>
-                        array('App\Models\Registrant')) ,
-                'game_type' =>  array('value' => ImportCsvUtils::testRequired($line_of_text[11]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'gender'=>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[12]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'height' =>
-                    array('value' => $line_of_text[13]),
-                'graduation_year' =>
-                    array('value' => $line_of_text[14]),
-                'instagram_handle' =>
-                    array('value' => $line_of_text[15]),
-                'last_name' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[16]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'league' =>
-                    array('value' => $line_of_text[17]),
-                'level_of_play'=> array('value' => ImportCsvUtils::testRequired($line_of_text[18]), 'tables' =>
-                        array('App\Models\Registrant')),
-                'middle_name' =>
-                    array('value' => $line_of_text[19], 'tables' =>
-                        array('App\Models\Registrant')),
-                'org_name' =>
-                    array('value' => $line_of_text[20]),
-                'org_state' =>
-                    array('value' => $line_of_text[21]),
-                'sports' =>
-                    array('value' => $line_of_text[22]),
-                'guardian_1_cell' =>
-                    array('value' =>  $line_of_text[23]),
-                'guardian_1_email' =>
-                    array('value' =>  $line_of_text[24]),
-                'guardian_1_first_name' =>
-                    array('value' =>  $line_of_text[25]),
-                'guardian_1_home_phone' =>
-                    array('value' =>  $line_of_text[26]),
-                'guardian_1_last_name' =>
-                    array('value' =>  $line_of_text[27]),
-                'guardian_1_work_phone' =>
-                    array('value' =>  $line_of_text[28]),
-                'guardian_2_cell' =>
-                    array('value' =>  $line_of_text[29]),
-                'guardian_2_email' =>
-                    array('value' =>  $line_of_text[30]),
-                'guardian_2_first_name' =>
-                    array('value' =>  $line_of_text[31]),
-                'guardian_2_home_phone' =>
-                    array('value' =>  $line_of_text[32]),
-                'guardian_2_last_name' =>
-                    array('value' =>  $line_of_text[33]),
-                'guardian_2_work_phone' =>
-                    array('value' =>  $line_of_text[34]),
-                'photo' =>
-                    array('value' =>  $line_of_text[35]),
-                'salesforce_id' =>
-                    array('value' => $line_of_text[36]),
-                'usadfb_id' => array('value' => ImportCsvUtils::testNotRequired($line_of_text[37])),
-                'positions' =>
-                    array('value' => $line_of_text[38]),
-                'player_last_updated' =>
-                    array('value' => $line_of_text[39]),
-                'school' =>
-                    array('value' => $line_of_text[40]),
-                'school_district' =>
-                    array('value' => $line_of_text[41]),
-                'school_state' =>
-                    array('value' => $line_of_text[42]),
-                'season' =>
-                    array('value' => $line_of_text[43]),
-                'state' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[44]), 'tables' =>
-                        array( 'App\Models\Registrant')),
-                'team_name' =>
-                    array('value' => $line_of_text[45]),
-                'team_age_group' =>
-                    array('value' => $line_of_text[46]),
-                'team_gender' =>
-                    array('value' => $line_of_text[47]),
-                'twitter_handle' =>
-                    array('value' => $line_of_text[48]),
-                'usafb_market' =>
-                    array('value' => $line_of_text[49]),
-                'weight' =>
-                    array('value' => $line_of_text[50]),
-                'zip_code' =>
-                    array('value' => ImportCsvUtils::testRequired($line_of_text[51]), 'tables' =>
-                        array('App\Models\Registrant'))
+                'address_line_2' => array('rule' => $identity,
+                    'field_name' => 'address_second_line',
+                    'tables' => array('App\Models\Registrant')),
+                'cell_phone' => array('rule' => $testRequired,
+                    'field_name' => 'phone_number',
+                    'tables' => array( 'App\Models\Registrant')),
+                'city' => array('rule' => $testRequired,
+                    'field_name' => 'city',
+                    'tables' => array('App\Models\Registrant')),
+                'county' => array('rule' => $testRequired,
+                    'field_name' => 'county',
+                    'tables' => array('App\Models\Registrant')),
+                'date_of_birth' => array('rule' => FunctionalHelper::compose($testRequired, $parseToDate),
+                    'field_name' => 'birth_date',
+                    'tables' => array('App\Models\Registrant')),
+                'email' => array('rule' => $testRequired,
+                    'field_name' => 'email',
+                    'tables' => array('App\Models\Registrant')),
+                'first_name' => array('rule' => $testRequired,
+                    'field_name' => 'first_name',
+                    'tables' => array('App\Models\Registrant')) ,
+                'game_type' =>  array('rule' => $testRequired,
+                    'field_name' => 'game_type',
+                    'tables' => array('App\Models\Registrant')),
+                'gender' => array('rule' => $testRequired,
+                    'field_name' => 'gender',
+                    'tables' => array('App\Models\Registrant')),
+                'last_name' => array('rule' => $testRequired,
+                    'field_name' => 'last_name',
+                    'tables' => array('App\Models\Registrant')),
+                'level_of_play'=> array('rule' => $testRequired,
+                    'field_name' => 'level_of_play',
+                    'tables' => array('App\Models\Registrant')),
+                'middle_name' => array('rule' => $identity,
+                    'field_name' => 'middle_name',
+                    'tables' => array('App\Models\Registrant')),
+                'usadfb_id' => array('rule' => $testNotRequired ,
+                    'field_name' => 'usadfb_id',
+                    'tables' => array( 'App\Models\Registrant')),
+                'state' => array('rule' => $testRequired,
+                    'field_name' => 'state',
+                    'tables' => array( 'App\Models\Registrant')),
+                'zip' => array('rule' => $testRequired,
+                    'field_name' => 'zip_code',
+                    'tables' => array('App\Models\Registrant'))
             );
-            $model = ImportCsvUtils::reduceRulesToModel(
-                ImportCsvUtils::filterModel($lineItem, 'App\Models\Registrant'),
-                new Registrant
-            );
-       
-            $model->save();
-        return true;
+            return $rules;
     }
 }

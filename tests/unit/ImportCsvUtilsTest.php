@@ -44,16 +44,16 @@ class ImportCsvUtilsTest extends \TestCase
     */
     public function testShouldReduceArrayToModelInstanceWithAttributes()
     {
-        $rulesArrayExample = array(
-             'type' =>
-                array('value' => 'any', 'tables' => array('App\Models\Registrant')),
-             'other' =>
-                array('value' => 'other', 'tables' => array('App\Models\Registrant'))
-        );
-        $result = ImportCsvUtils::reduceRulesToModel($rulesArrayExample, new Registrant);
         
-        $this->assertEquals($result->type, $rulesArrayExample['type']['value']);
-        $this->assertEquals($result->other, $rulesArrayExample['other']['value']);
+        
+        $rulesArrayExample = array(
+             'type' => 2,
+             'other' => 5
+        );
+        $result = ImportCsvUtils::reduceKeyValueToModel($rulesArrayExample, new Registrant);
+        
+        $this->assertEquals($result->type, $rulesArrayExample['type']);
+        $this->assertEquals($result->other, $rulesArrayExample['other']);
     }
 
     /**
@@ -126,5 +126,86 @@ class ImportCsvUtilsTest extends \TestCase
         
     }
 
+    /**
+    * Should convert isRequiredMethod to Clojure
+    *
+    **/
+    public function testShouldConvertTestRequiredMethodToClojure()
+    {
+        $testValue = 'A cool value';
+        $isRequiredClojure = ImportCsvUtils::toClojure('testRequired');
+        
+        $this->assertTrue(is_callable($isRequiredClojure));
+        $response = $isRequiredClojure($testValue);
+        
+        $this->assertEquals($response, $testValue);
+    }
+
+    public function testShouldConvertAnArrayOfRulesToKeyValues()
+    {
+        $testFunc = function($val) {
+            return $val + 1;
+        };
+        
+        $indexMapper = array(
+            'Bla' => 0,
+            'Bo' => 1
+        );
+
+        $valueMapper = [1,2];
+
+        $testRules = array('Bla' => array('rule' => $testFunc, 'field_name' => 'last_name', 'tables' => array('App\Models\Registrant')),
+                            'Bo' => array('rule' => $testFunc, 'field_name' => 'level_of_play', 'tables' => array('App\Models\Registrant')));
+        
+        $result = ImportCsvUtils::mapRulesToArrayOfKeyValue($testRules, $indexMapper, $valueMapper);
+
+        $expected = $testFunc($valueMapper[0]);
+        $expected_2 = $testFunc($valueMapper[1]);
+
+        $this->assertEquals($expected, $result['last_name']);
+        $this->assertEquals($expected_2, $result['level_of_play']);
+        
+    }
+
+    public function testShouldLowerCaseAndTurnSpacesIntoUnderscore()
+    {
+        $testValue = 'This IS A TESt';
+        $result = ImportCsvUtils::lowerCaseAndSpacesToUnderscore($testValue);
+        $this->assertEquals($result, 'this_is_a_test');
+    }
+
+    public function testShouldReturnAnArrayOfFieldNamesWithoutSpacesAndLowerCased()
+    {
+        $testColumns = array('column 1','cOLumn 2');
+
+        $result = ImportCsvUtils::columnToIndexMapper($testColumns);
+        $this->assertEquals($result['column_1'], 0);
+        $this->assertEquals($result['column_2'], 1);
+
+    }
+
+    public function testShouldReturnValueIfKeyExists()
+    {
+        $testValue = 3;
+        $testKey = 'key';
+        $testArray = array($testKey => $testValue);
+        
+        $result = ImportCsvUtils::retrieveValueUsingMapper($testArray, $testKey);
+
+         $this->assertEquals($result, $testValue);
+
+    }
+
+    public function testShouldReturnNullIfKeyDoesNotExists()
+    {
+        $testValue = 3;
+        $testKey = 'key';
+        $testArray = array('otherKey' => $testValue);
+        
+        $result = ImportCsvUtils::retrieveValueUsingMapper($testArray, $testKey);
+
+         $this->assertNull($result);
+
+    }
     
 }

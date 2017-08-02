@@ -3,10 +3,12 @@
 namespace App\Http\Services\ImportCsv;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\FunctionalHelper;
 
 class ImportCsvUtils
 {
     const DATE_FORMAT = 'Y-m-d';
+    const EXPECTED_LINE_AMOUNT = 52;
     /**
      *   Will return the array of rules for the given model filtering the others out
      *   @param array $table Rules for the InserterBuilder
@@ -67,18 +69,88 @@ class ImportCsvUtils
      *  Will return an instance populated with model values
      *   @param array $rules An array of rules with values
     */
-    public static function reduceRulesToModel(array $rules, Model $modelInstance)
+    public static function reduceKeyValueToModel(array $fields, Model $modelInstance)
     {
-        $fields = $rules;
         $fieldKeys = array_keys($fields);
         return array_reduce($fieldKeys, function ($modelInstance, $item) use ($fields) {
-            $hashTable = $fields[$item];
-            $value = $hashTable['value'];
-            
-            $attributeName = array_key_exists('attr_name', $hashTable) ? $hashTable['attr_name'] : $item;
-            
-            $modelInstance->setAttribute($attributeName, $value);
+            $value = $fields[$item];
+            $modelInstance->setAttribute($item, $value);
             return $modelInstance;
         }, $modelInstance);
+    }
+    /**
+    * Will convert a rules array to a key value array
+    * @param array $rules An array of rules
+    * @param array $indexMappings an array of index mappings
+    * @param array $valueMappings an array of calue mappings
+    * @return array of key value
+    */
+    public static function mapRulesToArrayOfKeyValue(array $rules, array $indexMappings, array $valueMappings)
+    {
+        
+        $indexMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $indexMappings);
+        $valueMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $valueMappings);
+
+        return array_reduce(array_keys($rules), function ($accum, $key) use ($rules, $indexMapper, $valueMapper) {
+                $rule = $rules[$key]['rule'];
+                $actual_key = $rules[$key]['field_name'];
+                $valueFunction = FunctionalHelper::compose($indexMapper, $valueMapper, $rule);
+
+                $accum[$actual_key] = $valueFunction($key);
+                return $accum;
+        }, array());
+    }
+
+    /**
+    * Will return an array where key is the column key and value is the index for that key
+    * @param array $columnNames Array of column names
+    * @return array of index and column names
+    */
+    public static function columnToIndexMapper(array $columnNames)
+    {
+        return array_flip(
+            array_map(self::toClojure('lowerCaseAndSpacesToUnderscore'), $columnNames)
+        );
+    }
+
+    /**
+    * Will return true if line is an array and has expected length false otherwise
+    * @param mixed $line will be tested for array an length
+    * @param number expected column lenght
+    * @return bool
+    */
+    public static function isLineAsExpected($line, $expectedLineAmount = self::EXPECTED_LINE_AMOUNT)
+    {
+        return is_array($line) && (sizeof($line) == $expectedLineAmount);
+    }
+    
+    /**
+    * Will return value if key exists. null otherwise
+    * @param array $mappings array to test for key
+    * @return bool
+    */
+    public static function retrieveValueUsingMapper(array $mappings, $key)
+    {
+        return array_key_exists($key, $mappings) ? $mappings[$key] : null;
+    }
+
+    /**
+    * Will return the anonimous function of passed method name
+    * @param string $methodName method name within this class
+    * @return anonimous function
+    */
+    public static function toClojure($methodName)
+    {
+        
+        return FunctionalHelper::toClojure('App\Http\Services\ImportCsv\ImportCsvUtils', $methodName);
+    }
+    /**
+    * Composes two functions. will lowercase $value and replace spaces for underscores
+    * @param string $value value to convert
+    * @return new value without spaces and lower cased
+    */
+    public static function lowerCaseAndSpacesToUnderscore($value)
+    {
+        return str_replace(' ', '_', strtolower($value));
     }
 }
