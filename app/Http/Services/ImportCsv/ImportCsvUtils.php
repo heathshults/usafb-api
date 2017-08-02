@@ -9,6 +9,8 @@ class ImportCsvUtils
 {
     const DATE_FORMAT = 'Y-m-d';
     const EXPECTED_LINE_AMOUNT = 52;
+    const RULE_IDX = 'rule';
+    const FIELD_NAME_IDX = 'field_name';
     /**
      *   Will return the array of rules for the given model filtering the others out
      *   @param array $table Rules for the InserterBuilder
@@ -66,8 +68,10 @@ class ImportCsvUtils
     }
 
     /**
-     *  Will return an instance populated with model values
-     *   @param array $rules An array of rules with values
+     * Will return an instance populated with model values
+     * @param array $rules An array of rules with values
+     * @param Model $modelInstance holding model to fill with props
+     * @return Model with attributes in it
     */
     public static function reduceKeyValueToModel(array $fields, Model $modelInstance)
     {
@@ -78,6 +82,7 @@ class ImportCsvUtils
             return $modelInstance;
         }, $modelInstance);
     }
+
     /**
     * Will convert a rules array to a key value array
     * @param array $rules An array of rules
@@ -92,8 +97,8 @@ class ImportCsvUtils
         $valueMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $valueMappings);
 
         return array_reduce(array_keys($rules), function ($accum, $key) use ($rules, $indexMapper, $valueMapper) {
-                $rule = $rules[$key]['rule'];
-                $actual_key = $rules[$key]['field_name'];
+                $rule = $rules[$key][self::RULE_IDX];
+                $actual_key = $rules[$key][self::FIELD_NAME_IDX];
                 $valueFunction = FunctionalHelper::compose($indexMapper, $valueMapper, $rule);
 
                 $accum[$actual_key] = $valueFunction($key);

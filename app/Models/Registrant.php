@@ -12,11 +12,10 @@ class Registrant extends Model
 
     protected $dates = [];
 
-    public static $rules = [
-        // Validation rules
-    ];
+    public static $rules = [];
+
     /**
-        Adds a create listener for model
+     * Adds a create listener for model
     */
     protected static function boot()
     {
@@ -27,10 +26,12 @@ class Registrant extends Model
             $model->usadfb_id  = $usadfId;
         });
     }
+
     /**
-        Will generate an id for Usadfb.
-        This is a temporary function, the generation of this id hasnt been discussed
-        This is just some ideas grabed from daily meetings
+     * Will generate an id for Usadfb.
+     * This is a temporary function, the generation of this id hasnt been discussed
+     * This is just some ideas grabed from daily meetings
+     * @return generatedId
     */
     public static function generateUsadfbId()
     {
