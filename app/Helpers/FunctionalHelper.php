@@ -22,9 +22,8 @@ class FunctionalHelper
     * @param mixed $args
     * @return a function composed by the functions as param
     */
-    public static function compose()
+    public static function compose(...$args)
     {
-        $args = func_get_args();
         return array_reduce($args, function ($acumFunc, $currentFunc) {
                 return function ($arg) use ($acumFunc, $currentFunc) {
                     return $currentFunc($acumFunc($arg));
