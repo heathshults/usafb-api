@@ -12,7 +12,7 @@ class RegistrantModelTest extends \TestCase {
     /**
     * Should test that an ussf_id is generated on create
     */
-    public function testShouldGenerateAnUssfIdAfterSaving() {
+    public function testShouldGenerateAnUsafbIdAfterSaving() {
         $entity = new Registrant;
         $entity->type = 'PLAYER' ;
         $entity->first_name = 'Some name';
