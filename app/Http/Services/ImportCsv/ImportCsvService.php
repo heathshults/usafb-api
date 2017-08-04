@@ -3,6 +3,7 @@ namespace App\Http\Services\ImportCsv;
 
 use App\Http\Services\ImportCsv\ImportCsvUtils;
 use App\Models\Registrant;
+use App\Models\Player;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\FunctionalHelper;
 
@@ -37,13 +38,13 @@ class ImportCsvService
         $indexMapperArray = ImportCsvUtils::columnToIndexMapper($header);
         $linesProcessed = 0;
         $errors = 0;
-        while (!feof($fd)) {
-            $fileLine = fgetcsv($fd);
+        while (($fileLine = fgetcsv($fd, 1000, ",")) !== false) {
             if (!ImportCsvUtils::isLineAsExpected($fileLine)) {
                 $errors ++;
             } else {
                 try {
-                    $model = ImportCsvUtils::reduceKeyValueToModel(
+                    // Registrant Model
+                    $registrantModel = ImportCsvUtils::reduceKeyValueToModel(
                         ImportCsvUtils::mapRulesToArrayOfKeyValue(
                             ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Registrant'),
                             $indexMapperArray,
@@ -52,8 +53,21 @@ class ImportCsvService
                         new Registrant
                     );
 
-                    $model->type = $type;
-                    $model->save();
+                    $registrantModel->type = $type;
+
+                    // Player Model
+                    $playerModel = ImportCsvUtils::reduceKeyValueToModel(
+                        ImportCsvUtils::mapRulesToArrayOfKeyValue(
+                            ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Player'),
+                            $indexMapperArray,
+                            $fileLine
+                        ),
+                        new Player
+                    );
+
+                    // Save Models
+                    $registrantModel->save();
+                    $registrantModel->player()->save($playerModel);
     
                     $linesProcessed++;
                 } catch (\Exception $e) {
@@ -118,13 +132,37 @@ class ImportCsvService
                     'tables' => array('App\Models\Registrant')),
                 'usadfb_id' => array('rule' => $testNotRequired ,
                     'field_name' => 'usadfb_id',
-                    'tables' => array( 'App\Models\Registrant')),
+                    'tables' => array('App\Models\Registrant', 'App\Models\Player')),
                 'state' => array('rule' => $testRequired,
                     'field_name' => 'state',
                     'tables' => array( 'App\Models\Registrant')),
                 'zip' => array('rule' => $testRequired,
                     'field_name' => 'zip_code',
-                    'tables' => array('App\Models\Registrant'))
+                    'tables' => array('App\Models\Registrant')),
+                'current_grade' => array('rule' => $testRequired,
+                    'field_name' => 'grade',
+                    'tables' => array('App\Models\Player')),
+                'height' => array('rule' => $testRequired,
+                    'field_name' => 'height',
+                    'tables' => array('App\Models\Player')),
+                'high_school_grad_year' => array('rule' => $testRequired,
+                    'field_name' => 'graduation_year',
+                    'tables' => array('App\Models\Player')),
+                'instagram_handle' => array('rule' => $identity,
+                    'field_name' => 'instagram',
+                    'tables' => array('App\Models\Player')),
+                'other_sports_played' => array('rule' => $testRequired,
+                    'field_name' => 'sports',
+                    'tables' => array('App\Models\Player')),
+                'twitter_handle' => array('rule' => $identity,
+                    'field_name' => 'twitter',
+                    'tables' => array('App\Models\Player')),
+                'weight' => array('rule' => $testRequired,
+                    'field_name' => 'weight',
+                    'tables' => array('App\Models\Player')),
+                '#_years_in_sport' => array('rule' => $testRequired,
+                    'field_name' => 'years_at_sport',
+                    'tables' => array('App\Models\Player'))
             );
             return $rules;
     }
