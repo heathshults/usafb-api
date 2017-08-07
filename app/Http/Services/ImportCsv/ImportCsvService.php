@@ -188,7 +188,7 @@ class ImportCsvService
                 '#_of_years_coaching' => ['rule' => $testRequired,
                     'field_name' => 'years_of_experience',
                     'tables' => ['App\Models\Coach']],
-                'certifications' => ['rule' => $testRequired,
+                'certifications' => ['rule' => $identity,
                     'field_name' => 'certifications',
                     'tables' => ['App\Models\Coach']],
                 'coach_role' => ['rule' => $testRequired,

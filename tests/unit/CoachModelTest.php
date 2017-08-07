@@ -60,9 +60,9 @@ class CoachModelTest extends \TestCase {
     }
 
     /**
-    * Should test that a coach couldn't be created if the certification field is null
+    * Should test that a coach can be created if the certification field is null
     */
-    public function testShouldFailIfTheRequiredFieldCertificationIsNull() {
+    public function testShouldNotFailIfTheRequiredFieldCertificationIsNull() {
 
         $entityRegistrant = new Registrant;
         $entityRegistrant->type = 'COACH' ;
