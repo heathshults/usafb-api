@@ -94,4 +94,61 @@ class CommonUtils
         }
     }
 
+
+    /**
+     * @return Settings
+     */
+    public function loadConfig()
+    {
+        $config = \Codeception\Configuration::config();
+        $Settings = \Codeception\Configuration::suiteSettings('USAFBAutomationApi', $config);
+        return $Settings;
+    }
+
+
+    /**
+     * @return email
+     */
+    public function getEnvEmail($noRole,ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+        if ($noRole != "")
+
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['emailNoRole'];
+        else
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['email'];
+        return $email;
+    }
+
+    /**
+     * @return password
+     */
+    public function getEnvPassword($noRole,ApiTester $I)
+    {
+
+        $settings = $this->loadConfig();
+
+        if ($noRole != "")
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
+        else
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['password'];
+        return $email;
+    }
+
+
+    /**
+     * @param $databuilder
+     * @param $email
+     * @param $password
+     * @return $postbody
+     */
+    public function loginPostRequest($dataBuilder, $email, $password)
+    {
+        if (($dataBuilder['postBody'] == null) || ($dataBuilder ==null)) {
+            $postbody = ['email' => $email, 'password' => $password];
+        } else {
+            $postbody = $dataBuilder['postBody'];
+        }
+        return $postbody;
+    }
 }

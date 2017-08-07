@@ -44,5 +44,13 @@ class ApiTester extends \Codeception\Actor
 
     }
 
+    /**
+     * @return currentenv
+     */
+    public  function getCurrentEnv()
+    {
+        return $this->getScenario()->current('env');
+    }
+
 
 }

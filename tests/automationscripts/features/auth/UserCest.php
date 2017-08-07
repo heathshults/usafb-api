@@ -12,6 +12,7 @@ class UserCest
     public $getLoginUrl = '/login';
     public $getUserProfileUrl = "/auth/user";
 
+
     /**
      * @var helper\auth\loginHelper
      */
@@ -39,7 +40,7 @@ class UserCest
         $this->validator = $validator;
         $this->loginhelper = $loginhelper;
         $this->common = $common;
-    }
+       }
 
     /**
      * @group release
@@ -53,7 +54,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -76,7 +77,7 @@ class UserCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postLogin($I, $this->getLoginUrl, $dataBuilder['postBody']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "EmptyToken") {
@@ -95,8 +96,8 @@ class UserCest
     protected function userdetails()
     {
         return [
-            ['TestCase' => 'verifyUserProfile', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{ \"name\": \"autouser@gmail.com\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true}", 'key' => 'authorized'],
-            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+            ['TestCase' => 'verifyUserProfile', 'code' => "200", "expResponse" => "{ \"name\": \"autouser@gmail.com\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true}", 'key' => 'authorized'],
+            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401",  "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
         ];
     }
 
@@ -106,9 +107,9 @@ class UserCest
     protected function userdetailsErr()
     {
         return [
-            ['TestCase' => 'verifyUserProfileWithNoAuthHeader', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"No authorization header provided.\"}]}", 'key' => 'NoHeader'],
-            ['TestCase' => 'verifyUserProfileWithInvalidTokenType', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"Invalid token type.\"}]}", 'key' => 'NoBearer'],
-            ['TestCase' => 'verifyUserProfileWithBlankToken', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'password123'], "expResponse" => "{\"errors\":[{\"error\":\"No token provided.\"}]}", 'key' => 'EmptyToken'],
+            ['TestCase' => 'verifyUserProfileWithNoAuthHeader', 'code' => "401",  "expResponse" => "{\"errors\":[{\"error\":\"No authorization header provided.\"}]}", 'key' => 'NoHeader'],
+            ['TestCase' => 'verifyUserProfileWithInvalidTokenType', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token type.\"}]}", 'key' => 'NoBearer'],
+            ['TestCase' => 'verifyUserProfileWithBlankToken', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"No token provided.\"}]}", 'key' => 'EmptyToken'],
 
         ];
     }

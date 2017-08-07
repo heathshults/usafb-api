@@ -15,7 +15,7 @@ class LoginValidator
      * @param ApiTester $I
      * @param CommonUtils $common
      */
-    public function validateErrResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
+    public function validateResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
     {
         $getActualResObj = $common->convertJsonToArray($actualResponse);
         $getExcepctedResObj = $common->convertJsonToArray($expectedResponse);
@@ -36,5 +36,6 @@ class LoginValidator
         $expectedArrayList = $common->getArrayOfValue($common->convertJsonToArray($expectedResponse));
         $common->assertObjects($actualArrayList, $expectedArrayList,$I);
     }
+
 
 }
