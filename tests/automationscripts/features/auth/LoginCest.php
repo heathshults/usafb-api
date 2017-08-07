@@ -148,7 +148,7 @@ class LoginCest
               ];
     }
 
-  /**
+   /**
      * @return array
      */
     protected function forgotPasswordErrScenarios()
