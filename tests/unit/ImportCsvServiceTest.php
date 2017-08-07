@@ -26,7 +26,7 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertTrue($root->hasChild('csv/input.csv'));
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertTrue(is_array($response));
     }
     
@@ -45,7 +45,7 @@ class ImportCsvServiceTest extends \TestCase
         $root = vfsStream::setup('root', null, $structure);
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertEquals($response['processed'], 1);
         $this->assertEquals($response['errors'], 0);
     }
@@ -65,7 +65,7 @@ class ImportCsvServiceTest extends \TestCase
         $root = vfsStream::setup('root', null, $structure);
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
 
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
@@ -89,7 +89,7 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertTrue($root->hasChild('csv/input.csv'));
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
     }
@@ -112,7 +112,7 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertTrue($root->hasChild('csv/input.csv'));
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
@@ -145,7 +145,7 @@ class ImportCsvServiceTest extends \TestCase
         $root = vfsStream::setup('root', null, $structure);
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertEquals($response['processed'], 1);
         $this->assertEquals($response['errors'], 0);
     }
@@ -165,7 +165,7 @@ class ImportCsvServiceTest extends \TestCase
         $root = vfsStream::setup('root', null, $structure);
 
         $importService = new ImportCsvService;
-        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYERS');
+        $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
     }

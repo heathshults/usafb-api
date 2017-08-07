@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Registrant extends Model
+class Coach extends Model
 {
-    protected $table = 'registrant';
+    protected $table = 'coach';
     
     protected $fillable = [];
 
@@ -28,19 +28,11 @@ class Registrant extends Model
     }
 
     /**
-     * Get the player record associated with the registrant.
+     * Get the registrant that owns the user.
      */
-    public function player()
+    public function registrant()
     {
-        return $this->hasOne('App\Models\Player');
-    }
-
-    /**
-     * Get the coach record associated with the registrant.
-     */
-    public function coach()
-    {
-        return $this->hasOne('App\Models\Coach');
+        return $this->belongsTo('App\Models\Registrant');
     }
 
     /**
@@ -51,8 +43,8 @@ class Registrant extends Model
     */
     public static function generateUsadfbId()
     {
-        $maxPlayerId = DB::table('registrant')
-                        ->find(DB::table('registrant')->max('id'));
+        $maxPlayerId = DB::table('coach')
+                        ->find(DB::table('coach')->max('id'));
         $newSequence = is_null($maxPlayerId) ? 0 : $maxPlayerId->id + 1;
         return date('Y', time()).str_pad($newSequence, 16, '0', STR_PAD_LEFT);
     }
