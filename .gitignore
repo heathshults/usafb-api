@@ -1,2 +1,4 @@
 /vendor
+/testresults
+/.scannerwork
 .env

@@ -1,0 +1,489 @@
+swagger: '2.0'
+info:
+  title: NPDB National Player Database
+  
+  description: The npdb-usafb-api, is an API for the National Player Database which is a unified database of players and coaches.
+  
+  version: "1.0.0"
+
+host: usafbconnect.com
+
+schemes:
+  - https
+
+basePath: /v1
+
+produces:
+  - application/json
+  - application/force-download
+
+securityDefinitions:
+  Bearer:
+    description: acccess token.
+    type: apiKey
+    name: Authorization
+    in: header
+
+responses:
+
+  UserResponse: # 200
+    description: Returns information on a single user
+    schema:
+      $ref: '#/definitions/UserDefinition'
+
+  UsersResponse: # 200
+    description: Returns array of users.
+    schema:
+      $ref: '#/definitions/UsersDefinition'
+      
+  UploadResponse:
+    description: Returns a report of the number of successful and failed records imported into the database from the CSV file.
+    schema:
+      $ref: '#/definitions/UploadReportDefinition'
+  
+  DownloadResponse:
+    description: Downloads registrant information to a CSV file.
+    schema: 
+      type: file
+  
+  BadRequestError: # 400
+    description: Malformed request
+    schema:
+      $ref: '#/definitions/MessageResponse'
+    
+  UnauthorizedError: # 401
+    description: Authorization required - missing login information
+    schema:
+      $ref: '#/definitions/MessageResponse'
+    
+  ForbiddenError: # 403
+    description: Access denied - additional privileges/rights required to retrieve item
+    schema:
+      $ref: '#/definitions/MessageResponse'
+      
+  DuplicateUser: # 409
+    description: User already exists.
+    schema:
+      $ref: '#/definitions/MessageResponse' 
+      
+  NotFoundError: # 404
+    description: Item not found
+    schema:
+      $ref: '#/definitions/MessageResponse'
+      
+  GeneralError: # 500
+    description: Unrecoverable error - something really bad happened
+    schema:
+      $ref: '#/definitions/MessageResponse'
+      
+paths:
+
+  /Auth/User:
+    get:
+      summary: Returns current user's informatoin.
+      description: Returns current user's information.
+        
+      tags:
+        - Authenticate
+        
+      responses:
+        200:
+          $ref: '#/responses/UserResponse'
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+          
+  /Users:
+  
+    post:
+      summary: Creates a New User.
+      description: Creates a new administrative user with access to this API.
+      
+      security:
+        - Bearer: []
+        
+      parameters:
+        - name: first_name
+          in: query
+          description: First Name.
+          required: true
+          type: string
+          
+        - name: last_name
+          in: query
+          description: Last Name.
+          required: true
+          type: string
+          
+        - name: email
+          in: query
+          description: Email
+          required: true
+          type: string
+          
+        - name: phone_number
+          in: query
+          description: Email.
+          required: false
+          type: string
+          
+        - name: city
+          in: query
+          description: City.
+          required: false
+          type: string
+          
+        - name: state
+          in: query
+          description: State.
+          required: false
+          type: string
+          
+        - name: postal_code
+          in: query
+          description: Postal Code.
+          required: false
+          type: string
+          
+        - name: role
+          in: query
+          description: Role.
+          required: true
+          type: string
+        
+      tags:
+        - Manage Users
+        
+      responses:
+        200:
+          $ref: "#/responses/UserResponse"
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        404:
+          $ref: '#/responses/NotFoundError'
+        409:
+          $ref: '#/responses/DuplicateUser'
+  
+    get:
+      summary: Return all Users.
+      description: Returns all users. 
+      
+      security:
+        - Bearer: []
+        
+      tags:
+        - Manage Users
+        
+      responses:
+        200:
+          $ref: "#/responses/UsersResponse"
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        404:
+           $ref: '#/responses/NotFoundError'
+
+  /Users/{id}:
+    get:
+      summary: Returns a single user.
+      description: Returns a single user.
+      
+      security:
+        - Bearer: []
+        
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to fetch.
+          required: true
+          type: integer
+          format: int64
+          
+      tags:
+        - Manage Users
+        
+      responses:
+        200:
+          $ref: "#/responses/UserResponse"
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        404:
+           $ref: '#/responses/NotFoundError'
+          
+    put:
+      summary: Updates a single user.
+      description: Updates a single user.
+      
+      security:
+        - Bearer: []
+
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to fetch.
+          required: true
+          type: string
+          
+        - name: first_name
+          in: query
+          description: First Name.
+          required: false
+          type: string
+
+        - name: last_name
+          in: query
+          description: Last Name.
+          required: false
+          type: string
+
+        - name: nick_name
+          in: query
+          description: Nick Name.
+          required: false
+          type: string
+          
+        - name: picture
+          in: query
+          description: Image URL of the user's avatar.
+          required: false
+          type: string
+
+        - name: email
+          in: query
+          description: Email
+          required: false
+          type: string
+
+        - name: email_verified
+          in: query
+          description: Indicates if email has been verified.
+          required: false
+          type: boolean
+          
+        - name: password
+          in: query
+          description: User's Password.
+          required: false
+          type: string
+          
+        - name: phone_number
+          in: query
+          description: Email.
+          required: false
+          type: string
+          
+        - name: city
+          in: query
+          description: City.
+          required: false
+          type: string
+          
+        - name: state
+          in: query
+          description: State.
+          required: false
+          type: string
+          
+        - name: postal_code
+          in: query
+          description: Postal Code.
+          required: false
+          type: string
+ 
+        - name: role
+          in: query
+          description: Role.
+          required: false
+          type: string
+          
+          
+      tags:
+        - Manage Users
+        
+      responses:
+        200:
+          $ref: "#/responses/UserResponse"
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        404:
+           $ref: '#/responses/NotFoundError'
+  
+    delete:
+      summary: Deletes a single user.
+      description: TESTING ONLY - Deletes a single user. Note This is for testing/automation only.
+      
+      security:
+        - Bearer: []
+        
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to fetch.
+          required: true
+          type: string
+          
+      tags:
+        - Manage Users
+        
+      responses:
+        200:
+          description: User secussfully deleted.
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        404:
+           $ref: '#/responses/NotFoundError'
+
+  /registrants/upload:
+    post:
+      summary: Uploads player information.
+      description: Uploads player information from a CSV file.
+      
+      security:
+        - Bearer: []
+      
+      consumes:
+        - multipart/form-data
+        
+      parameters:
+        - name: csv_file
+          in: formData
+          description: File to be processed.
+          required: true
+          type: file
+      
+      tags:
+        - Upload
+        - Players
+        
+      responses:
+        200:
+          $ref: '#/responses/UploadResponse'
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+
+  /registrants/download:
+    get:
+      summary: Download player information to an CSV file
+      description: Download player information to an CSV file
+    
+      security:
+        - Bearer: []
+      
+      consumes:
+        - application/force-download
+
+      tags:
+        - Download
+        - Players
+      
+      responses:
+        200:
+          $ref: '#/responses/DownloadResponse'
+        400:
+          $ref: '#/responses/BadRequestError'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+          
+
+definitions:
+
+  UsersDefinition:
+    description: An array of User
+    type: array
+    items:
+      $ref: '#/definitions/UserDefinition'
+    
+  UserDefinition:
+    description: User's Information
+    type: object
+    properties:
+    
+      id:
+        type: string
+        description: The user ID.
+        
+      first_name:
+        type: string
+        description: The user's first Name.
+        
+      last_name:
+        type: string
+        description: The user's last name.
+        
+      nick_name:
+        type: string
+        description: The user's nick name.
+        
+      picture:
+        type: string
+        description: The URL for the user's avatar.
+        
+      email:
+        type: string
+        description: The user's email address.
+        
+      password:
+        type: string
+        description: The user's account password.
+        
+      postal_code:
+        type: string
+        description: The user's postal code.
+        
+      role:
+        type: string
+        description: The user's access role into the system.
+        
+    example:
+      application/json: 
+        { 
+          id: 123,  
+          first_name: 'Ansel',
+          last_name: 'Adams',
+          nick_name: 'Zonner',
+          picture: 'http://avatar.org/a123456/avatar.jpg',
+          email: 'Ansel.Adams@email.com',
+          password: 'su93rs3cR#t',
+          postal_code: '09016',
+          role: 'Admin',
+        }
+  
+  UploadReportDefinition:
+    type: object
+    
+    properties:
+    
+      processed:
+        type: integer
+        description: The number of records processed and inserted. 
+        
+      errors:
+        type: integer
+        description: The number of records failed.
+        
+    example:
+      application/json: 
+        {
+          processed: 150,
+          errors: 12
+        }
+
+  MessageResponse:
+    type: object
+    properties:
+      message:
+        type: string

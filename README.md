@@ -41,6 +41,14 @@ To run all test suites (phpunit and jest):
 composer test
 ```
 
+### Code Coverage Metrics
+
+To include code coverage metrics for sonar
+
+```BASH
+brew install php71-xdebug
+```
+
 ### Lint and syntax check
 
 To run react-dev-server with the todo UI:
