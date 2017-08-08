@@ -16,8 +16,8 @@ class ImportCsvService
 {
     const TYPE_PLAYER = 'PLAYER';
     const TYPE_COACH = 'COACH';
-    const CSV_LINE_AMOUNT_PLAYER = 52;
-    const CSV_LINE_AMOUNT_COACH = 31;
+    const CSV_NUMBER_FIELDS_PLAYER = 52;
+    const CSV_NUMBER_FIELDS_COACH = 31;
 
     /**
      * Will process the file and return an array with the result
@@ -25,6 +25,7 @@ class ImportCsvService
      * On parsing errors,
      * On Required fields missing
      * @param File: file to process
+     * @param string $type The type of the CSV (PLAYER, COACH)
      * @return array of processed rules and error
     */
     public function importCsvFile($file, $type)
@@ -200,6 +201,7 @@ class ImportCsvService
 
     /**
     * Returns the expected csv line Amount based on the import type
+    * @param string $type The type of the CSV (PLAYER, COACH)
     * @return integer line Amount
     */
     public function getLineAmountByType($type)
@@ -208,10 +210,10 @@ class ImportCsvService
 
         switch ($type) {
             case self::TYPE_PLAYER:
-                $lineAmount = self::CSV_LINE_AMOUNT_PLAYER;
+                $lineAmount = self::CSV_NUMBER_FIELDS_PLAYER;
                 break;
             case self::TYPE_COACH:
-                $lineAmount = self::CSV_LINE_AMOUNT_COACH;
+                $lineAmount = self::CSV_NUMBER_FIELDS_COACH;
                 break;
         }
 

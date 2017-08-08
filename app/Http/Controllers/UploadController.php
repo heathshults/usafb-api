@@ -24,8 +24,8 @@ class UploadController extends Controller
                 'type' => 'required|in:' . self::TYPE_PLAYER . ','. self::TYPE_COACH
             ],
             [
-                'type.in' => "The selected type is invalid. 
-                Allowed types: " . self::TYPE_PLAYER . ", " . self::TYPE_COACH
+                'type.in' => "The selected type is invalid. " .
+                "Allowed types: " . self::TYPE_PLAYER . ", " . self::TYPE_COACH
             ]
         );
         $importService = new ImportCsvService();

@@ -29,6 +29,7 @@ class Coach extends Model
 
     /**
      * Get the registrant that owns the user.
+     * @return Registrant
      */
     public function registrant()
     {
