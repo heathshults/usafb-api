@@ -10,7 +10,6 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-
 $app->post(
     '/login', [
         'uses' => 'AuthenticationController@login'
@@ -29,6 +28,7 @@ $app->group(
                 'uses' => 'AuthenticationController@getUser'
             ]
         );
+        $app->post('/registrants/import', 'UploadController@processFileUpload');
     }
 );
 
@@ -37,5 +37,4 @@ $app->get(
         return $app->version();
     }
 );
-
 
