@@ -30,7 +30,7 @@ class UploadControllerTest extends \TestCase
     /**
     * Should test file was uploaded successfuly
     */
-    public function testSuccessfulUploadingCsv()
+    public function testSuccessfulUploadingPlayerCsv()
     {
         $structure = [
             'csv' => [
@@ -41,7 +41,7 @@ class UploadControllerTest extends \TestCase
         ];
 
         $this->withoutMiddleware();
-    	$response = $this->call('POST', '/registrants/import',
+    	$response = $this->call('POST', '/registrants/import?type=player',
             [],
             [],
             ['csv_file' => $this->createCsvUploadFile($structure)]
@@ -52,7 +52,7 @@ class UploadControllerTest extends \TestCase
     /**
     * Should test EndPoint responds expected json
     */
-    public function testShouldReturnAmountOfProcesedAndErrors()
+    public function testShouldReturnAmountOfProcesedAndErrorsPlayerCsv()
     {
         $structure = [
             'csv' => [
@@ -63,7 +63,51 @@ class UploadControllerTest extends \TestCase
         ];
 
         $this->withoutMiddleware();
-    	$response = $this->call('POST', '/registrants/import',
+    	$response = $this->call('POST', '/registrants/import?type=player',
+            [],
+            [],
+            ['csv_file' => $this->createCsvUploadFile($structure)]
+        );
+        
+        $this->assertEquals($response->getOriginalContent(), array('processed' => 1, 'errors' => 0));
+    }
+
+    /**
+    * Should test file was uploaded successfuly
+    */
+    public function testSuccessfulUploadingCoachCsv()
+    {
+        $structure = [
+            'csv' => [
+                'input.csv' =>"# of Years Coaching,Address,Address line 2,Cell Phone,City,County,Date of Birth,Email,First Name,Game Type,Gender,Last Name,League,Level of Play,Middle Name,Organization,Org State,SalesForce ID,USSF_ID,School,School District,School State,Season,State,Team,Team Gender,USAFB Right to Market,Zip,Certifications,Coach Role,Coaching Level
+                    1,44 summit rd,,12342314,staten island,USA,9/1/2006,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,FABI,,YOUTH,sdfsd,,,,,,,,,NY,,,,10307,\"Certification1, Certification 2, etc\",\"Head Coach, Quarterback Coach, Wide Reciever Coach, Linebacker Coach, Offensive Coordinator , Special Teams, Assistant Coach, Tight End Coach, Running Back Coach, Defensive Back Coach, Defensive Coordinator\","
+            ]
+        ];
+
+        $this->withoutMiddleware();
+        $response = $this->call('POST', '/registrants/import?type=coach',
+            [],
+            [],
+            ['csv_file' => $this->createCsvUploadFile($structure)]
+        );
+
+        $this->assertEquals(200, $response->status());
+    }
+    /**
+    * Should test EndPoint responds expected json
+    */
+    public function testShouldReturnAmountOfProcesedAndErrorsCoachCsv()
+    {
+        $structure = [
+            'csv' => [
+                'input.csv' =>"# of Years Coaching,Address,Address line 2,Cell Phone,City,County,Date of Birth,Email,First Name,Game Type,Gender,Last Name,League,Level of Play,Middle Name,Organization,Org State,SalesForce ID,USSF_ID,School,School District,School State,Season,State,Team,Team Gender,USAFB Right to Market,Zip,Certifications,Coach Role,Coaching Level
+                    1,44 summit rd,,12342314,staten island,USA,9/1/2006,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,FABI,,YOUTH,sdfsd,,,,,,,,,NY,,,,10307,\"Certification1, Certification 2, etc\",\"Head Coach, Quarterback Coach, Wide Reciever Coach, Linebacker Coach, Offensive Coordinator , Special Teams, Assistant Coach, Tight End Coach, Running Back Coach, Defensive Back Coach, Defensive Coordinator\","
+
+            ]
+        ];
+
+        $this->withoutMiddleware();
+        $response = $this->call('POST', '/registrants/import?type=coach',
             [],
             [],
             ['csv_file' => $this->createCsvUploadFile($structure)]

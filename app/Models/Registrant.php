@@ -36,6 +36,14 @@ class Registrant extends Model
     }
 
     /**
+     * Get the coach record associated with the registrant.
+     */
+    public function coach()
+    {
+        return $this->hasOne('App\Models\Coach');
+    }
+
+    /**
      * Will generate an id for Usadfb.
      * This is a temporary function, the generation of this id hasnt been discussed
      * This is just some ideas grabed from daily meetings

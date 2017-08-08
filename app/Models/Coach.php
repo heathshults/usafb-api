@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Player extends Model
+class Coach extends Model
 {
-    protected $table = 'player';
+    protected $table = 'coach';
     
     protected $fillable = [];
 
@@ -44,8 +44,8 @@ class Player extends Model
     */
     public static function generateUsadfbId()
     {
-        $maxPlayerId = DB::table('player')
-                        ->find(DB::table('player')->max('id'));
+        $maxPlayerId = DB::table('coach')
+                        ->find(DB::table('coach')->max('id'));
         $newSequence = is_null($maxPlayerId) ? 0 : $maxPlayerId->id + 1;
         return date('Y', time()).str_pad($newSequence, 16, '0', STR_PAD_LEFT);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Services\ImportCsv;
 use App\Http\Services\ImportCsv\ImportCsvUtils;
 use App\Models\Registrant;
 use App\Models\Player;
+use App\Models\Coach;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\FunctionalHelper;
 
@@ -13,13 +14,18 @@ use App\Helpers\FunctionalHelper;
 */
 class ImportCsvService
 {
-    
+    const TYPE_PLAYER = 'PLAYER';
+    const TYPE_COACH = 'COACH';
+    const CSV_NUMBER_FIELDS_PLAYER = 52;
+    const CSV_NUMBER_FIELDS_COACH = 31;
+
     /**
      * Will process the file and return an array with the result
      * Will show increment erros if line is not as big as expected (not the required amount of commas),
      * On parsing errors,
      * On Required fields missing
      * @param File: file to process
+     * @param string $type The type of the CSV (PLAYER, COACH)
      * @return array of processed rules and error
     */
     public function importCsvFile($file, $type)
@@ -27,8 +33,10 @@ class ImportCsvService
         $fd = fopen($file, 'r');
         
         $header = fgetcsv($fd);
+
+        $lineAmount = $this->getLineAmountByType($type);
         
-        if (!ImportCsvUtils::isLineAsExpected($header)) {
+        if (!ImportCsvUtils::isLineAsExpected($header, $lineAmount)) {
             return [
                 'processed' => 0,
                 'error' => 1
@@ -39,7 +47,7 @@ class ImportCsvService
         $linesProcessed = 0;
         $errors = 0;
         while (($fileLine = fgetcsv($fd, 1000, ",")) !== false) {
-            if (!ImportCsvUtils::isLineAsExpected($fileLine)) {
+            if (!ImportCsvUtils::isLineAsExpected($fileLine, $lineAmount)) {
                 $errors ++;
             } else {
                 try {
@@ -55,20 +63,35 @@ class ImportCsvService
 
                     $registrantModel->type = $type;
 
-                    // Player Model
-                    $playerModel = ImportCsvUtils::reduceKeyValueToModel(
-                        ImportCsvUtils::mapRulesToArrayOfKeyValue(
-                            ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Player'),
-                            $indexMapperArray,
-                            $fileLine
-                        ),
-                        new Player
-                    );
-
-                    // Save Models
                     $registrantModel->save();
-                    $registrantModel->player()->save($playerModel);
-    
+
+                    switch ($type) {
+                        case self::TYPE_PLAYER:
+                            // Player Model
+                            $playerModel = ImportCsvUtils::reduceKeyValueToModel(
+                                ImportCsvUtils::mapRulesToArrayOfKeyValue(
+                                    ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Player'),
+                                    $indexMapperArray,
+                                    $fileLine
+                                ),
+                                new Player
+                            );
+                            $registrantModel->player()->save($playerModel);
+                            break;
+                        case self::TYPE_COACH:
+                            // Coach Model
+                            $coachModel = ImportCsvUtils::reduceKeyValueToModel(
+                                ImportCsvUtils::mapRulesToArrayOfKeyValue(
+                                    ImportCsvUtils::filterModel($this->getRules(), 'App\Models\Coach'),
+                                    $indexMapperArray,
+                                    $fileLine
+                                ),
+                                new Coach
+                            );
+                            $registrantModel->coach()->save($coachModel);
+                            break;
+                    }
+
                     $linesProcessed++;
                 } catch (\Exception $e) {
                     $errors++;
@@ -162,8 +185,38 @@ class ImportCsvService
                     'tables' => ['App\Models\Player']],
                 '#_years_in_sport' => ['rule' => $testRequired,
                     'field_name' => 'years_at_sport',
-                    'tables' => ['App\Models\Player']]
+                    'tables' => ['App\Models\Player']],
+                '#_of_years_coaching' => ['rule' => $testRequired,
+                    'field_name' => 'years_of_experience',
+                    'tables' => ['App\Models\Coach']],
+                'certifications' => ['rule' => $identity,
+                    'field_name' => 'certifications',
+                    'tables' => ['App\Models\Coach']],
+                'coach_role' => ['rule' => $testRequired,
+                    'field_name' => 'roles',
+                    'tables' => ['App\Models\Coach']]
             ];
             return $rules;
+    }
+
+    /**
+    * Returns the expected csv line Amount based on the import type
+    * @param string $type The type of the CSV (PLAYER, COACH)
+    * @return integer line Amount
+    */
+    public function getLineAmountByType($type)
+    {
+        $lineAmount = 0;
+
+        switch ($type) {
+            case self::TYPE_PLAYER:
+                $lineAmount = self::CSV_NUMBER_FIELDS_PLAYER;
+                break;
+            case self::TYPE_COACH:
+                $lineAmount = self::CSV_NUMBER_FIELDS_COACH;
+                break;
+        }
+
+        return $lineAmount;
     }
 }
