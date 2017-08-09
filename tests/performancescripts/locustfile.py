@@ -46,7 +46,7 @@ class ApiTaskSet(TaskSet):
         if len(self.request_list) > 1:
           self.bearer_token = self.request_list.pop(0)
         files = {'csv_file':  open(os.path.dirname(os.path.realpath(__file__))+"/_Data/uploadplayers/Sample_PlayerUpload.csv", 'rb')}
-        response = self.client.post("/registrants/import",files=files,headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
+        response = self.client.post("/registrants/import?type=player",files=files,headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
         print(response.status_code)
         print(response.content)
         if response.status_code != 200:

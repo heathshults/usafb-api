@@ -142,7 +142,7 @@ class LoginCest
     {
         return [
             ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
-            ['TestCase' => 'verifyForgotPasswordWithInValidEmail', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
+            ['TestCase' => 'verifyForgotPasswordWithNoEmailRegistered', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
               ];
     }
 
@@ -152,8 +152,8 @@ class LoginCest
     protected function forgotPasswordErrScenarios()
     {
         return [
-            ['TestCase' => 'verifyForgotPasswordWithInValidEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required.\"}]}"],
-            ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => 'random'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"}]}"],
+            ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required1.\"}]}"],
+            ['TestCase' => 'verifyForgotPasswordWithInValidEmailFormat', 'code' => "400", "postBody" => ['email' => 'random'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"}]}"],
               ];
     }
 }
