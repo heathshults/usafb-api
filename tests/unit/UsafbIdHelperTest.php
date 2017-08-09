@@ -38,6 +38,23 @@ class UsafbIdHelperTest extends \TestCase
         }
 	}
 
+    public function testInvalidUsabFbUsedToGetRecordNumber()
+    {
+        // Given: A bad USAFB_ID
+        $badId = 'ABDEHFC';
+
+        // When: It is used to translate back to a valid record index
+        try {
+            UsafbIdHelper::getRecordNo($badId);
+            $this->assertFalse(true);
+        }
+
+        // Then: It should throw an UnexpectedValueException
+        catch (\UnexpectedValueException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
     public function testBadIdIsInvalid()
     {
         $this->assertFalse(UsafbIdHelper::isValidId('ABDEHFC'));
