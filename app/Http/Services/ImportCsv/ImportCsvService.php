@@ -261,7 +261,7 @@ class ImportCsvService
                 'sales_force_id' => ['rule' => $identity ,
                     'field_name' => 'external_id',
                     'tables' => ['App\Models\Registration']],
-                'usafb_right_to_market' => ['rule' => FunctionalHelper::compose($identity, $parseToBoolean) ,
+                'usafb_right_to_market' => ['rule' => $parseToBoolean,
                     'field_name' => 'right_to_market',
                     'tables' => ['App\Models\Registration']],
                 'team_gender' => ['rule' => $identity ,
