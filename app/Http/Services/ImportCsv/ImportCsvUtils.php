@@ -4,6 +4,10 @@ namespace App\Http\Services\ImportCsv;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Helpers\FunctionalHelper;
+use App\Exceptions\ParseToDateException;
+use App\Exceptions\ParseToBooleanException;
+use App\Exceptions\TestNotRequiredException;
+use App\Exceptions\TestRequiredException;
 
 class ImportCsvUtils
 {
@@ -33,7 +37,7 @@ class ImportCsvUtils
     public static function testRequired($value)
     {
         if ((trim($value) == '' || is_null($value))) {
-            throw new \Exception('Required Value not present for item ');
+            throw new TestRequiredException('Required Value not present for item ');
         } else {
             return $value;
         }
@@ -48,7 +52,7 @@ class ImportCsvUtils
         if ((trim($value) == '' || is_null($value))) {
             return null;
         } else {
-            throw new \Exception('Value is present, and expected empty');
+            throw new TestNotRequiredException('Value is present, and expected empty');
         }
     }
 
@@ -63,7 +67,7 @@ class ImportCsvUtils
         if ($parsedDate) {
             return date(self::DATE_FORMAT, strtotime($value));
         } else {
-            throw new \Exception('Cant parse that date '.$value);
+            throw new ParseToDateException('Cant parse that date '.$value);
         }
     }
 
@@ -79,7 +83,7 @@ class ImportCsvUtils
         } elseif (strtoupper($value) === 'NO' || $value === '0' || $value === '') {
             return false;
         } else {
-            throw new \Exception('Cant parse that string to boolean '.$value);
+            throw new ParseToBooleanException('Cant parse that string to boolean '.$value);
         }
     }
 
