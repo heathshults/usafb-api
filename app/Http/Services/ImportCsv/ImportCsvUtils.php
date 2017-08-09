@@ -68,6 +68,22 @@ class ImportCsvUtils
     }
 
     /**
+     *   Will return pased value to boolean
+     *   @param $value? as read from csv file
+     *   @return Boolean parsed string
+     */
+    public static function parseToBoolean($value)
+    {
+        if (strtoupper($value) === 'YES' || $value === '1') {
+            return true;
+        } elseif (strtoupper($value) === 'NO' || $value === '0' || $value === '') {
+            return false;
+        } else {
+            throw new \Exception('Cant parse that string to boolean '.$value);
+        }
+    }
+
+    /**
      * Will return an instance populated with model values
      * @param array $rules An array of rules with values
      * @param Model $modelInstance holding model to fill with props

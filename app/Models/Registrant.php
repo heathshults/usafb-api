@@ -29,6 +29,7 @@ class Registrant extends Model
 
     /**
      * Get the player record associated with the registrant.
+     * @return Player
      */
     public function player()
     {
@@ -37,10 +38,20 @@ class Registrant extends Model
 
     /**
      * Get the coach record associated with the registrant.
+     * @return Coach
      */
     public function coach()
     {
         return $this->hasOne('App\Models\Coach');
+    }
+
+    /**
+     * Get the registrations records associated with the registrant.
+     * @return array of Registration
+     */
+    public function registrations()
+    {
+        return $this->hasMany('App\Models\Registration');
     }
 
     /**
