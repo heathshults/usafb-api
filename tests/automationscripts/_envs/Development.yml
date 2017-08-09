@@ -3,7 +3,7 @@ modules:
     REST:
       url: "http://localhost:8000"
     Db:
-      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+      dsn: 'pgsql:host=postgres;dbname=npdb-usafb'
       user: 'root'
       password: 'root'
       enabled:
