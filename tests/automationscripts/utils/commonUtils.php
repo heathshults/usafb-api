@@ -68,13 +68,19 @@ class CommonUtils
      */
     public function setAuth0Credentials()
     {
-        $this->changeEnvironmentVariable("AUTH_CLIENT_ID", "ZE6CFuU1opzEeZ5WpDzl1CZZOFrpU3T7");
-        $this->changeEnvironmentVariable("AUTH_CLIENT_SECRET", "NuCNaHRUMci8OZFKCKjvZXtAq5j14NZikKLlT-Uz1UE64acsCe7y3_o3tgsAk2Y5");
-        $this->changeEnvironmentVariable("AUTH_AUDIENCE", "https://daylen.auth0.com/api/v2/");
-        $this->changeEnvironmentVariable("AUTH_ISS", "https://daylen.auth0.com/");
-        $this->changeEnvironmentVariable("AUTH_DOMAIN", "daylen.auth0.com");
+        $this->changeEnvironmentVariable("AUTH_CLIENT_ID", "MMAH4fxeYZbVMo4K9Te4jgWjkwNoqbsS");
+        $this->changeEnvironmentVariable("AUTH_CLIENT_SECRET", "5yqFrD49zv-u8zY7MrstR3Mo0bDAGcpzcds099u0dr4_BateNMnjRckRjjWV8MqL");
+        $this->changeEnvironmentVariable("AUTH_AUDIENCE", "https://bssauth.auth0.com/api/v2/");
+        $this->changeEnvironmentVariable("AUTH_ISS", "https://bssauth.auth0.com/");
+        $this->changeEnvironmentVariable("AUTH_DOMAIN", "bssauth.auth0.com");
         $this->changeEnvironmentVariable("AUTH_METADATA", "http://soccer.com/metadata");
         $this->changeEnvironmentVariable("AUTH_CONNECTION", "Username-Password-Authentication");
+        $this->changeEnvironmentVariable("DB_CONNECTION", "pgsql");
+        $this->changeEnvironmentVariable("DB_HOST", "postgres");
+        $this->changeEnvironmentVariable("DB_PORT", "5432");
+        $this->changeEnvironmentVariable("DB_DATABASE", "npdb-usafb");
+        $this->changeEnvironmentVariable("DB_USERNAME", "root");
+        $this->changeEnvironmentVariable("DB_PASSWORD", "root");
 
     }
 
