@@ -152,7 +152,7 @@ class LoginCest
     protected function forgotPasswordErrScenarios()
     {
         return [
-            ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required1.\"}]}"],
+            ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required.\"}]}"],
             ['TestCase' => 'verifyForgotPasswordWithInValidEmailFormat', 'code' => "400", "postBody" => ['email' => 'random'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"}]}"],
               ];
     }
