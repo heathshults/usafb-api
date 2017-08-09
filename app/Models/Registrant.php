@@ -22,8 +22,8 @@ class Registrant extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $usadfId = self::generateUsadfbId();
-            $model->usadfb_id  = $usadfId;
+            $usafbId = self::generateUsafbId();
+            $model->usafb_id  = $usafbId;
         });
     }
 
@@ -55,12 +55,12 @@ class Registrant extends Model
     }
 
     /**
-     * Will generate an id for Usadfb.
+     * Will generate an id for Usafb.
      * This is a temporary function, the generation of this id hasnt been discussed
      * This is just some ideas grabed from daily meetings
      * @return generatedId
     */
-    public static function generateUsadfbId()
+    public static function generateUsafbId()
     {
         $maxPlayerId = DB::table('registrant')
                         ->find(DB::table('registrant')->max('id'));

@@ -15,7 +15,6 @@ class Player extends Migration
     {
         Schema::create('player', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('usadfb_id', 32); 
             $table->string('grade', 4);
             $table->string('height', 20);
             $table->string('graduation_year', 4);

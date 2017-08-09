@@ -8,6 +8,7 @@ use App\Models\Source;
 use App\Models\Player;
 use App\Models\PlayerRegistration;
 use App\Models\Coach;
+use App\Models\CoachRegistration;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\FunctionalHelper;
 
@@ -45,7 +46,7 @@ class ImportCsvService
         if (!ImportCsvUtils::isLineAsExpected($header, $lineAmount)) {
             return [
                 'processed' => 0,
-                'error' => 1
+                'errors' => 1
             ];
         }
         
@@ -243,8 +244,8 @@ class ImportCsvService
                 'middle_name' => ['rule' => $identity,
                     'field_name' => 'middle_name',
                     'tables' => ['App\Models\Registrant', 'App\Models\Registration']],
-                'usadfb_id' => ['rule' => $testNotRequired ,
-                    'field_name' => 'usadfb_id',
+                'usafb_id' => ['rule' => $testNotRequired ,
+                    'field_name' => 'usafb_id',
                     'tables' => ['App\Models\Registrant']],
                 'league' => ['rule' => $testRequired ,
                     'field_name' => 'league',

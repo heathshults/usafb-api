@@ -10,15 +10,22 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 class ImportCsvServiceTest extends \TestCase
 {
     use DatabaseMigrations;
+
+    const CSV_HEADER = "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip";
+
+    const CSV_NEWLINE = "\n";
+
+    const CSV_ROWS = "1,44 summit rd,,,12342314,staten island,USA,K-5,9/1/2006,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,5 foot 10 inches,2018,,FABI,A,YOUTH,sdfsd,OrgName,NY,\"Basketball, Baseball, Soccer, LaCross, Swimming, Volleyball, Softball,  Hockey, Tennis, Golf, Rugby, Other\",,,,,,,,,,,,,,,,,,,,,2017,NY,,,,,,,145 pounds,10307";
+
+    const CSV = self::CSV_HEADER . self::CSV_NEWLINE . self::CSV_ROWS;
+
     /**
     * Should test that service returns array 
     */
     public function testShouldReturnArray() {
         $structure = [
             'csv' => [
-                'input.csv' => "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,SalesForce ID,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender, Team Age Group, Twitter Handle,USAFB Right to Market,Weight,Player Zip \n".
-                                "20,44 summit rd,,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
-
+                'input.csv' => self::CSV
             ]
         ];
         $root = vfsStream::setup('root', null, $structure);
@@ -37,9 +44,7 @@ class ImportCsvServiceTest extends \TestCase
     {
         $structure = [
             'csv' => [
-                'input.csv' => "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender, Team Age Group, Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "20,44 summit rd,,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
-
+                'input.csv' => self::CSV
             ]
         ];
         $root = vfsStream::setup('root', null, $structure);
@@ -57,8 +62,7 @@ class ImportCsvServiceTest extends \TestCase
     {
         $structure = [
             'csv' => [
-                'input.csv' => "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group, Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "23,,,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
+                'input.csv' => str_replace('fabval@hotmail.com', '', self::CSV)
 
             ]
         ];
@@ -78,9 +82,7 @@ class ImportCsvServiceTest extends \TestCase
     {
         $structure = [
             'csv' => [
-                'input.csv' => "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
-
+                'input.csv' => self::CSV_HEADER . ', OneMoreColumn' . self::CSV_NEWLINE . self::CSV_ROWS . ', OneMoreField'
             ]
         ];
 
@@ -95,19 +97,17 @@ class ImportCsvServiceTest extends \TestCase
     }
     
     /**
-    * Should test that process returns error if UssfId is present
+    * Should test that process returns error if UsaFbId is present
     */
-    public function testShouldFailIfUssfbIsPresent()
+    public function testShouldFailIfUsaFbIdIsPresent()
     {
-        $structureWithUssfPresent = [
+        $structureWithUsaFbIdPresent = [
             'csv' => [
-                'input.csv' => "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "20,44 summit rd,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,someId,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
-
+                'input.csv' => self::CSV_HEADER . ', usafb_id' . self::CSV_NEWLINE . self::CSV_ROWS . ', USFB_ID_VALUE'
             ]
         ];
 
-        $root = vfsStream::setup('root', null, $structureWithUssfPresent );
+        $root = vfsStream::setup('root', null, $structureWithUsaFbIdPresent);
 
         $this->assertTrue($root->hasChild('csv/input.csv'));
 
@@ -135,10 +135,12 @@ class ImportCsvServiceTest extends \TestCase
     */
     public function testShouldReturnOneProcesedCeroErrorsIfColumnsAreInDifferentOrder()
     {
+        $reversedCsv = '"'.implode('","', array_reverse(str_getcsv(self::CSV_HEADER, ',', '"'))).'"' .
+                       self::CSV_NEWLINE .
+                       '"'.implode('","', array_reverse(str_getcsv(self::CSV_ROWS, ',', '"'))).'"';
         $structure = [
             'csv' => [
-                'input.csv' => "Address,# Years in Sport,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "44 summit rd,20,,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
+                'input.csv' => $reversedCsv
 
             ]
         ];
@@ -155,10 +157,16 @@ class ImportCsvServiceTest extends \TestCase
     */
     public function testShouldReturnCeroProcessedOneError()
     {
+        $header = explode(',', self::CSV_HEADER);
+        unset($header[0]);
+        $row = explode(',', self::CSV_ROWS);
+        unset($row[0]);
+
         $structure = [
             'csv' => [
-                'input.csv' => "This Column is Replacing Address And will fail,# Years in Sport,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip\n".
-                                "44 summit rd,20,,,(917) 204-3772,staten island,USA,K-12,9/1/06,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,23,1984,,FABI,A,YOUTH,P name, United Sports Youth League,CA,other,(718) 612-2798,fabval@hotmail.com,Valerie,(917) 204-3772,Fabi,,(646) 623-5013,neil.fabi@yahoo.com,Nino,(917) 805-0826,Fabi,,www.yahoo.com,asadasd,,Pos,9/1/16,PS 1,CA,NY,2016-2017,NY,U2 Giants,4th Grade,Coed,,,,34l,10307"
+                'input.csv' => implode(',',  $header) .
+                               self::CSV_NEWLINE .
+                               implode(',', $row)
 
             ]
         ];
