@@ -3,7 +3,7 @@
 // Test covers the end points
 // "/auth/user"   - Get User Profile for logged in user
 
-//Test Scenerios covered 401 , 200
+//Test Scenarios covered 401 , 200
 
 class UserCest
 {
@@ -61,7 +61,7 @@ class UserCest
             $tokenParam = "ABCDEFGHIJ";
         }
         $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
-        codecept_debug($userProfileResponse);
+
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
@@ -72,7 +72,6 @@ class UserCest
      * @dataprovider userdetailsErr
      */
     //Incase to Skip Tests  * @skip
-
     public function verifyUserProfileErr(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
@@ -84,7 +83,7 @@ class UserCest
             $tokenParam = "";
         }
         $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
-        codecept_debug($userProfileResponse);
+
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);

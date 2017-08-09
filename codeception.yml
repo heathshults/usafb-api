@@ -13,7 +13,7 @@ suites:
                  - Db
             config:
                  Db:
-                      dsn: 'pgsql:host=postgres;dbname=npdb-usafb'
+                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
                       user: 'root'
                       password: 'root'
                       enabled:
@@ -35,9 +35,9 @@ gherkin: []
 paths:
     tests: tests/automationscripts
     output: tests/automationscripts/_output
-    data: tests/automationscripts/_data
+    data:   tests/automationscripts/_data
     support: tests/automationscripts/_support
-    envs: tests/automationscripts/_envs
+    envs:    tests/automationscripts/_envs
 
 settings:
     shuffle: false

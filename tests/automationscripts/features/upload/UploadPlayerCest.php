@@ -7,8 +7,8 @@ class UploadPlayerCest
     //define End points used in the tests globally
 
     public $getLoginUrl = '/login';
-    public $uploadPlayerUrl = "/registrants/import";
-
+    public $uploadPlayerUrl = "/registrants/import?type=";
+    public $uploaddir = "/uploadplayer/";
 
     /**
      * @var helper\auth\loginHelper
@@ -16,12 +16,12 @@ class UploadPlayerCest
     protected $loginhelper;
 
     /**
-     * @var validators\uploadplayer\UploadPlayerValidator
+     * @var validators\upload\UploadValidator
      */
     protected $validator;
 
     /**
-     * @var helper\uploadplayer\UploadPlayerHelper
+     * @var helper\upload\UploadHelper
      */
     protected $helper;
 
@@ -31,7 +31,7 @@ class UploadPlayerCest
     protected $common;
 
 
-    protected function _inject(validators\uploadplayer\UploadPlayerValidator $validator, helper\uploadplayer\UploadPlayerHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
+    protected function _inject(validators\upload\UploadValidator $validator, helper\upload\UploadHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
         $this->validator = $validator;
@@ -42,7 +42,7 @@ class UploadPlayerCest
     /**
      * @group release
      * @group sanity
-     * @group regression_noexecute
+     * @group regression
      * @dataprovider uploadplayer
      */
     //Incase to Skip Tests  * @skip
@@ -60,7 +60,10 @@ class UploadPlayerCest
 //        }
 
         //Upload Player
-        $this->helper->uploadPlayerCall($I, $this->uploadPlayerUrl, "ABCDEFG", $dataBuilder['FileName']);
+        $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
+        $I->seeResponseCodeIs($dataBuilder['code']);
+        $I->seeResponseIsJson();
+
     }
 
     /**
@@ -69,10 +72,7 @@ class UploadPlayerCest
     protected function uploadplayer()
     {
         return [
-              ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => ''],
-//            ['TestCase' => 'validateUploadPlayerNotNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
-//            ['TestCase' => 'validateUploadPlayerNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
-//            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => '']
         ];
     }
 

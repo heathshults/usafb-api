@@ -81,10 +81,9 @@ class LoginCest
     /**
      * @group release
      * @group sanity
-     * @group regression_norun
+     * @group regression
      * @dataprovider forgotPasswordScenarios
      */
-
     public function verifyForgotPassword(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
@@ -96,8 +95,7 @@ class LoginCest
     }
 
     /**
-
-     * @group regression_norun
+     * @group regression
      * @dataprovider forgotPasswordErrScenarios
      */
 
