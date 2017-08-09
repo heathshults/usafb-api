@@ -38,7 +38,7 @@ class UsafbIdHelperTest extends \TestCase
         }
 	}
 
-    public function testBadIsInvalid()
+    public function testBadIdIsInvalid()
     {
         $this->assertFalse(UsafbIdHelper::isValidId('ABDEHFC'));
     }
