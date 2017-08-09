@@ -52,8 +52,8 @@ automation:
     POSTGRES_DB: npdb-usafb
   type: test
   script:
-    - php artisan migrate:refresh --seed
     - composer env:prereq
+    - php artisan migrate:refresh --seed
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer test:reg
 
