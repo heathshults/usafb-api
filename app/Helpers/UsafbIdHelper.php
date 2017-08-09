@@ -72,9 +72,7 @@ class UsafbIdHelper
         }
 
         $number = implode('', array_reverse($number));
-        $number = $number . strval($stack);
-
-        return $number;
+        return $number . strval($stack);
     }
 
     /**
@@ -98,10 +96,14 @@ class UsafbIdHelper
     */
     public static function getRecordNo($usafId)
     {
-        $idLong = strtr($usafId, self::USAFID_SYMBOLS, self::BASE_SYMBOLS);
-        $idLunh = intval(base_convert($idLong, self::USAFID_BASE, 10));
-        // luhn adds checksum as last digit, so will need to remove "intval($idLunh / 10)"
-        return intval($idLunh / 10) - self::USAFID_MIN + 1;
+        if (self::isValidId($usafId)) {
+            $idLong = strtr($usafId, self::USAFID_SYMBOLS, self::BASE_SYMBOLS);
+            $idLunh = intval(base_convert($idLong, self::USAFID_BASE, 10));
+            // luhn adds checksum as last digit, so will need to remove "intval($idLunh / 10)"
+            return intval($idLunh / 10) - self::USAFID_MIN + 1;
+        } else {
+            throw new \UnexpectedValueException('The ID provided is invalid');
+        }
     }
 
     /**
