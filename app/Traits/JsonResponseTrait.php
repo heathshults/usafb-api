@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 trait JsonResponseTrait
 {
@@ -26,6 +27,9 @@ trait JsonResponseTrait
         switch (true) {
             case $this->isValidationException($e):
                 return $this->badRequest($e->getResponse()->getData(true));
+                break;
+            case $this->isBadRequestHttpException($e):
+                return $this->errorMessage($e->getMessage(), 400);
                 break;
             case $this->isModelNotFoundException($e):
             case $this->isNotFoundException($e):
@@ -219,5 +223,16 @@ trait JsonResponseTrait
     protected function isConflictHttpException(Exception $e)
     {
         return $e instanceof ConflictHttpException;
+    }
+
+    /**
+     * Determines if the given exception is a BadRequest exception from a controller.
+     *
+     * @param Exception $e
+     * @return bool
+     */
+    protected function isBadRequestHttpException(Exception $e)
+    {
+        return $e instanceof BadRequestHttpException;
     }
 }
