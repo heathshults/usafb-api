@@ -21,7 +21,7 @@ class UsafbIdHelper
     /** The base used for representing the USAFB_IDs */
     const USAFID_BASE = 31;
 
-    /* The first digit in our series to prevent leading 0's (base 10) */
+    /** The first digit in our series to prevent leading 0's (base 10) */
     const USAFID_MIN = 88750368;
 
     /* The maximum value a an ID can be (base 10) */
