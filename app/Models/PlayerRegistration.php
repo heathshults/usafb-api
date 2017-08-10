@@ -22,4 +22,13 @@ class PlayerRegistration extends Model
     {
         return $this->belongsTo('App\Models\Registration');
     }
+
+    /**
+     * Get the parentsguardians records associated with the PlayerRegistration.
+     * @return array of ParentGuardian
+     */
+    public function parentsguardians()
+    {
+        return $this->hasMany('App\Models\ParentGuardian');
+    }
 }

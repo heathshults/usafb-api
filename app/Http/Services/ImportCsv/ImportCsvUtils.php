@@ -118,22 +118,35 @@ class ImportCsvUtils
     * @param array $rules An array of rules
     * @param array $indexMappings an array of index mappings
     * @param array $valueMappings an array of calue mappings
+    * @param boolean $returnArrayValuesPerKey return an array of values per key instead one value per key
     * @return array of key value
     */
-    public static function mapRulesToArrayOfKeyValue(array $rules, array $indexMappings, array $valueMappings)
-    {
-        
+    public static function mapRulesToArrayOfKeyValue(
+        array $rules,
+        array $indexMappings,
+        array $valueMappings,
+        $returnArrayValuesPerKey = false
+    ) {
         $indexMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $indexMappings);
         $valueMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $valueMappings);
 
-        return array_reduce(array_keys($rules), function ($accum, $key) use ($rules, $indexMapper, $valueMapper) {
+        return array_reduce(
+            array_keys($rules),
+            function ($accum, $key) use ($rules, $indexMapper, $valueMapper, $returnArrayValuesPerKey) {
                 $rule = $rules[$key][self::RULE_IDX];
                 $actual_key = $rules[$key][self::FIELD_NAME_IDX];
                 $valueFunction = FunctionalHelper::compose($indexMapper, $valueMapper, $rule);
 
-                $accum[$actual_key] = $valueFunction($key);
+                if (!$returnArrayValuesPerKey) {
+                    $accum[$actual_key] = $valueFunction($key);
+                } else {
+                    $accum[$actual_key][] = $valueFunction($key);
+                }
+
                 return $accum;
-        }, array());
+            },
+            array()
+        );
     }
 
     /**
