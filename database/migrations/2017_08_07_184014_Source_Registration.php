@@ -41,7 +41,6 @@ class SourceRegistration extends Migration
             $table->string('team_name', 100)->nullable();
             $table->string('school_district', 240)->nullable();
             $table->string('school_state', 80)->nullable();
-            // Registrant Fields
             $table->string('first_name', 40);
             $table->string('middle_name', 40)->nullable();
             $table->string('last_name', 80);
@@ -57,7 +56,6 @@ class SourceRegistration extends Migration
             $table->string('address_first_line', 128);
             $table->string('address_second_line', 128)->nullable();
             $table->string('county', 100);
-            // \Registrant Fields
             $table->timestamps();
 
             $table->foreign('source_id')

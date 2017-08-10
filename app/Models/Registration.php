@@ -31,6 +31,14 @@ class Registration extends Model
     }
 
     /**
+     * Get the CoachRegistration record associated with the registration.
+     */
+    public function coachRegistration()
+    {
+        return $this->hasOne('App\Models\CoachRegistration');
+    }
+
+    /**
      * Get the registrant that owns the registration.
      * @return Registrant
      */

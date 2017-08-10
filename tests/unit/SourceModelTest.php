@@ -25,6 +25,8 @@ class SourceModelTest extends \TestCase {
     * Should test that a source api_key is unique
     */
     public function testShouldFailIfApiKeyIsDuplicated() {
+        $this->expectException(\PDOException::class);
+
         $entity = new Source;
         $entity->name = 'Source Name Test' ;
         $entity->api_key = 'ThisIsMyTestApiKey';
@@ -35,17 +37,15 @@ class SourceModelTest extends \TestCase {
         $entity->name = 'Source Name Test 2' ;
         $entity->api_key = 'ThisIsMyTestApiKey';
 
-        try  {
-            $entity->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23505');
-        }
+        $entity->save();
     }
 
     /**
     * Should test that a source name is unique
     */
     public function testShouldFailIfNameIsDuplicated() {
+        $this->expectException(\PDOException::class);
+
         $entity = new Source;
         $entity->name = 'Source Name Test' ;
         $entity->api_key = 'ThisIsMyTestApiKey';
@@ -56,10 +56,6 @@ class SourceModelTest extends \TestCase {
         $entity->name = 'Source Name Test' ;
         $entity->api_key = 'ThisIsMyTestApiKey2';
 
-        try  {
-            $entity->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23505');
-        }
+        $entity->save();
     }
 }

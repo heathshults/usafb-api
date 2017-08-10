@@ -4,33 +4,19 @@ namespace Tests\Unit;
 
 use Mockery;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Tests\Unit\Traits\CreateRelationshipEntities;
 use App\Models\Player;
-use App\Models\Registrant;
 
 class PlayerModelTest extends \TestCase {
     use DatabaseMigrations;
-  
+    use CreateRelationshipEntities;
+
     /**
     * Should test that an ussf_id is generated on create
     */
     public function testShouldGenerateAPlayerSuccessfully() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         $entityPlayer = new Player;
         $entityPlayer->grade = 'K-12';
@@ -52,6 +38,8 @@ class PlayerModelTest extends \TestCase {
     * Should test that a player couldn't be created without it's parent
     */
     public function testShouldFailIfPlayerIsCreatedWithoutARegistrant() {
+        $this->expectException(\PDOException::class);
+
         $entity = new Player;
         $entity->grade = 'K-12';
         $entity->height = '5 foot 10 inches';
@@ -62,34 +50,16 @@ class PlayerModelTest extends \TestCase {
         $entity->weight = '14 pounds';
         $entity->years_at_sport = '5';
 
-        try  {
-            $entity->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entity->save();
     }
 
     /**
     * Should test that a player couldn't be created if the grade field is null
     */
     public function testShouldFailIfTheRequiredFieldGradeIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -101,36 +71,17 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->weight = '14 pounds';
         $entityPlayer->years_at_sport = '5';
 
-
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player couldn't be created if the height field is null
     */
     public function testShouldFailIfTheRequiredFieldHeightIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -142,35 +93,17 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->weight = '14 pounds';
         $entityPlayer->years_at_sport = '5';
 
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player couldn't be created if the graduation_year field is null
     */
     public function testShouldFailIfTheRequiredFieldGraduationYearIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -182,35 +115,17 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->weight = '14 pounds';
         $entityPlayer->years_at_sport = '5';
 
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player couldn't be created if the sports field is null
     */
     public function testShouldFailIfTheRequiredFieldSportsIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -222,36 +137,17 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->weight = '14 pounds';
         $entityPlayer->years_at_sport = '5';
 
-
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player couldn't be created if the weight field is null
     */
     public function testShouldFailIfTheRequiredFieldWeightIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -263,35 +159,17 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->twitter = '@twitter';
         $entityPlayer->years_at_sport = '5';
 
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player couldn't be created if the years_at_sport field is null
     */
     public function testShouldFailIfTheRequiredFieldYearsAtSportIsNull() {
+        $this->expectException(\PDOException::class);
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -303,35 +181,15 @@ class PlayerModelTest extends \TestCase {
         $entityPlayer->twitter = '@twitter';
         $entityPlayer->weight = '14 pounds';
 
-        try  {
-            $entityRegistrant->save();
-            $entityRegistrant->player()->save($entityPlayer);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistrant->save();
+        $entityRegistrant->player()->save($entityPlayer);
     }
 
     /**
     * Should test that a player can be created if requnired fields are null
     */
     public function testShouldCreateAPlayerIfNotRequiredFieldsAreNull() {
-
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Null not required fields instagram and twitter 
         $entityPlayer = new Player;

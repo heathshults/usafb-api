@@ -4,46 +4,15 @@ namespace Tests\Unit;
 
 use Mockery;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Tests\Unit\Traits\CreateRelationshipEntities;
 use App\Models\Registrant;
 use App\Models\Source;
 use App\Models\Registration;
 
 class RegistrationModelTest extends \TestCase {
     use DatabaseMigrations;
+    use CreateRelationshipEntities;
 
-    private function getSource() {
-        $entity = new Source;
-        $entity->name = 'Source Name Test' ;
-        $entity->api_key = 'ThisIsMyTestApiKey';
-
-        $entity->save();
-
-        return $entity;
-    }
-
-    private function getRegistrant() {
-        $entity = new Registrant;
-        $entity->type = 'PLAYER' ;
-        $entity->first_name = 'Some name';
-        $entity->middle_name = 'Middle name';
-        $entity->last_name = 'Last Name';
-        $entity->email = 'mail@mail.com';
-        $entity->gender = 'Male';
-        $entity->city = 'California';
-        $entity->zip_code = '234141234123';
-        $entity->birth_date = '11/27/1984';
-        $entity->phone_number = '1234567890';
-        $entity->game_type = 'SOME';
-        $entity->level_of_play = 'LEVEL';
-        $entity->state = 'CALIFORNIA';
-        $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
-
-        $entity->save();
-
-        return $entity;
-    }
-  
     /**
     * Should test that a registration is created ok
     */
@@ -63,7 +32,6 @@ class RegistrationModelTest extends \TestCase {
         $entity->team_name = 'A-Team';
         $entity->school_district = 'school district';
         $entity->school_state = 'school sate';
-        //Registrant fields
         $entity->first_name = 'Firt name';
         $entity->middle_name = 'Middle name';
         $entity->last_name = 'Last Name';
@@ -87,6 +55,7 @@ class RegistrationModelTest extends \TestCase {
     * Should test that a registration creation fail without source
     */
     public function testShouldFailIFARegistrationIsCreatedWithoutSource() {
+        $this->expectException(\PDOException::class);
         
         $entity = new Registration;
         $entity->registrant_id = $this->getRegistrant()->id;
@@ -101,7 +70,6 @@ class RegistrationModelTest extends \TestCase {
         $entity->team_name = 'A-Team';
         $entity->school_district = 'school district';
         $entity->school_state = 'school sate';
-        //Registrant fields
         $entity->first_name = 'Firt name';
         $entity->middle_name = 'Middle name';
         $entity->last_name = 'Last Name';
@@ -117,18 +85,15 @@ class RegistrationModelTest extends \TestCase {
         $entity->address_first_line = 'An Address 1234';
         $entity->county = 'A county';
 
-        try  {
-            $entity->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entity->save();
     }
 
     /**
     * Should test that a registration creation fail without registrant
     */
     public function testShouldFailIFARegistrationIsCreatedWithoutRegistrant() {
-        
+        $this->expectException(\PDOException::class);
+
         $entity = new Registration;
         $entity->source_id = $this->getSource()->id;
         $entity->type = 'PLAYER' ;
@@ -142,7 +107,6 @@ class RegistrationModelTest extends \TestCase {
         $entity->team_name = 'A-Team';
         $entity->school_district = 'school district';
         $entity->school_state = 'school sate';
-        //Registrant fields
         $entity->first_name = 'Firt name';
         $entity->middle_name = 'Middle name';
         $entity->last_name = 'Last Name';
@@ -158,10 +122,6 @@ class RegistrationModelTest extends \TestCase {
         $entity->address_first_line = 'An Address 1234';
         $entity->county = 'A county';
 
-        try  {
-            $entity->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entity->save();
     }
 }

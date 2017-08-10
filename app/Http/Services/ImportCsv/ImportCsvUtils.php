@@ -12,6 +12,19 @@ class ImportCsvUtils
     const EXPECTED_LINE_AMOUNT = 52;
     const RULE_IDX = 'rule';
     const FIELD_NAME_IDX = 'field_name';
+
+    /**
+     * Validate the max rows of the csv
+     * @param File $file The csv file
+     * @return int the number of rows
+     */
+    public static function countRows($file)
+    {
+        $fp = file($file);
+
+        return count($fp);
+    }
+
     /**
      *   Will return the array of rules for the given model filtering the others out
      *   @param array $table Rules for the InserterBuilder
