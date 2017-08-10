@@ -69,6 +69,7 @@ class ImportCsvService
                             break;
                         case self::TYPE_COACH:
                             $this->createCoach($registrantModel);
+                            $this->createCoachRegistration($registrationModel);
                             break;
                     }
 
@@ -191,6 +192,28 @@ class ImportCsvService
         $registrationModel->playerRegistration()->save($playerRegistrationModel);
 
         return $playerRegistrationModel;
+    }
+
+    /**
+     * Creates the coach registration
+     * @param string $registrationModel The Registration to associate the CoachRegistration
+     * @return CoachRegistration
+     */
+    public function createCoachRegistration($registrationModel)
+    {
+        $coachRegistrationModel = ImportCsvUtils::reduceKeyValueToModel(
+            ImportCsvUtils::mapRulesToArrayOfKeyValue(
+                ImportCsvUtils::filterModel($this->getRules(), 'App\Models\CoachRegistration'),
+                $this->indexMapperArray,
+                $this->fileLine
+            ),
+            new CoachRegistration
+        );
+
+        // Save relationship
+        $registrationModel->coachRegistration()->save($coachRegistrationModel);
+
+        return $coachRegistrationModel;
     }
 
     /**
@@ -318,13 +341,13 @@ class ImportCsvService
                     'tables' => ['App\Models\PlayerRegistration']],
                 '#_of_years_coaching' => ['rule' => $testRequired,
                     'field_name' => 'years_of_experience',
-                    'tables' => ['App\Models\Coach']],
+                    'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']],
                 'certifications' => ['rule' => $identity,
                     'field_name' => 'certifications',
-                    'tables' => ['App\Models\Coach']],
+                    'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']],
                 'coach_role' => ['rule' => $testRequired,
                     'field_name' => 'roles',
-                    'tables' => ['App\Models\Coach']]
+                    'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']]
             ];
             return $rules;
     }

@@ -4,33 +4,19 @@ namespace Tests\Unit;
 
 use Mockery;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Tests\Unit\Traits\CreateRelationshipEntities;
 use App\Models\Player;
-use App\Models\Registrant;
 
 class PlayerModelTest extends \TestCase {
     use DatabaseMigrations;
-  
+    use CreateRelationshipEntities;
+
     /**
     * Should test that an ussf_id is generated on create
     */
     public function testShouldGenerateAPlayerSuccessfully() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         $entityPlayer = new Player;
         $entityPlayer->grade = 'K-12';
@@ -74,22 +60,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldGradeIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -115,22 +86,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldHeightIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -155,22 +111,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldGraduationYearIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -195,22 +136,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldSportsIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -236,22 +162,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldWeightIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -276,22 +187,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldFailIfTheRequiredFieldYearsAtSportIsNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Required field grade null 
         $entityPlayer = new Player;
@@ -316,22 +212,7 @@ class PlayerModelTest extends \TestCase {
     */
     public function testShouldCreateAPlayerIfNotRequiredFieldsAreNull() {
 
-        $entityRegistrant = new Registrant;
-        $entityRegistrant->type = 'PLAYER' ;
-        $entityRegistrant->first_name = 'Some name';
-        $entityRegistrant->middle_name = 'Middle name';
-        $entityRegistrant->last_name = 'Last Name';
-        $entityRegistrant->email = 'mail@mail.com';
-        $entityRegistrant->gender = 'Male';
-        $entityRegistrant->city = 'California';
-        $entityRegistrant->zip_code = '234141234123';
-        $entityRegistrant->birth_date = '11/27/1984';
-        $entityRegistrant->phone_number = '1234567890';
-        $entityRegistrant->game_type = 'SOME';
-        $entityRegistrant->level_of_play = 'LEVEL';
-        $entityRegistrant->state = 'CALIFORNIA';
-        $entityRegistrant->address_first_line = 'An Address 1234';
-        $entityRegistrant->county = 'A county';
+        $entityRegistrant = $this->getRegistrant();
 
         // Null not required fields instagram and twitter 
         $entityPlayer = new Player;
