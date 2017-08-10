@@ -4,6 +4,7 @@ namespace App\Http\Services\ImportCsv;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Helpers\FunctionalHelper;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ImportCsvUtils
 {
@@ -33,7 +34,7 @@ class ImportCsvUtils
     public static function testRequired($value)
     {
         if ((trim($value) == '' || is_null($value))) {
-            throw new \Exception('Required Value not present for item ');
+            throw new BadRequestHttpException('Required Value not present for item ');
         } else {
             return $value;
         }
@@ -48,7 +49,7 @@ class ImportCsvUtils
         if ((trim($value) == '' || is_null($value))) {
             return null;
         } else {
-            throw new \Exception('Value is present, and expected empty');
+            throw new BadRequestHttpException('Value is present, and expected empty');
         }
     }
 
@@ -63,7 +64,23 @@ class ImportCsvUtils
         if ($parsedDate) {
             return date(self::DATE_FORMAT, strtotime($value));
         } else {
-            throw new \Exception('Cant parse that date '.$value);
+            throw new BadRequestHttpException('Cant parse that date '.$value);
+        }
+    }
+
+    /**
+     *   Will return pased value to boolean
+     *   @param $value? as read from csv file
+     *   @return Boolean parsed string
+     */
+    public static function parseToBoolean($value)
+    {
+        if (strtoupper($value) === 'YES' || $value === '1') {
+            return true;
+        } elseif (strtoupper($value) === 'NO' || $value === '0' || $value === '') {
+            return false;
+        } else {
+            throw new BadRequestHttpException('Cant parse that string to boolean '.$value);
         }
     }
 

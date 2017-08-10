@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Player extends Migration
+class PlayerRegistration extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class Player extends Migration
      */
     public function up()
     {
-        Schema::create('player', function (Blueprint $table) {
+        Schema::create('player_registration', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('positions', 32)->nullable(); 
+            $table->string('team_age_group', 4)->nullable();
+            $table->string('school_name', 255)->nullable();
+            // Player fields
             $table->string('grade', 4);
             $table->string('height', 20);
             $table->string('graduation_year', 4);
@@ -23,6 +27,7 @@ class Player extends Migration
             $table->string('twitter', 15)->nullable();
             $table->string('weight', 15);
             $table->integer('years_at_sport');
+            // \Player fields
             $table->timestamps();
         });
     }
@@ -34,6 +39,6 @@ class Player extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('player');
+        Schema::dropIfExists('player_registration');
     }
 }

@@ -31,6 +31,6 @@ class RegistrantModelTest extends \TestCase {
         $entity->county = 'A county';
 
         $entity->save();
-        $this->assertTrue(!is_null($entity->usadfb_id));
+        $this->assertTrue(!is_null($entity->usafb_id));
     }
 }

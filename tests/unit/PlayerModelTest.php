@@ -13,7 +13,7 @@ class PlayerModelTest extends \TestCase {
     /**
     * Should test that an ussf_id is generated on create
     */
-    public function testShouldGenerateAnUsafbIdAfterSaving() {
+    public function testShouldGenerateAPlayerSuccessfully() {
 
         $entityRegistrant = new Registrant;
         $entityRegistrant->type = 'PLAYER' ;
@@ -45,7 +45,7 @@ class PlayerModelTest extends \TestCase {
         $entityRegistrant->save();
         $entityRegistrant->player()->save($entityPlayer);
 
-        $this->assertTrue(!is_null($entityPlayer->usadfb_id));
+        $this->assertTrue(!is_null($entityPlayer->id));
     }
 
     /**
@@ -344,7 +344,7 @@ class PlayerModelTest extends \TestCase {
 
         $entityRegistrant->save();
         $entityRegistrant->player()->save($entityPlayer);
-        $this->assertTrue(!is_null($entityPlayer->usadfb_id));
+        $this->assertTrue(!is_null($entityPlayer->id));
     }
 
 }

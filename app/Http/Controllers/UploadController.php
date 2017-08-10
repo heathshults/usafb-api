@@ -21,6 +21,7 @@ class UploadController extends Controller
         $this->validate(
             $request,
             [
+                'csv_file' => 'required|mimes:csv,txt',
                 'type' => 'required|in:' . self::TYPE_PLAYER . ','. self::TYPE_COACH
             ],
             [

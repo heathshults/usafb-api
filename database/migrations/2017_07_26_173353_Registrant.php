@@ -16,7 +16,7 @@ class Registrant extends Migration
         Schema::create('registrant', function (Blueprint $table) {
             $table->increments('id');
             $table->string('type'); 
-            $table->string('usadfb_id', 32); 
+            $table->string('usafb_id', 32); 
             $table->string('first_name', 40);
             $table->string('middle_name', 40)->nullable();
             $table->string('last_name', 80);

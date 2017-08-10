@@ -22,13 +22,14 @@ class Registrant extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $usadfId = self::generateUsadfbId();
-            $model->usadfb_id  = $usadfId;
+            $usafbId = self::generateUsafbId();
+            $model->usafb_id  = $usafbId;
         });
     }
 
     /**
      * Get the player record associated with the registrant.
+     * @return Player
      */
     public function player()
     {
@@ -37,6 +38,7 @@ class Registrant extends Model
 
     /**
      * Get the coach record associated with the registrant.
+     * @return Coach
      */
     public function coach()
     {
@@ -44,12 +46,21 @@ class Registrant extends Model
     }
 
     /**
-     * Will generate an id for Usadfb.
+     * Get the registrations records associated with the registrant.
+     * @return array of Registration
+     */
+    public function registrations()
+    {
+        return $this->hasMany('App\Models\Registration');
+    }
+
+    /**
+     * Will generate an id for Usafb.
      * This is a temporary function, the generation of this id hasnt been discussed
      * This is just some ideas grabed from daily meetings
      * @return generatedId
     */
-    public static function generateUsadfbId()
+    public static function generateUsafbId()
     {
         $maxPlayerId = DB::table('registrant')
                         ->find(DB::table('registrant')->max('id'));

@@ -15,7 +15,6 @@ class Coach extends Migration
     {
         Schema::create('coach', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('usadfb_id', 32); 
             $table->text('certifications')->nullable();
             $table->text('roles');
             $table->integer('years_of_experience');

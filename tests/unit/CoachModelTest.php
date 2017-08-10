@@ -13,7 +13,7 @@ class CoachModelTest extends \TestCase {
     /**
     * Should test that an ussf_id is generated on create
     */
-    public function testShouldGenerateAnUsafbIdAfterSaving() {
+    public function testShouldGenerateACoachSuccessfully() {
 
         $entityRegistrant = new Registrant;
         $entityRegistrant->type = 'COACH' ;
@@ -40,7 +40,7 @@ class CoachModelTest extends \TestCase {
         $entityRegistrant->save();
         $entityRegistrant->coach()->save($entityCoach);
 
-        $this->assertTrue(!is_null($entityCoach->usadfb_id));
+        $this->assertTrue(!is_null($entityCoach->id));
     }
 
     /**
