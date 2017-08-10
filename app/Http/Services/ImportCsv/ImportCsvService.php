@@ -217,7 +217,7 @@ class ImportCsvService
     }
 
     /**
-    * Returns rules to process a Registrent row
+    * Returns rules to process a Registrant row
     * @return array of rules
     */
     public function getRules()

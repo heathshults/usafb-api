@@ -32,17 +32,14 @@ class CoachRegistrationTest extends \TestCase {
     * Should test that a coach registration couldn't be created without it's parent
     */
     public function testShouldFailIfCoachRegistrationIsCreatedWithoutARegistration() {
+        $this->expectException(\PDOException::class);
 
         $entityCoachRegistration = new CoachRegistration;
         $entityCoachRegistration->certifications = 'Certification 1, certification 2, cert 3...';
         $entityCoachRegistration->roles = 'Role 1, role 2, role 3...';
         $entityCoachRegistration->years_of_experience = '5';
 
-        try  {
-            $entityCoachRegistration->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityCoachRegistration->save();
     }
 
     /**
@@ -56,17 +53,16 @@ class CoachRegistrationTest extends \TestCase {
         $entityCoachRegistration->roles = 'Role 1, role 2, role 3...';
         $entityCoachRegistration->years_of_experience = '5';
 
-        try  {
-            $entityRegistration->coachRegistration()->save($entityCoachRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->coachRegistration()->save($entityCoachRegistration);
+
+        $this->assertTrue(!is_null($entityCoachRegistration->id));
     }
 
     /**
     * Should test that a player couldn't be created if the roles field is null
     */
     public function testShouldFailIfTheRequiredFieldRolesIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -74,17 +70,14 @@ class CoachRegistrationTest extends \TestCase {
         $entityCoachRegistration->certifications = 'Certification 1, certification 2, cert 3...';
         $entityCoachRegistration->years_of_experience = '5';
 
-        try  {
-            $entityRegistration->coachRegistration()->save($entityCoachRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->coachRegistration()->save($entityCoachRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the years_of_experience field is null
     */
     public function testShouldFailIfTheRequiredFieldYearsOfExperienceIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -92,10 +85,6 @@ class CoachRegistrationTest extends \TestCase {
         $entityCoachRegistration->certifications = 'Certification 1, certification 2, cert 3...';
         $entityCoachRegistration->roles = 'Role 1, role 2, role 3...';
 
-        try  {
-            $entityRegistration->coachRegistration()->save($entityCoachRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->coachRegistration()->save($entityCoachRegistration);
     }
 }

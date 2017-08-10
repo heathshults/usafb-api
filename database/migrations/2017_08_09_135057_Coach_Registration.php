@@ -14,13 +14,11 @@ class CoachRegistration extends Migration
     public function up()
     {
         Schema::create('coach_registration', function (Blueprint $table) {
-            // Coach fields
             $table->increments('id');
             $table->text('certifications')->nullable();
             $table->text('roles');
             $table->integer('years_of_experience');
             $table->timestamps();
-            // \Coach fields
         });
     }
 

@@ -40,6 +40,8 @@ class PlayerRegistrationTest extends \TestCase {
     * Should test that a player registration couldn't be created without it's parent
     */
     public function testShouldFailIfPlayerRegistrationIsCreatedWithoutARegistration() {
+        $this->expectException(\PDOException::class);
+
         $entityPlayerRegistration = new PlayerRegistration;
         $entityPlayerRegistration->positions = 'positions...';
         $entityPlayerRegistration->team_age_group = '2017';
@@ -53,17 +55,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->weight = '10';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityPlayerRegistration->save();
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityPlayerRegistration->save();
     }
 
     /**
     * Should test that a player reg couldn't be created if the grade field is null
     */
     public function testShouldFailIfTheRequiredFieldGradeIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -79,17 +78,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->weight = '10';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the height field is null
     */
     public function testShouldFailIfTheRequiredFieldHeightIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -105,17 +101,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->weight = '10';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the graduation_year field is null
     */
     public function testShouldFailIfTheRequiredFieldGraduationYearIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -131,17 +124,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->weight = '10';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the sports field is null
     */
     public function testShouldFailIfTheRequiredFieldSportsIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -157,17 +147,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->weight = '10';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the weight field is null
     */
     public function testShouldFailIfTheRequiredFieldWeightIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -183,17 +170,14 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->twitter = '@twitter';
         $entityPlayerRegistration->years_at_sport = '3';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
     * Should test that a player couldn't be created if the years_at_sport field is null
     */
     public function testShouldFailIfTheRequiredFieldYearsAtSportIsNull() {
+        $this->expectException(\PDOException::class);
 
         $entityRegistration = $this->getRegistration();
 
@@ -209,11 +193,7 @@ class PlayerRegistrationTest extends \TestCase {
         $entityPlayerRegistration->twitter = '@twitter';
         $entityPlayerRegistration->weight = '10';
 
-        try  {
-            $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
-        } catch (\PDOException $e) {
-            $this->assertEquals($e->getCode(), '23502');
-        }
+        $entityRegistration->playerRegistration()->save($entityPlayerRegistration);
     }
 
     /**
