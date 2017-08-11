@@ -63,6 +63,7 @@ class UploadPlayerCest
         $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
+        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
 
     }
 
@@ -72,7 +73,7 @@ class UploadPlayerCest
     protected function uploadplayer()
     {
         return [
-            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => '']
+            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => '']
         ];
     }
 

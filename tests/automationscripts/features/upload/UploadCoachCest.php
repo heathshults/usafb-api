@@ -63,6 +63,7 @@ class UploadCoachCest
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', "ABCDEFG", $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
+        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
 
     }
 
@@ -97,7 +98,7 @@ class UploadCoachCest
     protected function uploadcoach()
     {
         return [
-            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "", "FileName" => "UploadCoach_Scenario1.csv", 'key' => '']
+            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => '']
         ];
     }
 

@@ -45,8 +45,20 @@ class ApiTaskSet(TaskSet):
     def uploadplayer(self):
         if len(self.request_list) > 1:
           self.bearer_token = self.request_list.pop(0)
-        files = {'csv_file':  open(os.path.dirname(os.path.realpath(__file__))+"/_Data/uploadplayers/Sample_PlayerUpload.csv", 'rb')}
+        files = {'csv_file':  open(os.path.dirname(os.path.realpath(__file__))+"/_Data/uploadplayers/UploadPlayer_Scenario1.csv", 'rb')}
         response = self.client.post("/registrants/import?type=player",files=files,headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
+        print(response.status_code)
+        print(response.content)
+        if response.status_code != 200:
+            raise self.client.ConnectionError(response.content)
+
+# PerfTest UploadCoach  End Point Url registrants/import
+    @task(6)
+    def uploadcoach(self):
+        if len(self.request_list) > 1:
+          self.bearer_token = self.request_list.pop(0)
+        files = {'csv_file':  open(os.path.dirname(os.path.realpath(__file__))+"/_Data/uploadcoach/UploadCoach_Scenario1.csv", 'rb')}
+        response = self.client.post("/registrants/import?type=coach",files=files,headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
         print(response.status_code)
         print(response.content)
         if response.status_code != 200:
