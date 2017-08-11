@@ -4,8 +4,8 @@
 
 class UploadCoachCest
 {
-    //define End points used in the tests globally
 
+    //define End points used in the tests globally
     public $getLoginUrl = '/login';
     public $uploadCoachUrl = "/registrants/import?type=";
     public $uploaddir = "/uploadcoach/";
@@ -30,7 +30,6 @@ class UploadCoachCest
      */
     protected $common;
 
-
     protected function _inject(validators\upload\UploadValidator $validator, helper\upload\UploadHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
@@ -40,6 +39,7 @@ class UploadCoachCest
     }
 
     /**
+     * Test upload coach scenarios
      * @group release
      * @group sanity
      * @group regression
@@ -58,16 +58,15 @@ class UploadCoachCest
 //            $tokenParam = "ABCDEFGHIJ";
 //        }
 
-        //Upload Coach
         $filename = $this->uploaddir . $dataBuilder['FileName'];
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', "ABCDEFG", $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
-
     }
 
     /**
+     * Test upload coach error scenarios
      * @group regression
      * @dataprovider uploadbadrequest
      */
@@ -84,13 +83,14 @@ class UploadCoachCest
 //            $tokenParam = "ABCDEFGHIJ";
 //        }
 
-        //Upload Coach
         $filename = $this->uploaddir . $dataBuilder['FileName'];
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . $dataBuilder['type'], "ABCDEFG", $filename);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
+
+// Data Providers for the Tests to be provided within Cest Classes
 
     /**
      * @return array
@@ -113,5 +113,4 @@ class UploadCoachCest
             ['TestCase' => 'validateTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', "FileName" => "UploadCoach_Scenario1.csv"],
         ];
     }
-
 }

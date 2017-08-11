@@ -8,10 +8,8 @@
 class UserCest
 {
     //define End points used in the tests globally
-
     public $getLoginUrl = '/login';
     public $getUserProfileUrl = "/auth/user";
-
 
     /**
      * @var helper\auth\loginHelper
@@ -33,34 +31,32 @@ class UserCest
      */
     protected $common;
 
-
     protected function _inject(validators\auth\UserValidator $validator, helper\auth\UserHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
         $this->validator = $validator;
         $this->loginhelper = $loginhelper;
         $this->common = $common;
-       }
+    }
 
     /**
+     * Test to verify user profile scenarios
      * @group release
      * @group sanity
      * @group regression
      * @dataprovider userdetails
      */
-    //Incase to Skip Tests  * @skip
-
     public function verifyUserProfile(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
-        $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
+        $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam, $dataBuilder['key']);
 
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
@@ -68,26 +64,28 @@ class UserCest
     }
 
     /**
+     * Tests to validate user profile error scenarios
      * @group regression
      * @dataprovider userdetailsErr
      */
-    //Incase to Skip Tests  * @skip
     public function verifyUserProfileErr(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "EmptyToken") {
             $tokenParam = "";
         }
-        $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam,$dataBuilder['key']);
+        $userProfileResponse = $this->helper->getUserByToken($I, $this->getUserProfileUrl, $tokenParam, $dataBuilder['key']);
 
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->verifyUserProfile($I, $userProfileResponse, $dataBuilder['expResponse'], $this->common);
     }
+
+// Data Providers for the Tests to be provided within Cest Classes
 
     /**
      * @return array
@@ -96,7 +94,7 @@ class UserCest
     {
         return [
             ['TestCase' => 'verifyUserProfile', 'code' => "200", "expResponse" => "{ \"name\": \"autouser@gmail.com\", \"nickname\": \"autouser\", \"email\": \"autouser@gmail.com\", \"email_verified\": true}", 'key' => 'authorized'],
-            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401",  "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+            ['TestCase' => 'verifyUserProfileWithInvalidToken', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
         ];
     }
 
@@ -106,13 +104,10 @@ class UserCest
     protected function userdetailsErr()
     {
         return [
-            ['TestCase' => 'verifyUserProfileWithNoAuthHeader', 'code' => "401",  "expResponse" => "{\"errors\":[{\"error\":\"No authorization header provided.\"}]}", 'key' => 'NoHeader'],
+            ['TestCase' => 'verifyUserProfileWithNoAuthHeader', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"No authorization header provided.\"}]}", 'key' => 'NoHeader'],
             ['TestCase' => 'verifyUserProfileWithInvalidTokenType', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token type.\"}]}", 'key' => 'NoBearer'],
             ['TestCase' => 'verifyUserProfileWithBlankToken', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"No token provided.\"}]}", 'key' => 'EmptyToken'],
 
         ];
     }
-
-
-
 }

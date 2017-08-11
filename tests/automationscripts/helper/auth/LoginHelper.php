@@ -8,6 +8,7 @@ class LoginHelper
 {
 
     /**
+     * Function for making post call
      * @param ApiTester $I
      * @param $url
      * @param $postBody
@@ -21,7 +22,4 @@ class LoginHelper
         $I->sendPOST($url, $postBody);
         return $I->grabResponse();
     }
-
-
-
 }

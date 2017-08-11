@@ -42,18 +42,17 @@ class LoginCest
     }
 
     /**
+     * Test to validate login scenarios
      * @group release
      * @group sanity
      * @group regression
      * @dataprovider loginValidScenarios
      */
-    //Incase to Skip Tests  * @skip
-
     public function verifyValidLogin(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $response = $this->helper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest($dataBuilder,$this->common->getEnvEmail("",$I),$this->common->getEnvPassword("",$I)));
+        $response = $this->helper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest($dataBuilder, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         if ($dataBuilder['key'] == 'errors') {   //Sanity for Invalid Password with Valid Login
@@ -64,6 +63,7 @@ class LoginCest
     }
 
     /**
+     * Test to validate invalid login scenarios
      * @group regression
      * @dataprovider loginInvalidScenarios
      */
@@ -79,6 +79,7 @@ class LoginCest
 
 
     /**
+     * Test forgot password scenarios
      * @group release
      * @group sanity
      * @group regression
@@ -95,10 +96,10 @@ class LoginCest
     }
 
     /**
+     * Test forgot password error scenarios
      * @group regression
      * @dataprovider forgotPasswordErrScenarios
      */
-
     public function verifyForgotPasswordInvalid(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
@@ -109,7 +110,8 @@ class LoginCest
         $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
-//     Data Providers for the Tests to be provided within Cest Classes
+//Data Providers for the Tests to be provided within Cest Classes
+
     /**
      * @return array
      */
@@ -143,10 +145,10 @@ class LoginCest
         return [
             ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
             ['TestCase' => 'verifyForgotPasswordWithNoEmailRegistered', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
-              ];
+        ];
     }
 
-   /**
+    /**
      * @return array
      */
     protected function forgotPasswordErrScenarios()
@@ -154,6 +156,6 @@ class LoginCest
         return [
             ['TestCase' => 'verifyForgotPasswordWithBlankEmail', 'code' => "400", "postBody" => ['email' => ''], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email field is required.\"}]}"],
             ['TestCase' => 'verifyForgotPasswordWithInValidEmailFormat', 'code' => "400", "postBody" => ['email' => 'random'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"}]}"],
-              ];
+        ];
     }
 }

@@ -40,12 +40,12 @@ class UploadPlayerCest
     }
 
     /**
+     * Test upload player scenarios
      * @group release
      * @group sanity
      * @group regression
      * @dataprovider uploadplayer
      */
-    //Incase to Skip Tests  * @skip
     public function validateUploadPlayer(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
@@ -59,7 +59,6 @@ class UploadPlayerCest
 //            $tokenParam = "ABCDEFGHIJ";
 //        }
 
-        //Upload Player
         $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
@@ -76,5 +75,4 @@ class UploadPlayerCest
             ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => '']
         ];
     }
-
 }

@@ -7,7 +7,7 @@ import csv
 import random
 import json
 
-#Method to read CSV data for data driven
+# Function to read CSV data for data driven
 def read_csv(filename):
     csvfile = list(csv.reader(open(filename)))
     csvdics = []
@@ -36,11 +36,11 @@ class ApiTaskSet(TaskSet):
         request_id = json_response_dict['access_token']
         self.request_list.append(request_id)
 
-# Intial Execution Script to Get Token to be passed to UploadPlayer
+# Intial Execution Script to Get Token to be passed to UploadPlayer/UploadCoach
     def on_start(self):
        self.login()
 
- # PerfTest UploadPlayer  End Point Url registrants/import
+ # PerfTest UploadPlayer End Point Url registrants/import?type=player
     @task(6)
     def uploadplayer(self):
         if len(self.request_list) > 1:
@@ -52,7 +52,7 @@ class ApiTaskSet(TaskSet):
         if response.status_code != 200:
             raise self.client.ConnectionError(response.content)
 
-# PerfTest UploadCoach  End Point Url registrants/import
+# PerfTest UploadCoach  End Point Url registrants/import?type=coach
     @task(6)
     def uploadcoach(self):
         if len(self.request_list) > 1:

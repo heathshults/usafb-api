@@ -8,6 +8,7 @@ class CommonUtils
 {
 
     /**
+     * Function to convert json object to Array
      * @param $jsonObject
      * @return mixed
      */
@@ -19,6 +20,7 @@ class CommonUtils
     }
 
     /**
+     * Function to store key and value to a array list
      * @param $arrayObject
      * @return array
      */
@@ -29,14 +31,13 @@ class CommonUtils
         foreach ($arrayObject as $key => $value) {
 
             $arrayList[$key] = $key . ":" . $value;
-
         }
-
         return $arrayList;
     }
 
 
     /**
+     * Function to compare actual object with expected object
      * assert actual vs expected
      * @param $actualObj
      * @param $expectedObj
@@ -53,7 +54,7 @@ class CommonUtils
     }
 
     /**
-     * random number generation
+     * Function to generate random number
      * @return int
      */
     public function randomNumber()
@@ -62,9 +63,9 @@ class CommonUtils
         return ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));
     }
 
-
     /**
      * Set Credentials for Env File
+     *
      */
     public function setAuth0Credentials()
     {
@@ -81,27 +82,27 @@ class CommonUtils
         $this->changeEnvironmentVariable("DB_DATABASE", "npdb-usafb");
         $this->changeEnvironmentVariable("DB_USERNAME", "root");
         $this->changeEnvironmentVariable("DB_PASSWORD", "root");
-
     }
 
     /**
+     * Function to update .Env file parameters
      * @param $key
      * @param $value
      */
     public function changeEnvironmentVariable($key, $value)
     {
-        $path = getcwd().'/.env';
+        $path = getcwd() . '/.env';
 
         if (file_exists($path)) {
 
             file_put_contents($path, str_replace(
-                "$key=".getenv($key), "$key=".$value, file_get_contents($path)
+                "$key=" . getenv($key), "$key=" . $value, file_get_contents($path)
             ));
         }
     }
 
-
     /**
+     * Function to get the config values of automation setup
      * @return Settings
      */
     public function loadConfig()
@@ -111,11 +112,11 @@ class CommonUtils
         return $Settings;
     }
 
-
     /**
+     * Function to get email from environment file
      * @return email
      */
-    public function getEnvEmail($noRole,ApiTester $I)
+    public function getEnvEmail($noRole, ApiTester $I)
     {
         $settings = $this->loadConfig();
         if ($noRole != "")
@@ -127,13 +128,12 @@ class CommonUtils
     }
 
     /**
+     *  function to get password from environment file
      * @return password
      */
-    public function getEnvPassword($noRole,ApiTester $I)
+    public function getEnvPassword($noRole, ApiTester $I)
     {
-
         $settings = $this->loadConfig();
-
         if ($noRole != "")
             $email = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
         else
@@ -141,8 +141,8 @@ class CommonUtils
         return $email;
     }
 
-
     /**
+     * Function for login post body to be used in tests
      * @param $databuilder
      * @param $email
      * @param $password
@@ -150,7 +150,7 @@ class CommonUtils
      */
     public function loginPostRequest($dataBuilder, $email, $password)
     {
-        if (($dataBuilder['postBody'] == null) || ($dataBuilder ==null)) {
+        if (($dataBuilder['postBody'] == null) || ($dataBuilder == null)) {
             $postbody = ['email' => $email, 'password' => $password];
         } else {
             $postbody = $dataBuilder['postBody'];
