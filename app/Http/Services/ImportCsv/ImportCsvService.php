@@ -26,6 +26,7 @@ class ImportCsvService
     const CSV_NUMBER_FIELDS_PLAYER = 53;
     const CSV_NUMBER_FIELDS_COACH = 31;
     const LEGAL_AGE = 18;
+    const CSV_MAX_LINE_LENGTH = 1000;
     private $fileLine = null;
     private $indexMapperArray = null;
 
@@ -57,7 +58,7 @@ class ImportCsvService
         $this->indexMapperArray = ImportCsvUtils::columnToIndexMapper($header);
         $linesProcessed = 0;
         $errors = 0;
-        while (($this->fileLine = fgetcsv($fd, 1000, ",")) !== false) {
+        while (($this->fileLine = fgetcsv($fd, self::CSV_MAX_LINE_LENGTH, ",")) !== false) {
             DB::beginTransaction();
             if (!ImportCsvUtils::isLineAsExpected($this->fileLine, $lineAmount)) {
                 $errors ++;
@@ -81,7 +82,7 @@ class ImportCsvService
 
                     $linesProcessed++;
                     DB::commit();
-                } catch (\Exception $e) {
+                } catch (BadRequestHttpException $e) {
                     $errors++;
                     DB::rollBack();
                 }
