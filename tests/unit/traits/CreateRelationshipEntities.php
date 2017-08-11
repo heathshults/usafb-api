@@ -5,6 +5,7 @@ namespace Tests\Unit\Traits;
 use App\Models\Registrant;
 use App\Models\Registration;
 use App\Models\Source;
+use App\Models\PlayerRegistration;
 
 trait CreateRelationshipEntities
 {
@@ -91,4 +92,32 @@ trait CreateRelationshipEntities
 
         return $entity;
     }
+
+    /**
+     * Creates a new PlayerRegistration entity.
+     *
+     * @return PlayerRegistration
+     */
+    public function getPlayerRegistration() {
+
+        $entity = new PlayerRegistration;
+        $entity->registration_id = $this->getRegistration()->id;
+        $entity->positions = 'positions...';
+        $entity->team_age_group = '2017';
+        $entity->school_name = 'school name...';
+        $entity->grade = 'K-12';
+        $entity->height = '5.3';
+        $entity->graduation_year = '2018';
+        $entity->instagram = '@instagram';
+        $entity->sports = 'my sports...';
+        $entity->twitter = '@twitter';
+        $entity->weight = '10';
+        $entity->years_at_sport = '3';
+
+        $entity->save();
+
+        return $entity;
+    }
+
+
 }

@@ -9,8 +9,11 @@ use App\Models\Player;
 use App\Models\PlayerRegistration;
 use App\Models\Coach;
 use App\Models\CoachRegistration;
+use App\Models\ParentGuardian;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\FunctionalHelper;
+use App\Helpers\DateHelper;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /*
     ImportCSV Service
@@ -22,6 +25,8 @@ class ImportCsvService
     const TYPE_COACH = 'COACH';
     const CSV_NUMBER_FIELDS_PLAYER = 53;
     const CSV_NUMBER_FIELDS_COACH = 31;
+    const LEGAL_AGE = 18;
+    const CSV_MAX_LINE_LENGTH = 1000;
     private $fileLine = null;
     private $indexMapperArray = null;
 
@@ -53,7 +58,8 @@ class ImportCsvService
         $this->indexMapperArray = ImportCsvUtils::columnToIndexMapper($header);
         $linesProcessed = 0;
         $errors = 0;
-        while (($this->fileLine = fgetcsv($fd, 1000, ",")) !== false) {
+        while (($this->fileLine = fgetcsv($fd, self::CSV_MAX_LINE_LENGTH, ",")) !== false) {
+            DB::beginTransaction();
             if (!ImportCsvUtils::isLineAsExpected($this->fileLine, $lineAmount)) {
                 $errors ++;
             } else {
@@ -65,7 +71,8 @@ class ImportCsvService
                     switch ($type) {
                         case self::TYPE_PLAYER:
                             $this->createPlayer($registrantModel);
-                            $this->createPlayerRegistration($registrationModel);
+                            $playerRegistrationModel = $this->createPlayerRegistration($registrationModel);
+                            $this->createParentGuardian($playerRegistrationModel, $registrantModel);
                             break;
                         case self::TYPE_COACH:
                             $this->createCoach($registrantModel);
@@ -74,8 +81,10 @@ class ImportCsvService
                     }
 
                     $linesProcessed++;
-                } catch (\Exception $e) {
+                    DB::commit();
+                } catch (BadRequestHttpException $e) {
                     $errors++;
+                    DB::rollBack();
                 }
             }
         }
@@ -133,7 +142,7 @@ class ImportCsvService
 
     /**
      * Creates the Player
-     * @param string $registrantModel The Registrant to associate the Player
+     * @param Registrant $registrantModel The Registrant to associate the Player
      * @return Player
      */
     public function createPlayer($registrantModel)
@@ -153,7 +162,7 @@ class ImportCsvService
 
     /**
      * Creates the Coach
-     * @param string $registrantModel The Registrant to associate the Coach
+     * @param Registrant $registrantModel The Registrant to associate the Coach
      * @return Coach
      */
     public function createCoach($registrantModel)
@@ -174,7 +183,7 @@ class ImportCsvService
 
     /**
      * Creates the player registration
-     * @param string $registrationModel The Registration to associate the PlayerRegistration
+     * @param Registration $registrationModel The Registration to associate the PlayerRegistration
      * @return PlayerRegistration
      */
     public function createPlayerRegistration($registrationModel)
@@ -192,6 +201,61 @@ class ImportCsvService
         $registrationModel->playerRegistration()->save($playerRegistrationModel);
 
         return $playerRegistrationModel;
+    }
+
+    /**
+     * Creates the parent guardian
+     * @param PlayerRegistration $playerRegistrationModel The PlayerRegistration to associate the ParentGuardian
+     * @param Registrant $registrantModel The Registrant to check the birth date
+     * @return ParentGuardian
+     */
+    public function createParentGuardian($playerRegistrationModel, $registrantModel)
+    {
+        $parentGuardianModels = [];
+        $isMinor = DateHelper::getYearsFromDateToNow($registrantModel->birth_date) < self::LEGAL_AGE;
+
+        $arrayKeyValues = ImportCsvUtils::mapRulesToArrayOfKeyValue(
+            ImportCsvUtils::filterModel($this->getRules(), 'App\Models\ParentGuardian'),
+            $this->indexMapperArray,
+            $this->fileLine,
+            true
+        );
+        
+        $mapForParentGuardian1 = [];
+        $mapForParentGuardian2 = [];
+        $saveParentGuardian1 = false;
+        $saveParentGuardian2 = false;
+        foreach ($arrayKeyValues as $key => $arrayValues) {
+            $mapForParentGuardian1[$key] = $arrayValues[0];
+            $saveParentGuardian1 |= !empty($arrayValues[0]);
+
+            $mapForParentGuardian2[$key] = $arrayValues[1];
+            $saveParentGuardian2 |= !empty($arrayValues[1]);
+        }
+
+        if ($saveParentGuardian1) {
+            $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
+                $mapForParentGuardian1,
+                new ParentGuardian
+            );
+        }
+
+        if ($saveParentGuardian1) {
+            $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
+                $mapForParentGuardian2,
+                new ParentGuardian
+            );
+        }
+
+        if (!empty($parentGuardianModels)) {
+            // Save relationship
+            $playerRegistrationModel->parentsguardians()->saveMany($parentGuardianModels);
+        } elseif ($isMinor) {
+            throw new BadRequestHttpException('The minor should have at least one '.
+                '                             parent/guardian contact information.');
+        }
+
+        return $parentGuardianModels;
     }
 
     /**
@@ -347,7 +411,43 @@ class ImportCsvService
                     'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']],
                 'coach_role' => ['rule' => $testRequired,
                     'field_name' => 'roles',
-                    'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']]
+                    'tables' => ['App\Models\Coach', 'App\Models\CoachRegistration']],
+                'parent_/_guardian_1_cell_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_mobile_phone',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_1_email' => ['rule' => $identity,
+                    'field_name' => 'pg_email',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_1_first_name' => ['rule' => $identity,
+                    'field_name' => 'pg_first_name',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_1_last_name' => ['rule' => $identity,
+                    'field_name' => 'pg_last_name',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_1_home_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_home_phone',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_1_work_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_work_phone',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_cell_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_mobile_phone',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_email' => ['rule' => $identity,
+                    'field_name' => 'pg_email',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_first_name' => ['rule' => $identity,
+                    'field_name' => 'pg_first_name',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_last_name' => ['rule' => $identity,
+                    'field_name' => 'pg_last_name',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_home_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_home_phone',
+                    'tables' => ['App\Models\ParentGuardian']],
+                'parent_/_guardian_2_work_phone' => ['rule' => $identity,
+                    'field_name' => 'pg_work_phone',
+                    'tables' => ['App\Models\ParentGuardian']]
             ];
             return $rules;
     }

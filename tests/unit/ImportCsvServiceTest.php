@@ -15,7 +15,7 @@ class ImportCsvServiceTest extends \TestCase
 
     const CSV_NEWLINE = "\n";
 
-    const CSV_ROWS = "1,44 summit rd,,,12342314,staten island,USA,K-5,9/1/2006,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,5 foot 10 inches,2018,,FABI,A,YOUTH,sdfsd,OrgName,NY,\"Basketball, Baseball, Soccer, LaCross, Swimming, Volleyball, Softball,  Hockey, Tennis, Golf, Rugby, Other\",,,,,,,,,,,,,,,,,,,,,2017,NY,,,,,,,145 pounds,10307";
+    const CSV_ROWS = "1,44 summit rd,,,12342314,staten island,USA,K-5,9/1/1998,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,5 foot 10 inches,2018,,FABI,A,YOUTH,sdfsd,OrgName,NY,\"Basketball, Baseball, Soccer, LaCross, Swimming, Volleyball, Softball,  Hockey, Tennis, Golf, Rugby, Other\",,,,,,,,,,,,,,,,,,,,,2017,NY,,,,,,,145 pounds,10307";
 
     const CSV = self::CSV_HEADER . self::CSV_NEWLINE . self::CSV_ROWS;
 

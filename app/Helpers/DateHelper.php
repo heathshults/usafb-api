@@ -35,4 +35,16 @@ class DateHelper
 
         return $isExpired;
     }
+
+    /**
+    * Gets the years between the param date and today.
+    * @param String $date Represents a date string.
+    * @return Integer The number of years between $date param and today
+    */
+    public static function getYearsFromDateToNow($date)
+    {
+        $date = new DateTime($date);
+        $now = new DateTime();
+        return $date->diff($now)->y;
+    }
 }

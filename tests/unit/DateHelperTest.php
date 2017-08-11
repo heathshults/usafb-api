@@ -39,5 +39,15 @@ class DateHelperTest extends \TestCase
 		$this->assertTrue(DateHelper::isDateActive($now, 20));
 	}
 
+	public function testIsLegalAge()
+	{
+		$this->assertTrue(DateHelper::getYearsFromDateToNow('01-01-1998') >= 18);
+	}
+
+	public function testIsMinor()
+	{
+		$this->assertTrue(DateHelper::getYearsFromDateToNow(date('Y-m-d')) <= 18);
+	}
+
 }
 
