@@ -29,6 +29,7 @@ $app->group(
             ]
         );
         $app->post('/registrants/import', 'UploadController@processFileUpload');
+        $app->get('/registrants/export', 'DownloadController@downloadFile');
     }
 );
 
