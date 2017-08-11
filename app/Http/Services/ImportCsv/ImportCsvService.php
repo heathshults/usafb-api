@@ -12,6 +12,8 @@ use App\Models\CoachRegistration;
 use App\Models\ParentGuardian;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\FunctionalHelper;
+use App\Helpers\DateHelper;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /*
     ImportCSV Service
@@ -23,6 +25,7 @@ class ImportCsvService
     const TYPE_COACH = 'COACH';
     const CSV_NUMBER_FIELDS_PLAYER = 53;
     const CSV_NUMBER_FIELDS_COACH = 31;
+    const LEGAL_AGE = 18;
     private $fileLine = null;
     private $indexMapperArray = null;
 
@@ -55,6 +58,7 @@ class ImportCsvService
         $linesProcessed = 0;
         $errors = 0;
         while (($this->fileLine = fgetcsv($fd, 1000, ",")) !== false) {
+            DB::beginTransaction();
             if (!ImportCsvUtils::isLineAsExpected($this->fileLine, $lineAmount)) {
                 $errors ++;
             } else {
@@ -67,7 +71,7 @@ class ImportCsvService
                         case self::TYPE_PLAYER:
                             $this->createPlayer($registrantModel);
                             $playerRegistrationModel = $this->createPlayerRegistration($registrationModel);
-                            $this->createParentGuardian($playerRegistrationModel);
+                            $this->createParentGuardian($playerRegistrationModel, $registrantModel);
                             break;
                         case self::TYPE_COACH:
                             $this->createCoach($registrantModel);
@@ -76,8 +80,10 @@ class ImportCsvService
                     }
 
                     $linesProcessed++;
+                    DB::commit();
                 } catch (\Exception $e) {
                     $errors++;
+                    DB::rollBack();
                 }
             }
         }
@@ -199,11 +205,13 @@ class ImportCsvService
     /**
      * Creates the parent guardian
      * @param PlayerRegistration $playerRegistrationModel The PlayerRegistration to associate the ParentGuardian
+     * @param Registrant $registrantModel The Registrant to check the birth date
      * @return ParentGuardian
      */
-    public function createParentGuardian($playerRegistrationModel)
+    public function createParentGuardian($playerRegistrationModel, $registrantModel)
     {
         $parentGuardianModels = [];
+        $isMinor = DateHelper::getYearsFromDateToNow($registrantModel->birth_date) < self::LEGAL_AGE;
 
         $arrayKeyValues = ImportCsvUtils::mapRulesToArrayOfKeyValue(
             ImportCsvUtils::filterModel($this->getRules(), 'App\Models\ParentGuardian'),
@@ -214,23 +222,37 @@ class ImportCsvService
         
         $mapForParentGuardian1 = [];
         $mapForParentGuardian2 = [];
+        $saveParentGuardian1 = false;
+        $saveParentGuardian2 = false;
         foreach ($arrayKeyValues as $key => $arrayValues) {
             $mapForParentGuardian1[$key] = $arrayValues[0];
+            $saveParentGuardian1 |= !empty($arrayValues[0]);
+
             $mapForParentGuardian2[$key] = $arrayValues[1];
+            $saveParentGuardian2 |= !empty($arrayValues[1]);
         }
 
-        $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
-            $mapForParentGuardian1,
-            new ParentGuardian
-        );
+        if ($saveParentGuardian1) {
+            $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
+                $mapForParentGuardian1,
+                new ParentGuardian
+            );
+        }
 
-        $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
-            $mapForParentGuardian2,
-            new ParentGuardian
-        );
+        if ($saveParentGuardian1) {
+            $parentGuardianModels[] = ImportCsvUtils::reduceKeyValueToModel(
+                $mapForParentGuardian2,
+                new ParentGuardian
+            );
+        }
 
-        // Save relationship
-        $playerRegistrationModel->parentsguardians()->saveMany($parentGuardianModels);
+        if (!empty($parentGuardianModels)) {
+            // Save relationship
+            $playerRegistrationModel->parentsguardians()->saveMany($parentGuardianModels);
+        } elseif ($isMinor) {
+            throw new BadRequestHttpException('The minor should have at least one '.
+                '                             parent/guardian contact information.');
+        }
 
         return $parentGuardianModels;
     }

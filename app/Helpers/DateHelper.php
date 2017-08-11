@@ -35,4 +35,11 @@ class DateHelper
 
         return $isExpired;
     }
+
+    public static function getYearsFromDateToNow($date)
+    {
+        $date = new DateTime($date);
+        $now = new DateTime();
+        return $date->diff($now)->y;
+    }
 }
