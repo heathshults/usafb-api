@@ -34,9 +34,6 @@ services:
 
     php-fpm:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
-      depends_on:
-       - postgres
-      command: ["./wait-for-it.sh", "postgres:5432"]
       container_name: usafb-php-fpm
       working_dir: /application
       ports:
@@ -46,9 +43,9 @@ services:
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
       links:
         - postgres
-        - redis 
+        - redis
       entrypoint: /application/start_fpm.sh
-    
+
     locust-master:
         image: swernst/locusts
         volumes:

@@ -1,4 +1,4 @@
-image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest 
+image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
 before_script:
   - set -xe
