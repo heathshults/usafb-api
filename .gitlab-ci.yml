@@ -1,4 +1,4 @@
-image: edbizarro/gitlab-ci-pipeline-php:7.1-alpine
+image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest 
 
 before_script:
   - set -xe
@@ -10,6 +10,7 @@ after_script:
 stages:
   - setup
   - test
+  - build
 
 setup:
   type: setup
@@ -57,4 +58,24 @@ automation:
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer --global config process-timeout 20000
     - composer test:reg
+
+
+build:
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  stage: build
+  only:
+  #  - develop
+    - sarath/npdb-usafb-build
+  when: manual
+  script:
+    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
 
