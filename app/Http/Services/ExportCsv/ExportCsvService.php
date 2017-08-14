@@ -113,6 +113,14 @@ class ExportCsvService
                     $newKey = $column;
                 }
 
+                if ($newKey === 'right_to_market') {
+                    if ($columnValue) {
+                        $columnValue = 'YES';
+                    } else {
+                        $columnValue = 'NO';
+                    }
+                }
+
                 $data[$currentIndex][$newKey] = $columnValue;
             }
 
