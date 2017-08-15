@@ -53,7 +53,7 @@ class DownloadControllerTest extends \TestCase
         );
         $response = $this->call('GET', '/registrants/export?type=player');
 
-        $this->assertEquals(200, $response->status());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**
@@ -75,6 +75,6 @@ class DownloadControllerTest extends \TestCase
         );
         $response = $this->call('GET', '/registrants/export?type=coach');
 
-        $this->assertEquals(200, $response->status());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
