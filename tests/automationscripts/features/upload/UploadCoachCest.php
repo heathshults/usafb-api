@@ -98,7 +98,8 @@ class UploadCoachCest
     protected function uploadcoach()
     {
         return [
-            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => '']
+            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => '']
         ];
     }
 
