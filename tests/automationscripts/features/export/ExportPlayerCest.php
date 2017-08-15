@@ -42,7 +42,7 @@ class ExportPlayerCest
      * Test export player scenarios
      * @group release
      * @group sanity
-     * @group regression
+     * @group regression_norun
      * @dataprovider exportplayer
      */
     public function validateExportPlayer(ApiTester $I, \Codeception\Example $dataBuilder)

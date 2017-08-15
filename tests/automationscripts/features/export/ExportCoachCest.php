@@ -41,7 +41,7 @@ class ExportCoachCest
      * Test export coach scenarios
      * @group release
      * @group sanity
-     * @group regression
+     * @group regression_norun
      * @dataprovider exportcoach
      */
     public function validateExportCoach(ApiTester $I, \Codeception\Example $dataBuilder)
@@ -65,7 +65,7 @@ class ExportCoachCest
 
     /**
      * Test export coach error scenarios
-     * @group regression
+     * @group regression_norun
      * @dataprovider exportbadrequest
      */
     public function validateExportBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
