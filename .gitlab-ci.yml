@@ -2,7 +2,7 @@ image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:la
 
 before_script:
   - set -xe
-  - apk add --update php7-simplexml
+  - apt-get install php7.0-xml
 
 after_script:
   - killall php
@@ -25,7 +25,6 @@ setup:
     expire_in: 1 week
     paths:
       - vendor/
-      - .env
 
 test:
   services:
