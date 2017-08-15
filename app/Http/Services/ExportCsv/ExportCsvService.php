@@ -88,7 +88,6 @@ class ExportCsvService
                 break;
             default:
                 throw new BadRequestHttpException('No data for type: ' . $type);
-                break;
         }
 
         $columns = DB::select($queryColumns);
