@@ -56,7 +56,6 @@ class DownloadController extends Controller
             }
         };
 
-        $response = new StreamedResponse($callback, 200, $headers);
-        $response->send();
+        return new StreamedResponse($callback, 200, $headers);
     }
 }
