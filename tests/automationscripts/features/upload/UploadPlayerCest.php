@@ -62,8 +62,7 @@ class UploadPlayerCest
         $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
-
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**

@@ -62,7 +62,7 @@ class UploadCoachCest
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', "ABCDEFG", $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**
@@ -70,7 +70,7 @@ class UploadCoachCest
      * @group regression
      * @dataprovider uploadbadrequest
      */
-    public function validateBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
+    public function validateUploadBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
@@ -87,7 +87,7 @@ class UploadCoachCest
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . $dataBuilder['type'], "ABCDEFG", $filename);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
 // Data Providers for the Tests to be provided within Cest Classes
@@ -109,9 +109,9 @@ class UploadCoachCest
     protected function uploadbadrequest()
     {
         return [
-            ['TestCase' => 'validateTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, "FileName" => "UploadCoach_Scenario1.csv"],
-            ['TestCase' => 'validateTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', "FileName" => "UploadCoach_Scenario1.csv"],
-            ['TestCase' => 'validateTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', "FileName" => "UploadCoach_Scenario1.csv"],
+            ['TestCase' => 'validateUploadTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, "FileName" => "UploadCoach_Scenario1.csv"],
+            ['TestCase' => 'validateUploadTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', "FileName" => "UploadCoach_Scenario1.csv"],
+            ['TestCase' => 'validateUploadTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', "FileName" => "UploadCoach_Scenario1.csv"],
         ];
     }
 }

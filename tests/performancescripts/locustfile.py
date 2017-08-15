@@ -64,6 +64,29 @@ class ApiTaskSet(TaskSet):
         if response.status_code != 200:
             raise self.client.ConnectionError(response.content)
 
+ # PerfTest ExportPlayer End Point Url registrants/export?type=player
+    @task(6)
+    def exportplayer(self):
+        if len(self.request_list) > 1:
+          self.bearer_token = self.request_list.pop(0)
+        response = self.client.get("/registrants/export?type=player",headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
+        print(response.status_code)
+        print(response.content)
+        if response.status_code != 200:
+            raise self.client.ConnectionError(response.content)
+
+# PerfTest ExportCoach  End Point Url registrants/export?type=coach
+    @task(6)
+    def exportcoach(self):
+        if len(self.request_list) > 1:
+          self.bearer_token = self.request_list.pop(0)
+        response = self.client.get("/registrants/export?type=coach",headers={'Accept-Encoding':'gzip','Authorization':'Bearer ' + self.bearer_token })
+        print(response.status_code)
+        print(response.content)
+        if response.status_code != 200:
+            raise self.client.ConnectionError(response.content)
+
+
 # class to call the  TaskSet for all the API's
 class APILocust(HttpLocust):
      min_wait=5000

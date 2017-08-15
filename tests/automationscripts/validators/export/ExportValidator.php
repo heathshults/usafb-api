@@ -1,12 +1,12 @@
 <?php
 
-namespace validators\upload;
+namespace validators\export;
 
 use ApiTester;
 use utils\CommonUtils;
 
 
-class UploadValidator
+class ExportValidator
 {
 
     /**
@@ -16,7 +16,7 @@ class UploadValidator
      * @param ApiTester $I
      * @param CommonUtils $common
      */
-    public function validateUploadResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
+    public function validateExportResponse($actualResponse, $expectedResponse, ApiTester $I, CommonUtils $common)
     {
         $actualArrayList = $common->convertJsonToArray($actualResponse);
         $expectedArrayList = $common->convertJsonToArray($expectedResponse);
