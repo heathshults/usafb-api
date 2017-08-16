@@ -6,5 +6,14 @@ namespace Helper;
 
 class Api extends \Codeception\Module
 {
+    /**
+     * Function to clear Authorization header
+     */
+    public function clearAuthorizationHeaders()
+    {
+        unset($this->getModule('REST')->headers['Authorization']);
+        unset($this->getModule('PhpBrowser')->headers['Authorization']);
+
+    }
 
 }

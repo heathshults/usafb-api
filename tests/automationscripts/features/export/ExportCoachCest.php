@@ -54,10 +54,12 @@ class ExportCoachCest
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
-
+        $this->common->waitTimeCall();
         $response = $this->helper->exportCall($I, $this->exportCoachUrl . 'coach',$tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
-       // $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        if ($dataBuilder['key'] == "unauthorized") {
+            $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        }
     }
 
     /**
@@ -75,6 +77,7 @@ class ExportCoachCest
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
+        $this->common->waitTimeCall();
         $response = $this->helper->exportCall($I, $this->exportCoachUrl . $dataBuilder['type'], $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
@@ -89,7 +92,9 @@ class ExportCoachCest
     {
         return [
             ['TestCase' => 'validateExportCoach', 'code' => "200", "expResponse" => "", 'key' => ''],
-            ['TestCase' => 'validateExportCoachNullColumns', 'code' => "200", "expResponse" => "", 'key' => '']
+            ['TestCase' => 'validateExportCoachNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
+            ['TestCase' => 'validateExportCaochInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+
         ];
     }
 
@@ -101,7 +106,8 @@ class ExportCoachCest
         return [
             ['TestCase' => 'validateExportTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, 'key' => ''],
             ['TestCase' => 'validateExportTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', 'key' => ''],
-            ['TestCase' => 'validateExportTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', 'key' => ''],
+            ['TestCase' => 'validateExportTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', 'key' => '']
+
         ];
     }
 }

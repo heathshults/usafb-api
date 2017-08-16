@@ -56,9 +56,13 @@ class ExportPlayerCest
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
+        $this->common->waitTimeCall();
         $response = $this->helper->exportCall($I, $this->exportPlayerUrl . 'player', $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
-       // $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        if ($dataBuilder['key'] == "unauthorized") {
+            $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        }
+
     }
 
     /**
@@ -68,7 +72,8 @@ class ExportPlayerCest
     {
         return [
             ['TestCase' => 'validateExportPlayer', 'code' => "200", "expResponse" => "", 'key' => ''],
-            ['TestCase' => 'validateExportPlayerNullColumns', 'code' => "200", "expResponse" => "", 'key' => '']
+            ['TestCase' => 'validateExportPlayerNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
+            ['TestCase' => 'validateExportPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
         ];
     }
 }
