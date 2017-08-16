@@ -12,12 +12,17 @@ services:
       image: postgres:9.6-alpine
       container_name: usafb-postgres
       working_dir: /application
+      healthcheck:
+       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432"]
+       interval: 30s
+       timeout: 30s
+       retries: 3
       ports:
         - "5432:5432"
       environment:
-        - POSTGRES_USER=root
-        - POSTGRES_PASSWORD=root
-        - POSTGRES_DB=npdb-usafb
+        - POSTGRES_DB=root
+        - POSTGRES_USER=homestead
+        - POSTGRES_PASSWORD=secret
 
     nginx:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
@@ -34,6 +39,10 @@ services:
 
     php-fpm:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
+      depends_on:
+       - postgres
+      command: ["./wait-for-it.sh", "postgres:5432"]
+         #  condition: service_healthy
       container_name: usafb-php-fpm
       working_dir: /application
       ports:
@@ -41,12 +50,11 @@ services:
       volumes:
         - .:/application
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-      entrypoint: /application/start_fpm.sh
-
       links:
         - postgres
-        - redis
-      
+        - redis 
+      entrypoint: /application/start_fpm.sh
+    
     locust-master:
         image: swernst/locusts
         volumes:

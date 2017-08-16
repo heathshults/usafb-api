@@ -108,7 +108,7 @@ $app->group(
 
 $app->get(
     '/', function () use ($app) {
-        return $_ENV;
+        return ;
     }
 );
 
