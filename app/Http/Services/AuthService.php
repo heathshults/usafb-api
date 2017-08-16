@@ -121,6 +121,43 @@ class AuthService
         }
     }
 
+        /**
+     * Send email to reset password
+     *
+     * @param string $email
+     *
+     * @return json
+     */
+    public function forgotPassword($email)
+    {
+        $user = $this->getUserByEmail($email);
+        if ($user !== null) {
+            $emailSentMessage = $this->authentication->dbconnections_change_password(
+                $email,
+                getenv('AUTH_CONNECTION')
+            );
+            return response()->json(["message" => $emailSentMessage]);
+        }
+        throw new NotFoundHttpException("User not found");
+    }
+
+    /**
+     * Get user by criteria
+     *
+     * @param string $email
+     *
+     * @return json
+     */
+    public function getUserByEmail($email)
+    {
+        $options = [
+            'search_engine' => 'v2',
+            'q' => "email.raw:".$email
+        ];
+        $users = $this->getManagement()->users->getAll($options);
+        return empty($users) ? null : $users[0];
+    }
+
     /**
      * Get authenticated user profile by token provided in header
      *
