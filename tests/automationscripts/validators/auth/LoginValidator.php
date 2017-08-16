@@ -9,7 +9,7 @@ use utils\CommonUtils;
 class LoginValidator
 {
     /**
-     * Valdiate Error Response
+     * Function to validate actual response with excepted response
      * @param $actualResponse
      * @param $expectedResponse
      * @param ApiTester $I
@@ -22,9 +22,8 @@ class LoginValidator
         $I->assertEquals($getActualResObj, $getExcepctedResObj);
     }
 
-
     /**
-     * Validate Success Response
+     * Function to validate actual success response with excepted success response
      * @param $actualResponse
      * @param $expectedResponse
      * @param ApiTester $I
@@ -34,8 +33,7 @@ class LoginValidator
     {
         $actualArrayList = $common->getArrayOfValue($common->convertJsonToArray($actualResponse));
         $expectedArrayList = $common->getArrayOfValue($common->convertJsonToArray($expectedResponse));
-        $common->assertObjects($actualArrayList, $expectedArrayList,$I);
+        $common->assertObjects($actualArrayList, $expectedArrayList, $I);
     }
-
 
 }

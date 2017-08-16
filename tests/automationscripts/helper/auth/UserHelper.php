@@ -9,6 +9,7 @@ class UserHelper
 {
 
     /**
+     * Function for user get call by token
      * @param ApiTester $I
      * @param $url
      * @param $token

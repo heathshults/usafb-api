@@ -4,8 +4,8 @@
 
 class UploadCoachCest
 {
-    //define End points used in the tests globally
 
+    //define End points used in the tests globally
     public $getLoginUrl = '/login';
     public $uploadCoachUrl = "/registrants/import?type=";
     public $uploaddir = "/uploadcoach/";
@@ -30,7 +30,6 @@ class UploadCoachCest
      */
     protected $common;
 
-
     protected function _inject(validators\upload\UploadValidator $validator, helper\upload\UploadHelper $helper, helper\auth\loginHelper $loginhelper, utils\CommonUtils $common)
     {
         $this->helper = $helper;
@@ -40,6 +39,7 @@ class UploadCoachCest
     }
 
     /**
+     * Test upload coach scenarios
      * @group release
      * @group sanity
      * @group regression
@@ -49,48 +49,43 @@ class UploadCoachCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
-
-        //Upload Coach
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
         $filename = $this->uploaddir . $dataBuilder['FileName'];
-        $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', "ABCDEFG", $filename, $dataBuilder['key']);
+        $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', $tokenParam, $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
-
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**
+     * Test upload coach error scenarios
      * @group regression
      * @dataprovider uploadbadrequest
      */
-    public function validateBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
+    public function validateUploadBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
 
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
-
-        //Upload Coach
         $filename = $this->uploaddir . $dataBuilder['FileName'];
-        $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . $dataBuilder['type'], "ABCDEFG", $filename);
+        $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . $dataBuilder['type'], $tokenParam, $filename);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
+
+// Data Providers for the Tests to be provided within Cest Classes
 
     /**
      * @return array
@@ -98,7 +93,8 @@ class UploadCoachCest
     protected function uploadcoach()
     {
         return [
-            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => '']
+            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => '']
         ];
     }
 
@@ -108,10 +104,9 @@ class UploadCoachCest
     protected function uploadbadrequest()
     {
         return [
-            ['TestCase' => 'validateTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, "FileName" => "UploadCoach_Scenario1.csv"],
-            ['TestCase' => 'validateTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', "FileName" => "UploadCoach_Scenario1.csv"],
-            ['TestCase' => 'validateTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', "FileName" => "UploadCoach_Scenario1.csv"],
+            ['TestCase' => 'validateUploadTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
         ];
     }
-
 }

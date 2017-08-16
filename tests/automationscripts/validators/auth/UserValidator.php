@@ -9,6 +9,7 @@ use utils\CommonUtils;
 class UserValidator
 {
     /**
+     * Function to validate actual user profile with expected user profile
      * @param ApiTester $I
      * @param $actualResponse
      * @param $expectedResponse
@@ -20,6 +21,4 @@ class UserValidator
         $expectedResponseArr = $common->convertJsonToArray($expectedResponse);
         $common->assertObjects($actualResponseArr, $expectedResponseArr, $I);
     }
-
-
 }

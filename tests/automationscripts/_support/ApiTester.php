@@ -25,32 +25,28 @@ class ApiTester extends \Codeception\Actor
     */
 
    // Set HTTP Headers
-
     public function setHeaders()
     {
         $this->haveHttpHeader('Content-Type', 'application/json');
         $this->haveHttpHeader('Accept', 'application/json');
         $this->haveHttpHeader('Accept-Language', 'en-US');
-
     }
 
     //Clear Http Headers
-
     public function clearHeaders()
     {
         $this->deleteHeader('Content-Type');
         $this->deleteHeader('Accept');
         $this->deleteHeader('Accept-Language');
-
     }
 
     /**
+     * Get Current Environment
+     *
      * @return currentenv
      */
     public  function getCurrentEnv()
     {
         return $this->getScenario()->current('env');
     }
-
-
 }

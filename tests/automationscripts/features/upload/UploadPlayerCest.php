@@ -40,31 +40,28 @@ class UploadPlayerCest
     }
 
     /**
+     * Test upload player scenarios
      * @group release
      * @group sanity
      * @group regression
      * @dataprovider uploadplayer
      */
-    //Incase to Skip Tests  * @skip
     public function validateUploadPlayer(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
 
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
 
-        //Upload Player
-        $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
+        $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', $tokenParam, $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateResponse($response, $dataBuilder['expResponse'], $I, $this->common);
-
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**
@@ -73,8 +70,8 @@ class UploadPlayerCest
     protected function uploadplayer()
     {
         return [
-            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":8,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => '']
+            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadPlayerNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => '']
         ];
     }
-
 }
