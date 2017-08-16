@@ -2,7 +2,11 @@ image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:la
 
 before_script:
   - set -xe
-  - apt-get install php7.0-xml
+  - apt-add-repository ppa:ondrej/php
+  - apt-get update
+  - apt-get install -y php7.0
+  - apt-get install -y php7.0-xml
+
 
 after_script:
   - killall php

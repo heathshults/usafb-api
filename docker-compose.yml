@@ -1,14 +1,12 @@
 version: "3.1"
 services:
-    mailhog:
-      image: mailhog/mailhog:latest
-      container_name: usafb-mailhog
-      ports:
-        - "8081:8025"
 
     redis:
       image: redis:alpine
       container_name: usafb-redis
+      ports:
+      - "6379:6379"
+
 
     postgres:
       image: postgres:9.6-alpine
@@ -20,10 +18,6 @@ services:
         - POSTGRES_USER=root
         - POSTGRES_PASSWORD=root
         - POSTGRES_DB=npdb-usafb
-
-    elasticsearch:
-      image: elasticsearch:5.3-alpine
-      container_name: usafb-elasticsearch
 
     nginx:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
@@ -50,10 +44,8 @@ services:
       entrypoint: /application/start_fpm.sh
 
       links:
-        - mailhog
         - postgres
         - redis
-        - elasticsearch
       
     locust-master:
         image: swernst/locusts

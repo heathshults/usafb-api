@@ -11,6 +11,10 @@ use App\Models\Enums\Role;
 | and give it the Closure to call when that URI is requested.
 |
 */
+
+$app->get('healthz', 'StatusController@health');
+$app->get('statusz', 'StatusController@status');
+
 $app->post(
     '/login', [
         'uses' => 'AuthenticationController@login'
@@ -104,7 +108,7 @@ $app->group(
 
 $app->get(
     '/', function () use ($app) {
-        return $app->version();
+        return $_ENV;
     }
 );
 
