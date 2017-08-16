@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authenticate
 {
@@ -16,8 +17,15 @@ class Authenticate
     public function handle($request, Closure $next)
     {
         $headers = $request->headers->all();
-        app('Auth')->authenticate($headers);
-
+        $user = app('Auth')->authenticatedUser($headers);
+        if (!isset($user)) {
+            throw new UnauthorizedHttpException('Bearer', 'Invalid token.');
+        }
+        $request->setUserResolver(
+            function () use ($user) {
+                return $user;
+            }
+        );
         return $next($request);
     }
 }

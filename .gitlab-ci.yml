@@ -55,5 +55,6 @@ automation:
     - php artisan migrate:refresh --seed
     - composer env:prereq
     - php -S localhost:8000 -t public 1>/dev/null &
+    - composer --global config process-timeout 20000
     - composer test:reg
 

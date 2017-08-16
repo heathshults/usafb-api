@@ -46,7 +46,7 @@ class AuthenticationController extends Controller
     public function getUser(Request $request)
     {
         $headers = $request->headers->all();
-        return app('Auth')->getUser($headers);
+        return app('Auth')->authenticatedUser($headers);
     }
 
     /**

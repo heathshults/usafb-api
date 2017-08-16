@@ -55,6 +55,7 @@ class UploadCoachCest
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
+        $this->common->waitTimeCall();
         $filename = $this->uploaddir . $dataBuilder['FileName'];
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', $tokenParam, $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
@@ -77,7 +78,7 @@ class UploadCoachCest
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
         }
-
+        $this->common->waitTimeCall();
         $filename = $this->uploaddir . $dataBuilder['FileName'];
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . $dataBuilder['type'], $tokenParam, $filename);
         $I->seeResponseCodeIs($dataBuilder['code']);
@@ -94,7 +95,8 @@ class UploadCoachCest
     {
         return [
             ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
-            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => '']
+            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadCoachInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'unauthorized']
         ];
     }
 

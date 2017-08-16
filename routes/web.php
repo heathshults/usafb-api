@@ -28,8 +28,13 @@ $app->group(
                 'uses' => 'AuthenticationController@getUser'
             ]
         );
-        $app->post('/registrants/import', 'UploadController@processFileUpload');
+        $app->get(
+            '/me', [
+                'uses' => 'AuthenticationController@getAuthenticatedUser'
+            ]
+        );
         $app->get('/registrants/export', 'DownloadController@downloadFile');
+        $app->post('/registrants/import', 'UploadController@processFileUpload');
     }
 );
 

@@ -38,6 +38,7 @@ class ApiTester extends \Codeception\Actor
         $this->deleteHeader('Content-Type');
         $this->deleteHeader('Accept');
         $this->deleteHeader('Accept-Language');
+        $this->clearAuthorizationHeaders();
     }
 
     /**

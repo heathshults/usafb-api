@@ -8,7 +8,7 @@ class Role
     const TEST = 3;
 
     protected static $typeLabels = array(
-        self::USSF_ADMIN        => 'U.S. Soccer Staff',
+        self::USAFB_ADMIN        => 'U.S. Football Staff',
         self::TEST   => 'Automation Test'
     );
 

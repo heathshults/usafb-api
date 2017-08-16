@@ -157,4 +157,14 @@ class CommonUtils
         }
         return $postbody;
     }
+
+    /**
+     * Function handles wait time between calls for Auth0.
+     * @return int
+     *
+     */
+    public function waitTimeCall()
+    {
+        return sleep(10);
+    }
 }
