@@ -51,15 +51,14 @@ class UploadPlayerCest
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
 
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
 
-        $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', "ABCDEFG", $this->uploaddir . $dataBuilder['FileName']);
+        $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', $tokenParam, $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);

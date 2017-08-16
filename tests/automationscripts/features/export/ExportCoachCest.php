@@ -41,47 +41,41 @@ class ExportCoachCest
      * Test export coach scenarios
      * @group release
      * @group sanity
-     * @group regression_norun
+     * @group regression
      * @dataprovider exportcoach
      */
     public function validateExportCoach(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
 
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
-
-
-        $response = $this->helper->exportCall($I, $this->exportCoachUrl . 'coach', "ABCDEFG");
+        $response = $this->helper->exportCall($I, $this->exportCoachUrl . 'coach',$tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
        // $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**
      * Test export coach error scenarios
-     * @group regression_norun
+     * @group regression
      * @dataprovider exportbadrequest
      */
     public function validateExportBadRequest(ApiTester $I, \Codeception\Example $dataBuilder)
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
-
-        $response = $this->helper->exportCall($I, $this->exportCoachUrl . $dataBuilder['type'], "ABCDEFG");
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
+        $response = $this->helper->exportCall($I, $this->exportCoachUrl . $dataBuilder['type'], $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
@@ -105,9 +99,9 @@ class ExportCoachCest
     protected function exportbadrequest()
     {
         return [
-            ['TestCase' => 'validateExportTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null],
-            ['TestCase' => 'validateExportTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => ''],
-            ['TestCase' => 'validateExportTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random'],
+            ['TestCase' => 'validateExportTypeValueAsNull', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => null, 'key' => ''],
+            ['TestCase' => 'validateExportTypeValueAsBlank', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The type field is required.\" } ] }", 'type' => '', 'key' => ''],
+            ['TestCase' => 'validateExportTypeValueAsInvalid', 'code' => "400", "expResponse" => "{ \"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Type\", \"error\": \"The selected type is invalid. Allowed types: PLAYER, COACH\" } ] }", 'type' => 'random', 'key' => ''],
         ];
     }
 }

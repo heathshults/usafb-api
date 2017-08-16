@@ -50,15 +50,13 @@ class ExportPlayerCest
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
 
-//        // Login call
-//        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-//        $token = $I->grabDataFromResponseByJsonPath('access_token');
-//        $tokenParam = $token[0];
-//        if ($dataBuilder['key'] == "unauthorized") {
-//            $tokenParam = "ABCDEFGHIJ";
-//        }
-
-        $response = $this->helper->exportCall($I, $this->exportPlayerUrl . 'player', "ABCDEFG");
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "unauthorized") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
+        $response = $this->helper->exportCall($I, $this->exportPlayerUrl . 'player', $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
        // $this->validator->validateExportResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
