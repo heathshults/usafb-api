@@ -68,14 +68,12 @@ build:
   image: docker:latest
   variables:
     DOCKER_DRIVER: overlay
-    DOCKER_HOST: tcp://localhost:2375
   services:
     - docker:dind
   before_script:
     - docker info
   stage: build
   only:
-  #  - develop
     - kubernetes-npdb-usafb-build
   when: manual
   script:
