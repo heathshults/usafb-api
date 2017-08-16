@@ -72,7 +72,7 @@ class UploadPlayerCest
         return [
             ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => ''],
             ['TestCase' => 'validateUploadPlayerNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => ''],
-            ['TestCase' => 'validateUploadPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => 'unauthorized']
+            ['TestCase' => 'validateUploadPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => 'unauthorized']
 
         ];
     }
