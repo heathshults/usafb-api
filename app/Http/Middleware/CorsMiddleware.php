@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\HeaderBag;
+
 /**
  * CorsMiddleware
  * Enable cross-origin resource sharing
@@ -37,9 +40,17 @@ class CorsMiddleware
 
         $response = $next($request);
         foreach ($headers as $key => $value) {
-            $response->header($key, $value);
+            if ($response instanceof StreamedResponse) {
+                $response->headers->set($key, $value);
+            } else {
+                $response->header($key, $value);
+            }
         }
 
-        return $response;
+        if ($response instanceof StreamedResponse) {
+            return $response->send();
+        } else {
+            return $response;
+        }
     }
 }
