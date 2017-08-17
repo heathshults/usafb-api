@@ -24,7 +24,7 @@ class ImportCsvService
     const TYPE_PLAYER = 'PLAYER';
     const TYPE_COACH = 'COACH';
     const CSV_NUMBER_FIELDS_PLAYER = 53;
-    const CSV_NUMBER_FIELDS_COACH = 31;
+    const CSV_NUMBER_FIELDS_COACH = 30;
     const LEGAL_AGE = 18;
     const CSV_MAX_LINE_LENGTH = 1000;
     private $fileLine = null;
@@ -325,8 +325,8 @@ class ImportCsvService
                 'last_name' => ['rule' => $testRequired,
                     'field_name' => 'last_name',
                     'tables' => ['App\Models\Registrant', 'App\Models\Registration']],
-                'level_of_play'=> ['rule' => $testRequired,
-                    'field_name' => 'level_of_play',
+                'level'=> ['rule' => $testRequired,
+                    'field_name' => 'level',
                     'tables' => ['App\Models\Registrant', 'App\Models\Registration']],
                 'middle_name' => ['rule' => $identity,
                     'field_name' => 'middle_name',

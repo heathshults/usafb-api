@@ -42,7 +42,7 @@ trait CreateRelationshipEntities
         $entity->birth_date = '11/27/1984';
         $entity->phone_number = '1234567890';
         $entity->game_type = 'SOME';
-        $entity->level_of_play = 'LEVEL';
+        $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
         $entity->county = 'A county';
@@ -83,7 +83,7 @@ trait CreateRelationshipEntities
         $entity->birth_date = '11/27/1984';
         $entity->phone_number = '1234567890';
         $entity->game_type = 'SOME';
-        $entity->level_of_play = 'LEVEL';
+        $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
         $entity->county = 'A county';
