@@ -11,7 +11,7 @@ use Datetime;
 
 class ImportCsvUtilsTest extends \TestCase
 {
-    const CSV = "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level of Play,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip
+    const CSV = "# Years in Sport,Address,Address line 2,Birth Certificate,Cell Phone,City,County,Current Grade,Date of Birth,Email,First Name,Game Type,Gender,Height,High School Grad Year,Instagram handle,Last Name,League,Level,Middle Name,Organization,Org State,Other Sports Played,Parent / Guardian 1 Cell Phone,Parent / Guardian 1 Email,Parent / Guardian 1 First Name,Parent / Guardian 1 Home Phone,Parent / Guardian 1 Last Name,Parent / Guardian 1 Work Phone,Parent / Guardian 2 Cell Phone,Parent / Guardian 2 Email,Parent / Guardian 2 First Name,Parent / Guardian 2 Home Phone,Parent / Guardian 2 Last Name,Parent / Guardian 2 Work Phone,Photo,SalesForce ID,USSF_ID,Position,Profile Last Updated,School Attending,School District,School State,Season,State,Team,Team Grade,Team Gender,Team Age Group,Twitter Handle,USAFB Right to Market,Weight,Zip
         1,44 summit rd,,,12342314,staten island,USA,K-5,9/1/2006,fabval@hotmail.com,MARIOLUCA,YOUTH FLAG,Male,5 foot 10 inches,2018,,FABI,A,YOUTH,sdfsd,OrgName,NY,\"Basketball, Baseball, Soccer, LaCross, Swimming, Volleyball, Softball,  Hockey, Tennis, Golf, Rugby, Other\",,,,,,,,,,,,,,,,,,,,,2017,NY,,,,,,,145 pounds,10307";
 
     /**
@@ -194,7 +194,7 @@ class ImportCsvUtilsTest extends \TestCase
         $valueMapper = [1,2];
 
         $testRules = array('Bla' => array('rule' => $testFunc, 'field_name' => 'last_name', 'tables' => array('App\Models\Registrant')),
-                            'Bo' => array('rule' => $testFunc, 'field_name' => 'level_of_play', 'tables' => array('App\Models\Registrant')));
+                            'Bo' => array('rule' => $testFunc, 'field_name' => 'level', 'tables' => array('App\Models\Registrant')));
         
         $result = ImportCsvUtils::mapRulesToArrayOfKeyValue($testRules, $indexMapper, $valueMapper);
 
@@ -202,7 +202,7 @@ class ImportCsvUtilsTest extends \TestCase
         $expected_2 = $testFunc($valueMapper[1]);
 
         $this->assertEquals($expected, $result['last_name']);
-        $this->assertEquals($expected_2, $result['level_of_play']);
+        $this->assertEquals($expected_2, $result['level']);
         
     }
 

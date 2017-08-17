@@ -27,7 +27,7 @@ class Registrant extends Migration
             $table->dateTime('birth_date');
             $table->string('phone_number');
             $table->string('game_type');
-            $table->string('level_of_play');
+            $table->string('level');
             $table->string('state');
             $table->string('address_first_line', 128);
             $table->string('address_second_line', 128)->nullable();
