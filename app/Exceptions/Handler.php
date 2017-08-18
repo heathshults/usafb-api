@@ -26,17 +26,6 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Log exception error
-     *
-     * @param Exception $e
-     * @return void
-     */
-    public function report(Exception $e)
-    {
-        parent::report($e);
-    }
-
-    /**
      * Render JSON Error Response
      *
      * @param Illuminate\Http\Request $request

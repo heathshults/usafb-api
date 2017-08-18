@@ -15,6 +15,9 @@ use Illuminate\Validation\Validator;
  */
 class AuthenticationController extends Controller
 {
+
+    const INPUT_EMAIL = 'email';
+    const INPUT_PWD = 'password';
     /**
      * Login user by email and password
      * Url: /auth/login
@@ -28,11 +31,11 @@ class AuthenticationController extends Controller
         $this->validate(
             $request,
             [
-                'email' => 'required|email',
-                'password' => 'required'
+                self::INPUT_EMAIL => 'required|email',
+                self::INPUT_PWD => 'required'
             ]
         );
-        return app('Auth')->login($request->input('email'), $request->input('password'));
+        return app('Auth')->login($request->input(self::INPUT_EMAIL), $request->input(self::INPUT_PWD));
     }
 
     /**
@@ -62,9 +65,9 @@ class AuthenticationController extends Controller
         $this->validate(
             $request,
             [
-                'email' => 'required|email'
+                self::INPUT_EMAIL => 'required|email'
             ]
         );
-        return app('Auth')->forgotPassword($request->input('email'));
+        return app('Auth')->forgotPassword($request->input(self::INPUT_EMAIL));
     }
 }

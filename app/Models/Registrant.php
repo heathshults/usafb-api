@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\UsafbIdHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -21,9 +22,9 @@ class Registrant extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            $usafbId = self::generateUsafbId();
-            $model->usafb_id  = $usafbId;
+        static::created(function ($model) {
+            $model->usafb_id = UsafbIdHelper::getId($model->id);
+            $model->save();
         });
     }
 
@@ -52,19 +53,5 @@ class Registrant extends Model
     public function registrations()
     {
         return $this->hasMany('App\Models\Registration');
-    }
-
-    /**
-     * Will generate an id for Usafb.
-     * This is a temporary function, the generation of this id hasnt been discussed
-     * This is just some ideas grabed from daily meetings
-     * @return generatedId
-    */
-    public static function generateUsafbId()
-    {
-        $maxPlayerId = DB::table('registrant')
-                        ->find(DB::table('registrant')->max('id'));
-        $newSequence = is_null($maxPlayerId) ? 0 : $maxPlayerId->id + 1;
-        return date('Y', time()).str_pad($newSequence, 16, '0', STR_PAD_LEFT);
     }
 }

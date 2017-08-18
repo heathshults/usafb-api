@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Mockery;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use App\Models\Registrant;
+use App\Helpers\UsafbIdHelper;
 
 class RegistrantModelTest extends \TestCase {
     use DatabaseMigrations;
@@ -32,5 +33,6 @@ class RegistrantModelTest extends \TestCase {
 
         $entity->save();
         $this->assertTrue(!is_null($entity->usafb_id));
+        $this->assertTrue(UsafbIdHelper::isValidId($entity->usafb_id));
     }
 }
