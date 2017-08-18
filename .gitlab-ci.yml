@@ -81,3 +81,20 @@ build:
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
 
+deploy:
+  stage: deploy
+  only:
+    - develop
+  when: manual
+  script:
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - mv ./kubectl /usr/local/bin/kubectl
+    - kubectl config set-cluster bss-staging --server=https://api.cluster02.staging.bluestarsports.io --insecure-skip-tls-verify=true
+    - kubectl config set-credentials deploy_bot --token=$gitlab_service_account_token_default
+    - kubectl config set-context bss-staging --cluster=bss-staging --user=deploy_bot
+    - kubectl config use-context bss-staging
+    - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" kubernetes/deployment.yml
+    - kubectl create -f kubernetes/deployment.yml --namespace=staging --validate=false || kubectl replace -f kubernetes/deployment.yml --namespace=staging
+    - kubectl create -f kubernetes/cron.yml --namespace=staging || kubectl replace -f kubernetes/cron.yml --namespace=staging
+
