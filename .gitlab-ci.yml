@@ -96,5 +96,4 @@ deploy:
     - kubectl config use-context bss-staging
     - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" kubernetes/deployment.yml
     - kubectl create -f kubernetes/deployment.yml --namespace=staging --validate=false || kubectl replace -f kubernetes/deployment.yml --namespace=staging
-    - kubectl create -f kubernetes/cron.yml --namespace=staging || kubectl replace -f kubernetes/cron.yml --namespace=staging
 
