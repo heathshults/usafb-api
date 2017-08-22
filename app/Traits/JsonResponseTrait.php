@@ -27,32 +27,24 @@ trait JsonResponseTrait
         switch (true) {
             case $this->isValidationException($e):
                 return $this->badRequest($e->getResponse()->getData(true));
-                break;
             case $this->isBadRequestHttpException($e):
                 return $this->errorMessage($e->getMessage(), 400);
-                break;
             case $this->isModelNotFoundException($e):
             case $this->isNotFoundException($e):
                 return $this->modelNotFound();
-                break;
             case $this->isUnauthorizedException($e):
                 return $this->errorMessage($e->getMessage(), 401);
-                break;
             case $this->isAccessDeniedHttpException($e):
                 return $this->errorMessage($e->getMessage(), 403);
-                break;
             case $this->isConflictHttpException($e):
                 return $this->errorMessage($e->getMessage(), 409);
-                break;
             case $this->isClientException($e):
                 return $this->clientExceptionMessage(
                     $e->getResponse(),
                     $e->getResponse()->getStatusCode()
                 );
-                break;
             default:
                 return $this->errorMessage("Bad Request", 400);
-                break;
         }
     }
 
