@@ -34,7 +34,6 @@ class UsersController extends Controller
     {
         $user = $request->user();
         $isUSSFStaff = app('Auth')->isSuperUser($user);
-        $isProClubAdmin = app('Auth')->isProClubAdmin($user);
 
         $validationRules = [
             'first_name' => 'required',
@@ -46,8 +45,6 @@ class UsersController extends Controller
         if ($isUSSFStaff) {
             $validationRules['role'] = 'required';
             $role = Role::label($request->input('role'));
-        } elseif ($isProClubAdmin) {
-            $role = Role::label(Role::PRO_CLUB_ADMIN);
         }
         $this->validate(
             $request,

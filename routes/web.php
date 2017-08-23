@@ -46,11 +46,6 @@ $app->group(
                         'uses' => 'UsersController@getAll'
                     ]
                 );
-                $app->get(
-                    '/me', [
-                        'uses' => 'AuthenticationController@getAuthenticatedUser'
-                    ]
-                );
                 $app->post(
                     '/users', [
                         'uses' => 'UsersController@create'
@@ -85,10 +80,15 @@ $app->group(
                 );
             }
         );
+        $app->get(
+            '/me', [
+                'uses' => 'AuthenticationController@getAuthenticatedUser'
+            ]
+        );
         $app->group(
             ['middleware' =>
                 [
-                    'authorize:'.Role::label(Role::TEST)
+                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::TEST)
                 ]
             ],
             function () use ($app) {
