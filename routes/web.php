@@ -27,7 +27,7 @@ $app->group(
         $app->group(
             ['middleware' =>
                 [
-                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::ADMIN_USER)
+                    'authorize:'.Role::label(Role::SUPER_USER)
                 ]
             ],
             function () use ($app) {
@@ -71,6 +71,23 @@ $app->group(
         $app->group(
             ['middleware' =>
                 [
+                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::ADMIN_USER)
+                ]
+            ],
+            function () use ($app) {
+                $app->get('/registrants/export', [
+                        'uses' => 'DownloadController@downloadFile'
+                    ]
+                );
+                $app->post('/registrants/import', [
+                        'uses' => 'UploadController@processFileUpload'
+                    ]
+                );
+            }
+        );
+        $app->group(
+            ['middleware' =>
+                [
                     'authorize:'.Role::label(Role::TEST)
                 ]
             ],
@@ -82,8 +99,6 @@ $app->group(
                 );
             }
         );
-        $app->get('/registrants/export', 'DownloadController@downloadFile');
-        $app->post('/registrants/import', 'UploadController@processFileUpload');
     }
 );
 
