@@ -9,7 +9,7 @@ class UserCest
 {
     //define End points used in the tests globally
     public $getLoginUrl = '/login';
-    public $getUserProfileUrl = "/auth/user";
+    public $getUserProfileUrl = "/me";
 
     /**
      * @var helper\auth\loginHelper
