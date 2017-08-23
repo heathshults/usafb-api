@@ -127,6 +127,7 @@ class UserCest
         } else if ($dataBuilder['key'] == 'create') {
 
             //Get User ID
+            $this->common->waitTimeCall();
             $userId = $I->grabDataFromResponseByJsonPath('user_id');
             $getUserResponse = $this->helper->getUserByID($I, $this->getUserByIDUrl . $userId[0], $token[0], $userId[0]);
             $I->seeResponseCodeIs($dataBuilder['code']);
@@ -145,6 +146,7 @@ class UserCest
             $I->seeResponseCodeIs($dataBuilder['code']);
 
             // Get User after deletion should return 404
+            $this->common->waitTimeCall();
             $getUserResponse = $this->helper->getUserByID($I, $this->getUserByIDUrl . $userId[0], $token[0], $userId[0]);
             $I->seeResponseCodeIs($dataBuilder['errorResponseCode']);
             $I->seeResponseIsJson();
