@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Enums\Role;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -21,17 +22,65 @@ $app->post(
     ]
 );
 $app->group(
-    ['middleware' => 'auth'],
+    ['middleware' => 'authenticate'],
     function () use ($app) {
-        $app->get(
-            '/auth/user', [
-                'uses' => 'AuthenticationController@getUser'
-            ]
+        $app->group(
+            ['middleware' =>
+                [
+                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::ADMIN_USER)
+                ]
+            ],
+            function () use ($app) {
+                $app->get(
+                    '/users/{id}', [
+                        'uses' => 'UsersController@getById'
+                    ]
+                );
+                $app->get(
+                    '/users/{id}/logs', [
+                        'uses' => 'UsersController@getLogs'
+                    ]
+                );
+                $app->get(
+                    '/users', [
+                        'uses' => 'UsersController@getAll'
+                    ]
+                );
+                $app->get(
+                    '/me', [
+                        'uses' => 'AuthenticationController@getAuthenticatedUser'
+                    ]
+                );
+                $app->post(
+                    '/users', [
+                        'uses' => 'UsersController@create'
+                    ]
+                );
+                $app->put(
+                    '/users/{id}', [
+                        'uses' => 'UsersController@update'
+                    ]
+                );
+                $app->post(
+                    '/reset-password', [
+                        'uses' => 'AuthenticationController@resetPassword'
+                    ]
+                );
+            }
         );
-        $app->get(
-            '/me', [
-                'uses' => 'AuthenticationController@getAuthenticatedUser'
-            ]
+        $app->group(
+            ['middleware' =>
+                [
+                    'authorize:'.Role::label(Role::TEST)
+                ]
+            ],
+            function () use ($app) {
+                $app->delete(
+                    '/users/{id}', [
+                        'uses' => 'UsersController@delete'
+                    ]
+                );
+            }
         );
         $app->get('/registrants/export', 'DownloadController@downloadFile');
         $app->post('/registrants/import', 'UploadController@processFileUpload');

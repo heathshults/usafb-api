@@ -29,6 +29,7 @@ class AuthService
 
     const EXISTENT_USER_MSG = "The email address submitted already exists in the system.";
     const PERMISSION_DENIED_MSG = "Permission denied.";
+    const USER_METADATA = "user_metadata";
 
     /**
      * Initialize authentication client with auth credentials
@@ -71,6 +72,9 @@ class AuthService
      *
      * @param array $requestHeaders
      *
+     * @throws UnauthorizedHttpException if authorization header is not provided
+     * @throws UnauthorizedHttpException if token type is invalid
+     * @throws UnauthorizedHttpException if token is not provided
      * @return string
      */
     public function getHeaderToken($requestHeaders)
@@ -121,7 +125,26 @@ class AuthService
         }
     }
 
-        /**
+    /**
+     * Normalize user
+     * Remove user metadata namespace and replace sub index by id
+     *
+     * @param array $user
+     *
+     * @return $user
+     */
+    public function normalizeUser($user)
+    {
+        $user[self::USER_METADATA] = $user[getenv('AUTH_METADATA')];
+        unset($user[getenv('AUTH_METADATA')]);
+
+        $user['id'] = $user['sub'];
+        unset($user['sub']);
+
+        return $user;
+    }
+
+    /**
      * Send email to reset password
      *
      * @param string $email
@@ -129,6 +152,27 @@ class AuthService
      * @return json
      */
     public function forgotPassword($email)
+    {
+        $user = $this->getUserByEmail($email);
+        if ($user !== null) {
+            $emailSentMessage = $this->authentication->dbconnections_change_password(
+                $email,
+                getenv('AUTH_CONNECTION')
+            );
+            return response()->json(["message" => $emailSentMessage]);
+        }
+        throw new NotFoundHttpException("User not found");
+    }
+
+    /**
+     * Send email to reset password
+     *
+     * @param string $email
+     *
+     * @throws NotFoundHttpException when user with email provided does not exists
+     * @return json
+     */
+    public function resetPassword($email)
     {
         $user = $this->getUserByEmail($email);
         if ($user !== null) {
@@ -169,7 +213,11 @@ class AuthService
     {
         $token = $this->getHeaderToken($requestHeaders);
         try {
-            return $this->authentication->userinfo($token);
+            $user = $this->authentication->userinfo($token);
+            if ($user !== null) {
+                $user = $this->normalizeUser($user);
+            }
+            return $user;
         } catch (ClientException $e) {
             throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
         }
@@ -185,21 +233,7 @@ class AuthService
      */
     public function isSuperUser($user)
     {
-        return $this->hasRoles($user, [Role::label(Role::USSF_ADMIN)]);
-    }
-
-    /**
-     * Determines if a user is Pro Club Admin
-     * This user will have full access to all api endpoints
-     * but limited data
-     *
-     * @param array $user
-     *
-     * @return boolean
-     */
-    public function isProClubAdmin($user)
-    {
-        return $this->hasRoles($user, [Role::label(Role::PRO_CLUB_ADMIN)]);
+        return $this->hasRoles($user, [Role::label(Role::SUPER_USER)]);
     }
 
     /**
@@ -225,7 +259,7 @@ class AuthService
      */
     public function hasRoles($user, $roles)
     {
-        $metadata = $user[getenv('AUTH_METADATA')];
+        $metadata = $user[self::USER_METADATA];
         if (isset($metadata["roles"])) {
             foreach ($metadata["roles"] as $roleName) {
                 if (is_array($roles) && in_array($roleName, $roles)) {
@@ -287,6 +321,16 @@ class AuthService
         }
         $userToDelete = $this->getUserById($id);
         return $this->getManagement()->users->delete($id);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return json
+     */
+    public function getRoles()
+    {
+        return response()->json(Role::labels());
     }
 
     /**

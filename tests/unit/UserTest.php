@@ -13,6 +13,19 @@ class UserTest extends \TestCase
 {
 
     /**
+     * Test successfull normalize user
+     *
+     * @return void
+     */
+    public function testSuccefullNormalizeUser()
+    {
+        $service = new AuthService();
+        $user = MockHelper::userResponse();
+        $normalizedUser = $service->normalizeUser($user);
+        $this->assertEquals($normalizedUser, MockHelper::normalizedUser());
+    }
+
+    /**
      * Test sucessfull get user info when token is provided
      *
      * @return void
@@ -26,7 +39,7 @@ class UserTest extends \TestCase
             'Authorization' => ['Bearer token123']
         ];
         $data = $service->authenticatedUser($headers);
-        $this->assertEquals($data, MockHelper::userResponse());
+        $this->assertEquals($data, MockHelper::normalizedUser());
     }
 
     /**
