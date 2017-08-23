@@ -167,4 +167,35 @@ class CommonUtils
     {
         return sleep(10);
     }
+
+    /**
+     * Function to check actual value equal to expected
+     * @param $actualObj
+     * @param $key
+     * @param $val
+     * @param ApiTester $I
+     */
+    public function assertEqualsKey($actualObj, $keycheck, $keyvalue,ApiTester $I)
+    {
+        foreach ($actualObj as $key => $val)
+            if ($key ==$keycheck){
+                $I->assertEquals($actualObj[$key],$keyvalue);
+            }
+    }
+
+    /**
+     * Function to check actual value equal to expected
+     * @param $actualObj
+     * @param $key
+     * @param $val
+     * @param ApiTester $I
+     */
+    public function assertNotEqualsKey($actualObj, $keycheck, $keyvalue,ApiTester $I)
+    {
+        foreach ($actualObj as $key => $val)
+            if ($key ==$keycheck){
+                $I->assertNotEquals($actualObj[$key],$keyvalue);
+            }
+    }
+
 }
