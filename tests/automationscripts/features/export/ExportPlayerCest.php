@@ -85,7 +85,7 @@ class ExportPlayerCest
             ['TestCase' => 'validateExportPlayer', 'code' => "200", "expResponse" => "", 'key' => ''],
             ['TestCase' => 'validateExportPlayerNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
             ['TestCase' => 'validateExportPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized'],
-            ['TestCase' => 'validateExportPlayersNoAccess', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'noaccess']
+            ['TestCase' => 'validateExportPlayersNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", 'key' => 'noaccess']
         ];
     }
 }

@@ -232,7 +232,7 @@ class CommonUtils
     }
 
     /**
-     * Function to get dbusername from environment file
+     * Function to get dbpassword from environment file
      * @return dbpassword
      */
     public function getDbPassword( ApiTester $I)
