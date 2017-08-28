@@ -205,4 +205,42 @@ class CommonUtils
             }
     }
 
+    /**
+     * Function to get dsn from environment file
+     * @return $dsn
+     */
+    public function getDsn( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dsn = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['dsn'];
+
+        return $dsn;
+    }
+
+    /**
+     * Function to get dbusername from environment file
+     * @return dbusername
+     */
+    public function getDbUser( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dbUser = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['user'];
+
+        return $dbUser;
+    }
+
+    /**
+     * Function to get dbusername from environment file
+     * @return dbpassword
+     */
+    public function getDbPassword( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dbPwd = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['password'];
+
+        return $dbPwd;
+    }
 }
