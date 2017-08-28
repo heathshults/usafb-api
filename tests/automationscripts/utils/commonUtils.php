@@ -116,14 +116,17 @@ class CommonUtils
      * Function to get email from environment file
      * @return email
      */
-    public function getEnvEmail($noRole, ApiTester $I)
+    public function getEnvEmail($rolekey, ApiTester $I)
     {
         $settings = $this->loadConfig();
-        if ($noRole != "")
-
+        if ($rolekey == "norole") {
             $email = $settings['env'][$I->getCurrentEnv()]['login']['emailNoRole'];
-        else
+        } else if ($rolekey == "adminrole") {
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['emailadmin'];
+        } else {
             $email = $settings['env'][$I->getCurrentEnv()]['login']['email'];
+        }
+        codecept_debug($email);
         return $email;
     }
 
@@ -131,14 +134,18 @@ class CommonUtils
      *  function to get password from environment file
      * @return password
      */
-    public function getEnvPassword($noRole, ApiTester $I)
+    public function getEnvPassword($rolekey, ApiTester $I)
     {
         $settings = $this->loadConfig();
-        if ($noRole != "")
-            $email = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
-        else
-            $email = $settings['env'][$I->getCurrentEnv()]['login']['password'];
-        return $email;
+        if ($rolekey == "norole") {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
+        } else if ($rolekey == "adminrole") {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['passwordadmin'];
+        } else {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['password'];
+        }
+
+        return $password;
     }
 
     /**
@@ -175,11 +182,11 @@ class CommonUtils
      * @param $val
      * @param ApiTester $I
      */
-    public function assertEqualsKey($actualObj, $keycheck, $keyvalue,ApiTester $I)
+    public function assertEqualsKey($actualObj, $keycheck, $keyvalue, ApiTester $I)
     {
         foreach ($actualObj as $key => $val)
-            if ($key ==$keycheck){
-                $I->assertEquals($actualObj[$key],$keyvalue);
+            if ($key == $keycheck) {
+                $I->assertEquals($actualObj[$key], $keyvalue);
             }
     }
 
@@ -190,11 +197,11 @@ class CommonUtils
      * @param $val
      * @param ApiTester $I
      */
-    public function assertNotEqualsKey($actualObj, $keycheck, $keyvalue,ApiTester $I)
+    public function assertNotEqualsKey($actualObj, $keycheck, $keyvalue, ApiTester $I)
     {
         foreach ($actualObj as $key => $val)
-            if ($key ==$keycheck){
-                $I->assertNotEquals($actualObj[$key],$keyvalue);
+            if ($key == $keycheck) {
+                $I->assertNotEquals($actualObj[$key], $keyvalue);
             }
     }
 

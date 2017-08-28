@@ -48,7 +48,16 @@ class ExportCoachCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -71,7 +80,17 @@ class ExportCoachCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        // Login Call
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -93,7 +112,8 @@ class ExportCoachCest
         return [
             ['TestCase' => 'validateExportCoach', 'code' => "200", "expResponse" => "", 'key' => ''],
             ['TestCase' => 'validateExportCoachNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
-            ['TestCase' => 'validateExportCaochInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+            ['TestCase' => 'validateExportCoachInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized'],
+            ['TestCase' => 'validateExportCoachNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", 'key' => 'noaccess']
 
         ];
     }
