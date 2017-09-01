@@ -71,7 +71,8 @@ $app->middleware(
 
 $app->routeMiddleware(
     [
-        'auth' => App\Http\Middleware\Authenticate::class,
+        'authenticate' => App\Http\Middleware\Authenticate::class,
+        'authorize' => App\Http\Middleware\Authorize::class,
     ]
 );
 

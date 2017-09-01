@@ -49,7 +49,19 @@ class UploadCoachCest
     {
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+
+        // Login Call
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -96,7 +108,8 @@ class UploadCoachCest
         return [
             ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
             ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => ''],
-            ['TestCase' => 'validateUploadCoachInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'unauthorized']
+            ['TestCase' => 'validateUploadCoachInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'unauthorized'],
+            ['TestCase' => 'validateUploadCoachNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'noaccess']
         ];
     }
 

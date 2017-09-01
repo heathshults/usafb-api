@@ -116,14 +116,17 @@ class CommonUtils
      * Function to get email from environment file
      * @return email
      */
-    public function getEnvEmail($noRole, ApiTester $I)
+    public function getEnvEmail($rolekey, ApiTester $I)
     {
         $settings = $this->loadConfig();
-        if ($noRole != "")
-
+        if ($rolekey == "norole") {
             $email = $settings['env'][$I->getCurrentEnv()]['login']['emailNoRole'];
-        else
+        } else if ($rolekey == "adminrole") {
+            $email = $settings['env'][$I->getCurrentEnv()]['login']['emailadmin'];
+        } else {
             $email = $settings['env'][$I->getCurrentEnv()]['login']['email'];
+        }
+        codecept_debug($email);
         return $email;
     }
 
@@ -131,14 +134,18 @@ class CommonUtils
      *  function to get password from environment file
      * @return password
      */
-    public function getEnvPassword($noRole, ApiTester $I)
+    public function getEnvPassword($rolekey, ApiTester $I)
     {
         $settings = $this->loadConfig();
-        if ($noRole != "")
-            $email = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
-        else
-            $email = $settings['env'][$I->getCurrentEnv()]['login']['password'];
-        return $email;
+        if ($rolekey == "norole") {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['passwordNoRole'];
+        } else if ($rolekey == "adminrole") {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['passwordadmin'];
+        } else {
+            $password = $settings['env'][$I->getCurrentEnv()]['login']['password'];
+        }
+
+        return $password;
     }
 
     /**
@@ -166,5 +173,74 @@ class CommonUtils
     public function waitTimeCall()
     {
         return sleep(10);
+    }
+
+    /**
+     * Function to check actual value equal to expected
+     * @param $actualObj
+     * @param $key
+     * @param $val
+     * @param ApiTester $I
+     */
+    public function assertEqualsKey($actualObj, $keycheck, $keyvalue, ApiTester $I)
+    {
+        foreach ($actualObj as $key => $val)
+            if ($key == $keycheck) {
+                $I->assertEquals($actualObj[$key], $keyvalue);
+            }
+    }
+
+    /**
+     * Function to check actual value equal to expected
+     * @param $actualObj
+     * @param $key
+     * @param $val
+     * @param ApiTester $I
+     */
+    public function assertNotEqualsKey($actualObj, $keycheck, $keyvalue, ApiTester $I)
+    {
+        foreach ($actualObj as $key => $val)
+            if ($key == $keycheck) {
+                $I->assertNotEquals($actualObj[$key], $keyvalue);
+            }
+    }
+
+    /**
+     * Function to get dsn from environment file
+     * @return $dsn
+     */
+    public function getDsn( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dsn = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['dsn'];
+
+        return $dsn;
+    }
+
+    /**
+     * Function to get dbusername from environment file
+     * @return dbusername
+     */
+    public function getDbUser( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dbUser = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['user'];
+
+        return $dbUser;
+    }
+
+    /**
+     * Function to get dbpassword from environment file
+     * @return dbpassword
+     */
+    public function getDbPassword( ApiTester $I)
+    {
+        $settings = $this->loadConfig();
+
+        $dbPwd = $settings['env'][$I->getCurrentEnv()]['modules']['config']['Db']['password'];
+
+        return $dbPwd;
     }
 }

@@ -46,10 +46,9 @@ class AuthenticationController extends Controller
      *
      * @return json
      */
-    public function getUser(Request $request)
+    public function getAuthenticatedUser(Request $request)
     {
-        $headers = $request->headers->all();
-        return app('Auth')->authenticatedUser($headers);
+        return $request->user();
     }
 
     /**
@@ -69,5 +68,24 @@ class AuthenticationController extends Controller
             ]
         );
         return app('Auth')->forgotPassword($request->input(self::INPUT_EMAIL));
+    }
+
+    /**
+     * Send a reset password link via email
+     * Url: /reset-password
+     *
+     * @param Request $request
+     *
+     * @return json
+     */
+    public function resetPassword(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                self::INPUT_EMAIL => 'required|email'
+            ]
+        );
+        return app('Auth')->resetPassword($request->input(self::INPUT_EMAIL));
     }
 }

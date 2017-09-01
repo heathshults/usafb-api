@@ -26,7 +26,7 @@ class MockHelper
                 'phone_number'=> '',
                 'state'=> '',
                 'postal_code'=> '',
-                'roles'=> [Role::label(Role::USAFB_ADMIN)]
+                'roles'=> [Role::label(Role::SUPER_USER)]
             ],
             'email_verified'=> false,
             'user_id'=> 'auth0|123',
@@ -44,6 +44,43 @@ class MockHelper
     }
 
     /**
+     * Normalized user response
+     *
+     * @return array
+     */
+    static function normalizedUser()
+    {
+        return [
+            'id' => 'auth0|123',
+            'name' => 'Jhon Smith',
+            'email' => 'smith@gmail.com',
+            'connection' => 'connection',
+            'user_metadata' => [
+                'first_name'=> 'Jhon',
+                'last_name'=> 'Smith',
+                'city'=> '',
+                'phone_number'=> '',
+                'state'=> '',
+                'postal_code'=> '',
+                'roles'=> [Role::label(Role::SUPER_USER)]
+            ],
+            'email_verified'=> false,
+            'user_id'=> 'auth0|123',
+            'picture'=> 'https://s.gravatar.com/avatar/123.png',
+            'nickname'=> 'Jhon Smith',
+            'identities'=> [
+                'connection'=> 'Username-Password-Authentication',
+                'user_id'=> '123',
+                'provider'=> 'auth0',
+                'isSocial'=> false
+            ],
+            'updated_at'=> '2017-07-24T20:45:26.793Z',
+            'created_at'=> '2017-07-24T20:45:26.793Z'
+        ];
+    }
+
+
+    /**
      * User Profile
      *
      * @return array
@@ -57,7 +94,7 @@ class MockHelper
             'phone_number'=> '',
             'state'=> '',
             'postal_code'=> '',
-            'role'=> Role::USAFB_ADMIN
+            'role'=> Role::SUPER_USER
         ];
     }
 
@@ -76,9 +113,7 @@ class MockHelper
                 MockHelper::userResponse()
             )->shouldReceive('dbconnections_change_password')
             ->andReturn(
-                [
-                    "Email sent"
-                ]
+                "Email sent"
             )->shouldReceive('client_credentials')
             ->andReturn(
                 [
@@ -96,8 +131,9 @@ class MockHelper
      *
      * @return Mock
      */
-    static function managementMock($data = [])
+    static function managementMock($data = [], $userList = [])
     {
+
         $userUpdated = array_merge(MockHelper::userResponse(), $data);
         $mockManagement = Mockery::mock(\Auth0\SDK\API\Management::class);
         $mockManagement->users = Mockery::mock(\Auth0\SDK\API\Management\Users::class);
@@ -108,10 +144,7 @@ class MockHelper
             ->shouldReceive('create')
             ->andReturn(MockHelper::userResponse())
             ->shouldReceive('getAll')
-            ->andReturn([
-                'users' => [MockHelper::userResponse()],
-                'total' => 1
-            ]);
+            ->andReturn($userList);
         return $mockManagement;
     }
 
@@ -122,7 +155,7 @@ class MockHelper
      */
     static function authenticateMiddlewareMock($hasUser = true)
     {
-        $user = $hasUser ? MockHelper::userResponse() : null;
+        $user = $hasUser ? MockHelper::normalizedUser() : null;
         $mockMiddleware = Mockery::mock(App\Http\Middleware\Authenticate::class);
         $mockMiddleware->shouldReceive('handle')->once()
             ->andReturnUsing(
@@ -145,7 +178,7 @@ class MockHelper
      */
     static function authServiceMock($hasUser = true, $hasRole = true)
     {
-        $user = $hasUser ? MockHelper::userResponse() : null;
+        $user = $hasUser ? MockHelper::normalizedUser() : null;
         $mockAuth = Mockery::mock(App\Http\Services\AuthService::class);
         $mockAuth->shouldReceive('hasRoles')
             ->andReturn($hasRole)

@@ -42,7 +42,7 @@ class ExportPlayerCest
      * Test export player scenarios
      * @group release
      * @group sanity
-     * @group regression_norun
+     * @group regression
      * @dataprovider exportplayer
      */
     public function validateExportPlayer(ApiTester $I, \Codeception\Example $dataBuilder)
@@ -50,7 +50,18 @@ class ExportPlayerCest
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
 
-        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
+        // Login Call
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
         $token = $I->grabDataFromResponseByJsonPath('access_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
@@ -73,7 +84,8 @@ class ExportPlayerCest
         return [
             ['TestCase' => 'validateExportPlayer', 'code' => "200", "expResponse" => "", 'key' => ''],
             ['TestCase' => 'validateExportPlayerNullColumns', 'code' => "200", "expResponse" => "", 'key' => ''],
-            ['TestCase' => 'validateExportPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized']
+            ['TestCase' => 'validateExportPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", 'key' => 'unauthorized'],
+            ['TestCase' => 'validateExportPlayersNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", 'key' => 'noaccess']
         ];
     }
 }

@@ -12,6 +12,8 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
+     *
+     * @throws UnauthorizedHttpException if user could not be authenticated.
      * @return mixed
      */
     public function handle($request, Closure $next)
