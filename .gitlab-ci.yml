@@ -1,15 +1,5 @@
 image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
-before_script:
-  - set -xe
-  - apt-get update -y
-  - apt-get install -y php7.0
-  - apt-get install -y php7.0-xml
-
-
-after_script:
-  - killall php
-
 stages:
   - setup
   - test
@@ -63,7 +53,8 @@ automation:
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer --global config process-timeout 20000
     - composer test:reg
-
+  after_script:
+    - killall php
 
 build:
   image: docker:latest
@@ -75,9 +66,12 @@ build:
     - docker info
   stage: build
   only:
-    - kubernetes-npdb-usafb-build
+    - develop
   when: manual
+  before_script:
+    - export GIT_DEPLOYED_SHA = $CI_COMMIT_SHA
   script:
+    - echo $GIT_DEPLOYED_SHA
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
