@@ -70,7 +70,7 @@ build:
     - kubernetes-npdb-usafb-build
   when: manual
   before_script:
-    - export GIT_DEPLOYED_SHA = $CI_COMMIT_SHA
+    - export GIT_DEPLOYED_SHA="$CI_COMMIT_SHA"
   script:
     - echo $GIT_DEPLOYED_SHA
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
