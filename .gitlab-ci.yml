@@ -67,6 +67,7 @@ build:
   stage: build
   only:
     - develop
+    - kubernetes-npdb-usafb-build
   when: manual
   before_script:
     - export GIT_DEPLOYED_SHA = $CI_COMMIT_SHA
