@@ -16,12 +16,14 @@ $app->get('healthz', 'StatusController@health');
 $app->get('statusz', 'StatusController@status');
 
 $app->post(
-    '/login', [
+    '/login',
+    [
         'uses' => 'AuthenticationController@login'
     ]
 );
 $app->post(
-    '/forgot-password', [
+    '/forgot-password',
+    [
         'uses' => 'AuthenticationController@forgotPassword'
     ]
 );
@@ -85,7 +87,8 @@ $app->group(
             }
         );
         $app->get(
-            '/me', [
+            '/me',
+            [
                 'uses' => 'AuthenticationController@getAuthenticatedUser'
             ]
         );
@@ -111,4 +114,3 @@ $app->get(
         return ;
     }
 );
-

@@ -8,5 +8,4 @@ EXPOSE 9000
 
 WORKDIR "/application"
 
-ENTRYPOINT . /application/start_fpm.sh
-
+ENTRYPOINT . /application/start_application.sh

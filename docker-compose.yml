@@ -37,24 +37,24 @@ services:
       volumes:
         - .:/application
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
+      entrypoint: /application/start_application.sh
       links:
         - postgres
         - redis
-      entrypoint: /application/start_fpm.sh
 
     locust-master:
-        image: swernst/locusts
-        volumes:
-          - ./tests/performancescripts:/scripts
-        ports:
-          - "8089:8089"
+      image: swernst/locusts
+      volumes:
+        - ./tests/performancescripts:/scripts
+      ports:
+        - "8089:8089"
 
     locust-worker:
-        image: swernst/locusts
-        command: "--master-host=locust-master"
-        volumes:
-          - ./tests/performancescripts:/scripts
-        links:
-          - locust-master
-          - nginx
-          - php-fpm
+      image: swernst/locusts
+      command: "--master-host=locust-master"
+      volumes:
+        - ./tests/performancescripts:/scripts
+      links:
+        - locust-master
+        - nginx
+        - php-fpm

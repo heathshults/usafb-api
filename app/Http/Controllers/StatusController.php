@@ -37,10 +37,10 @@ class StatusController extends Controller
                 'timestamp' => Carbon::now()->toW3cString(),
             ],
             'application_status' => $this->getStatusDB(),
-           # 'application_status' => $this->getStatusApp(),
+            'application_status' => $this->getStatusApp(),
             'db_status'          => $this->getStatusDB(),
-           # 'redis_status'       => $this->getStatusRedis(),
-           # 'cache_status'       => $this->getStatusCache(),
+            'redis_status'       => $this->getStatusRedis(),
+            'cache_status'       => $this->getStatusCache(),
         ];
 
         return response()->json(compact('data'));
