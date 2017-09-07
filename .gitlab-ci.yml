@@ -58,25 +58,11 @@ lint:
 #  after_script:
 #    - killall php
 
-#compile_views:
-#  stage: app_build
-#  only:
-#    #- develop
-#    - kubernetes-npdb-usafb-build
-#  script:
-#    - mv .env.testing .env
-#    - cp -r $CI_PROJECT_DIR /application
-#    - php /application/artisan view:compile 
-#    - mv /application/storage/framework/views/* $CI_PROJECT_DIR/storage/framework/views
-#  artifacts:
-#    expire_in: 1 week
-#    paths:
-#      - storage/framework/views
-
 build:
   image: docker:latest
   variables:
     DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
   services:
     - docker:dind
   before_script:
@@ -88,7 +74,6 @@ build:
   when: manual
   allow_failure: false
   script:
-    - touch -m storage/framework/views/*
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
@@ -98,6 +83,7 @@ build_nginx_static:
   image: docker:latest
   variables:
     DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
   services:
     - docker:dind
   before_script:
