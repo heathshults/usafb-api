@@ -4,6 +4,7 @@ stages:
   - setup
   - test
   - build
+  - build_workers
   - deploy
 
 setup:
@@ -68,16 +69,35 @@ build:
   only:
     - develop
   when: manual
+  allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
+
+build_nginx_static:
+  stage: build_workers
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  only:
+    - develop
+  script:
+    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
+
 
 deploy:
   stage: deploy
   only:
     - develop
   when: manual
+  allow_failure: false
   script:
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
     - chmod +x ./kubectl

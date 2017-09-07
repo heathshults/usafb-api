@@ -17,7 +17,7 @@ spec:
       containers:
       - name: npdb-usafb-app
         image:
-          registry.gitlab.com/bluestarsports/npdb-usafb-api
+          registry.gitlab.com/bluestarsports/npdb-usafb-api:latest
         imagePullPolicy: Always
         env:
         - name: FOR_GODS_SAKE_PLEASE_REDEPLOY
@@ -29,7 +29,7 @@ spec:
         - containerPort: 9000
       - name: npdb-usafb-nginx
         image:
-          registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
+          registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:latest
         imagePullPolicy: Always
         envFrom:
           - secretRef:
