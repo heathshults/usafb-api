@@ -50,7 +50,7 @@ automation:
   type: test
   script:
     - cp .env.testing .env
-    - composer env:prereq
+    #- composer env:prereq
     - php artisan migrate:refresh --seed
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer --global config process-timeout 20000
