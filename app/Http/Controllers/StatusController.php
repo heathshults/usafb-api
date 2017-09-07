@@ -48,6 +48,10 @@ class StatusController extends Controller
 
     protected function getCommitHash()
     {
+        if (!empty(env('GIT_DEPLOYED_SHA'))) {
+            return env('GIT_DEPLOYED_SHA');
+        }
+
         $process = new Process('git rev-parse --verify HEAD');
         $process->run();
 
