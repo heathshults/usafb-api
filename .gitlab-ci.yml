@@ -86,6 +86,6 @@ deploy:
     - kubectl config set-credentials deploy_bot --token=$gitlab_service_account_token_default
     - kubectl config set-context bss-staging --cluster=bss-staging --user=deploy_bot
     - kubectl config use-context bss-staging
-    - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" kubernetes/deployment.yml
-    - kubectl create -f kubernetes/deployment.yml --namespace=staging --validate=false || kubectl replace -f kubernetes/deployment.yml --namespace=staging
+    - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" deploy/deployment.yml
+    - kubectl create -f deploy/deployment.yml --namespace=staging --validate=false || kubectl replace -f deploy/deployment.yml --namespace=staging
 
