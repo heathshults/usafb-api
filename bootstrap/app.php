@@ -90,6 +90,7 @@ $app->routeMiddleware(
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
