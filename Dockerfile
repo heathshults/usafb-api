@@ -1,7 +1,7 @@
 FROM registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
-ARG GIT_DEPLOY_SHA
-ENV GIT_DEPLOY_SHA ${GIT_DEPLOY_SHA}
+ARG GIT_DEPLOYED_SHA
+ENV GIT_DEPLOYED_SHA ${GIT_DEPLOYED_SHA}
 
 COPY . /application
 
