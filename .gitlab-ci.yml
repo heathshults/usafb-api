@@ -3,7 +3,6 @@ image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:la
 stages:
   - setup
   - test
-  - app_build
   - build
   - build_workers
   - deploy
