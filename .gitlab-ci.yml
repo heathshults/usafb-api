@@ -58,20 +58,20 @@ lint:
 #  after_script:
 #    - killall php
 
-compile_views:
-  stage: app_build
-  only:
-    #- develop
-    - kubernetes-npdb-usafb-build
-  script:
-    - mv .env.testing .env
-    - cp -r $CI_PROJECT_DIR /application
-    - php /application/artisan view:compile 
-    - mv /application/storage/framework/views/* $CI_PROJECT_DIR/storage/framework/views
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - storage/framework/views
+#compile_views:
+#  stage: app_build
+#  only:
+#    #- develop
+#    - kubernetes-npdb-usafb-build
+#  script:
+#    - mv .env.testing .env
+#    - cp -r $CI_PROJECT_DIR /application
+#    - php /application/artisan view:compile 
+#    - mv /application/storage/framework/views/* $CI_PROJECT_DIR/storage/framework/views
+#  artifacts:
+#    expire_in: 1 week
+#    paths:
+#      - storage/framework/views
 
 build:
   image: docker:latest
