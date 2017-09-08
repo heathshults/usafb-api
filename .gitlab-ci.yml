@@ -53,9 +53,10 @@ automation:
     - composer env:prereq
     - php artisan migrate:refresh --seed
     - php -S localhost:8000 -t public 1>/dev/null &
+    - composer --global config process-timeout 20000
     - composer test:reg
     - cp .env.testing .env
-
+    - killall php
 
 build:
   image: docker:latest
