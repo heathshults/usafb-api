@@ -77,7 +77,7 @@ class CommonUtils
         $this->changeEnvironmentVariable("AUTH_METADATA", "http://soccer.com/metadata");
         $this->changeEnvironmentVariable("AUTH_CONNECTION", "Username-Password-Authentication");
         $this->changeEnvironmentVariable("DB_CONNECTION", "pgsql");
-        $this->changeEnvironmentVariable("DB_HOST", "postgres");
+       // $this->changeEnvironmentVariable("DB_HOST", "postgres");
         $this->changeEnvironmentVariable("DB_PORT", "5432");
         $this->changeEnvironmentVariable("DB_DATABASE", "npdb-usafb");
         $this->changeEnvironmentVariable("DB_USERNAME", "root");
