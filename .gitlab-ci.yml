@@ -55,8 +55,8 @@ automation:
     - composer --global config process-timeout 20000
     - composer test:reg
     - cp .env.testing .env
-  after_script:
-    - killall php
+#  after_script:
+#    - killall php
 
 build:
   image: docker:latest
