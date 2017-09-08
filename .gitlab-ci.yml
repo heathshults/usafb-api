@@ -1,7 +1,5 @@
 image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
-after_script:
-  - killall php
 
 stages:
   - setup
@@ -58,6 +56,7 @@ automation:
     - composer --global config process-timeout 20000
     - composer test:reg
     - cp .env.testing .env
+    - echo "${JOBS_TO_RUN}"
 
 build:
   image: docker:latest
