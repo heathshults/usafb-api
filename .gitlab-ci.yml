@@ -56,7 +56,7 @@ automation:
     - composer --global config process-timeout 20000
     - composer test:reg
     - cp .env.testing .env
-    - echo "${JOBS_TO_RUN}"
+    - exit 1
 
 build:
   image: docker:latest
