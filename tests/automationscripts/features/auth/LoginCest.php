@@ -45,7 +45,7 @@ class LoginCest
      * Test to validate login scenarios
      * @group release
      * @group sanity
-     * @group regression
+     * @group regression2
      * @dataprovider loginValidScenarios
      */
     public function verifyValidLogin(ApiTester $I, \Codeception\Example $dataBuilder)
