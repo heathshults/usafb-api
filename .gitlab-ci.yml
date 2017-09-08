@@ -54,7 +54,7 @@ automation:
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer --global config process-timeout 20000
     - composer test:reg
-    - exit
+    - cp .env.testing .env
 
 build:
   image: docker:latest
