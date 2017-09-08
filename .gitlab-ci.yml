@@ -1,5 +1,8 @@
 image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
+after_script:
+  - killall php
+
 stages:
   - setup
   - test
