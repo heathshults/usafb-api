@@ -69,8 +69,7 @@ build:
     - docker info
   stage: build
   only:
-    #- develop
-    - kubernetes-npdb-usafb-build
+    - develop
   when: manual
   allow_failure: false
   script:
@@ -89,8 +88,7 @@ build_nginx_static:
   before_script:
     - docker info
   only:
-    #- develop
-    - kubernetes-npdb-usafb-build
+    - develop
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
@@ -100,8 +98,7 @@ build_nginx_static:
 deploy:
   stage: deploy
   only:
-    #- develop
-    - kubernetes-npdb-usafb-build
+    - develop
   when: manual
   allow_failure: false
   script:
