@@ -13,8 +13,10 @@
 		"auth0/auth0-php" : "~5.0",
 		"laravel/lumen-framework" : "5.4.*",
 		"vlucas/phpdotenv" : "~2.2",
-		"flow/jsonpath" : "^0.3.4",
-    "appzcoder/lumen-routes-list": "^1.0"
+    "flow/jsonpath" : "^0.3.4",
+    "illuminate/redis": "~5.4.0",
+    "appzcoder/lumen-routes-list": "^1.0",
+    "predis/predis": "~1.0"
 	},
 	"require-dev" : {
 		"fzaninotto/faker" : "~1.4",

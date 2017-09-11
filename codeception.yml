@@ -13,7 +13,7 @@ suites:
                  - Db
             config:
                  Db:
-                      dsn: 'pgsql:host=postgres;dbname=npdb-usafb'
+                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
                       user: 'root'
                       password: 'root'
                       enabled:

@@ -11,13 +11,19 @@ use App\Models\Enums\Role;
 | and give it the Closure to call when that URI is requested.
 |
 */
+
+$app->get('healthz', 'StatusController@health');
+$app->get('statusz', 'StatusController@status');
+
 $app->post(
-    '/login', [
+    '/login',
+    [
         'uses' => 'AuthenticationController@login'
     ]
 );
 $app->post(
-    '/forgot-password', [
+    '/forgot-password',
+    [
         'uses' => 'AuthenticationController@forgotPassword'
     ]
 );
@@ -32,32 +38,38 @@ $app->group(
             ],
             function () use ($app) {
                 $app->get(
-                    '/users/{id}', [
+                    '/users/{id}',
+                    [
                         'uses' => 'UsersController@getById'
                     ]
                 );
                 $app->get(
-                    '/users/{id}/logs', [
+                    '/users/{id}/logs',
+                    [
                         'uses' => 'UsersController@getLogs'
                     ]
                 );
                 $app->get(
-                    '/users', [
+                    '/users',
+                    [
                         'uses' => 'UsersController@getAll'
                     ]
                 );
                 $app->post(
-                    '/users', [
+                    '/users',
+                    [
                         'uses' => 'UsersController@create'
                     ]
                 );
                 $app->put(
-                    '/users/{id}', [
+                    '/users/{id}',
+                    [
                         'uses' => 'UsersController@update'
                     ]
                 );
                 $app->post(
-                    '/reset-password', [
+                    '/reset-password',
+                    [
                         'uses' => 'AuthenticationController@resetPassword'
                     ]
                 );
@@ -70,18 +82,23 @@ $app->group(
                 ]
             ],
             function () use ($app) {
-                $app->get('/registrants/export', [
+                $app->get(
+                    '/registrants/export',
+                    [
                         'uses' => 'DownloadController@downloadFile'
                     ]
                 );
-                $app->post('/registrants/import', [
+                $app->post(
+                    '/registrants/import',
+                    [
                         'uses' => 'UploadController@processFileUpload'
                     ]
                 );
             }
         );
         $app->get(
-            '/me', [
+            '/me',
+            [
                 'uses' => 'AuthenticationController@getAuthenticatedUser'
             ]
         );
@@ -93,7 +110,8 @@ $app->group(
             ],
             function () use ($app) {
                 $app->delete(
-                    '/users/{id}', [
+                    '/users/{id}',
+                    [
                         'uses' => 'UsersController@delete'
                     ]
                 );
@@ -103,8 +121,8 @@ $app->group(
 );
 
 $app->get(
-    '/', function () use ($app) {
+    '/',
+    function () use ($app) {
         return $app->version();
     }
 );
-

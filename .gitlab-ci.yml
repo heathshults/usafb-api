@@ -1,15 +1,11 @@
-image: edbizarro/gitlab-ci-pipeline-php:7.1-alpine
-
-before_script:
-  - set -xe
-  - apk add --update php7-simplexml
-
-after_script:
-  - killall php
+image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
 stages:
   - setup
   - test
+  - build
+  - build_workers
+  - deploy
 
 setup:
   type: setup
@@ -24,7 +20,6 @@ setup:
     expire_in: 1 week
     paths:
       - vendor/
-      - .env
 
 test:
   services:
@@ -35,6 +30,7 @@ test:
     POSTGRES_DB: npdb-usafb
   type: test
   script:
+    - cp .env.testing .env
     - php artisan migrate:refresh --seed
     - composer test
 
@@ -52,9 +48,67 @@ automation:
     POSTGRES_DB: npdb-usafb
   type: test
   script:
-    - php artisan migrate:refresh --seed
+    - cp .env.testing .env
     - composer env:prereq
+    - php artisan migrate:refresh --seed
     - php -S localhost:8000 -t public 1>/dev/null &
     - composer --global config process-timeout 20000
     - composer test:reg
+    - cp .env.testing .env
+    - killall php
+
+
+build:
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  stage: build
+  only:
+    - develop
+  when: manual
+  allow_failure: false
+  script:
+    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
+
+build_nginx_static:
+  stage: build_workers
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  only:
+    - develop
+  script:
+    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
+
+
+deploy:
+  stage: deploy
+  only:
+    - develop
+  when: manual
+  allow_failure: false
+  script:
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - mv ./kubectl /usr/local/bin/kubectl
+    - kubectl config set-cluster bss-staging --server=https://api.cluster01.staging.bluestarsports.io --insecure-skip-tls-verify=true
+    - kubectl config set-credentials deploy_bot --token=$gitlab_service_account_token_default
+    - kubectl config set-context bss-staging --cluster=bss-staging --user=deploy_bot
+    - kubectl config use-context bss-staging
+    - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" deploy/deployment.yml
+    - kubectl create -f deploy/deployment.yml --namespace=staging --validate=false || kubectl replace -f deploy/deployment.yml --namespace=staging
 
