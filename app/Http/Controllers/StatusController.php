@@ -9,18 +9,12 @@ use Queue;
 use Carbon\Carbon;
 use Symfony\Component\Process\Process;
 
+/**
+ * Provide health and status checks for the application
+ * This is used by kubernetes and monitoring software
+ */
 class StatusController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     public function health()
     {
         return $this->getStatusApp() == 'OK'
