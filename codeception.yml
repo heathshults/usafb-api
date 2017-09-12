@@ -1,0 +1,44 @@
+# suite config
+suites:
+    USAFBAutomationApi:
+        actor: ApiTester
+        path: features
+        modules:
+            enabled:
+                 - Asserts
+                 - REST:
+                     url: http://localhost:8000
+                     depends: PhpBrowser
+                 - \Helper\Api
+                 - Db
+            config:
+                 Db:
+                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+                      user: 'root'
+                      password: 'root'
+                      enabled:
+                           - Codeception\Lib\Driver\Db
+
+
+extensions:
+    enabled:
+            - Codeception\Extension\RunFailed # default extension
+            - Codeception\Extension\Logger: # enabled extension
+                max_files: 3 # logger configuration
+
+params:
+    - .env
+
+gherkin: []
+
+# additional paths
+paths:
+    tests: tests/automationscripts
+    output: tests/automationscripts/_output
+    data:   tests/automationscripts/_data
+    support: tests/automationscripts/_support
+    envs:    tests/automationscripts/_envs
+
+settings:
+    shuffle: false
+    lint: true

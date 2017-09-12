@@ -23,9 +23,9 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-// $app->withFacades();
+$app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +63,18 @@ $app->singleton(
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->middleware(
+    [
+        App\Http\Middleware\CorsMiddleware::class
+    ]
+);
+
+$app->routeMiddleware(
+    [
+        'authenticate' => App\Http\Middleware\Authenticate::class,
+        'authorize' => App\Http\Middleware\Authorize::class,
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -77,11 +86,11 @@ $app->singleton(
 | totally optional, so you are not required to uncomment this line.
 |
 */
-
-// $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
-
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
@@ -93,8 +102,18 @@ $app->singleton(
 |
 */
 
-$app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
-    require __DIR__.'/../routes/web.php';
-});
+$app->group(
+    ['namespace' => 'App\Http\Controllers'],
+    function ($app) {
+        include __DIR__.'/../routes/web.php';
+    }
+);
+
+$app->singleton(
+    'Auth',
+    function ($app) {
+        return new App\Http\Services\AuthService();
+    }
+);
 
 return $app;

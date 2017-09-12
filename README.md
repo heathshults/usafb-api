@@ -23,6 +23,7 @@ To install all application dependencies:
 ```BASH
 composer setup
 ```
+composer update
 
 ### Start Application
 
@@ -38,6 +39,14 @@ To run all test suites (phpunit and jest):
 
 ```BASH
 composer test
+```
+
+### Code Coverage Metrics
+
+To include code coverage metrics for sonar
+
+```BASH
+brew install php71-xdebug
 ```
 
 ### Lint and syntax check

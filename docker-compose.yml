@@ -1,54 +1,60 @@
 version: "3.1"
 services:
-    mailhog:
-      image: mailhog/mailhog:latest
-      container_name: usafb-mailhog
-      ports:
-        - "8081:8025"
 
     redis:
       image: redis:alpine
       container_name: usafb-redis
+      ports:
+      - "6379:6379"
 
     postgres:
       image: postgres:9.6-alpine
       container_name: usafb-postgres
-      working_dir: /application
       ports:
         - "5432:5432"
       environment:
+        - POSTGRES_DB=npdb-usafb
         - POSTGRES_USER=root
         - POSTGRES_PASSWORD=root
-        - POSTGRES_DB=npdb-usafb
-
-    elasticsearch:
-      image: elasticsearch:5.3-alpine
-      container_name: usafb-elasticsearch
-
     nginx:
-      image: nginx:alpine
+      image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
       container_name: usafb-nginx
-      working_dir: /application
       volumes:
           - .:/application
-          - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+          - ./docker/nginx/nginx.conf:/etc/nginx/sites-available/default
       ports:
-       - "8080:80"
+       - "8000:80"
+       - "443"
       links:
        - php-fpm
 
     php-fpm:
-      build:
-        context: .
-        dockerfile: docker/php-fpm/Dockerfile
+      image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
       container_name: usafb-php-fpm
       working_dir: /application
+      ports:
+       - "9000:9000"
       volumes:
         - .:/application
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-
+      entrypoint: /application/start_application.sh
       links:
-        - mailhog
         - postgres
         - redis
-        - elasticsearch
+
+    locust-master:
+      image: swernst/locusts
+      volumes:
+        - ./tests/performancescripts:/scripts
+      ports:
+        - "8089:8089"
+
+    locust-worker:
+      image: swernst/locusts
+      command: "--master-host=locust-master"
+      volumes:
+        - ./tests/performancescripts:/scripts
+      links:
+        - locust-master
+        - nginx
+        - php-fpm

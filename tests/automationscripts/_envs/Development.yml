@@ -1,0 +1,18 @@
+modules:
+  config:
+    REST:
+      url: "http://localhost:8000"
+    Db:
+      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+      user: 'root'
+      password: 'root'
+      enabled:
+           - Codeception\Lib\Driver\Db
+
+login:
+   email : "autouser@gmail.com"
+   password : "password123"
+   emailNoRole : "autouser_norole@gmail.com"
+   passwordNoRole : "password123"
+   emailadmin: "autouseradmin@gmail.com"
+   passwordadmin: "password123"
