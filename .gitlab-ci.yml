@@ -70,7 +70,7 @@ build:
   stage: build
   only:
     - develop
-  when: manual
+    - master
   allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
@@ -89,6 +89,7 @@ build_nginx_static:
     - docker info
   only:
     - develop
+    - master
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
@@ -99,7 +100,7 @@ deploy:
   stage: deploy
   only:
     - develop
-  when: manual
+    - master
   allow_failure: false
   script:
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
