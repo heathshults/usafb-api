@@ -147,7 +147,7 @@ class MockHelper
     static function user($data = [], $userResponse = null)
     {
         if (is_null($userResponse)) {
-            return new User(array_merge(MockHelper::userResponse(), $data));
+            return new User(array_merge(MockHelper::normalizedUser(), $data));
         }
 
         return new User($userResponse);
