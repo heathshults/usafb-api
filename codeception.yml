@@ -11,6 +11,7 @@ suites:
                      depends: PhpBrowser
                  - \Helper\Api
                  - Db
+                 - PhpBrowser
             config:
                  Db:
                       dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
@@ -18,6 +19,10 @@ suites:
                       password: 'root'
                       enabled:
                            - Codeception\Lib\Driver\Db
+                 PhpBrowser:
+                      url: ''
+                      curl:
+                          CURLOPT_TIMEOUT: 500
 
 
 extensions:

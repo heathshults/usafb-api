@@ -119,7 +119,7 @@ class LoginCest
     {
         return [
             ['TestCase' => 'verifyValidLogin', 'code' => "200", "postBody" => null, "expResponse" => "{ \"expires_in\": 86400, \"scope\": \"openid profile email address phone\", \"token_type\": \"Bearer\" }", "key" => ''],   // Valid UserName/Password
-            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'autouser@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Invalid email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
+            ['TestCase' => 'verifyValidLoginInvalidPassword', 'code' => "401", "postBody" => ['email' => 'footballautomation@gmail.com', 'password' => 'test123'], "expResponse" => "{ \"errors\":[ { \"error\": \"Invalid email or password.\" } ] }", "key" => 'errors'] // Valid UserName ,Invalid Password
         ];
     }
 
@@ -130,7 +130,7 @@ class LoginCest
     {
         return [
             ['TestCase' => 'verifyLoginWithBlankEmail', 'code' => "400", "postBody" => ['email' => '', 'password' => 'test'], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email field is required.\" } ] }", "key" => 'errors'],  // Email Blank
-            ['TestCase' => 'verifyLoginWithBlankPassword', 'code' => "400", "postBody" => ['email' => 'autouser@gmail.com', 'password' => ''], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Password\", \"error\": \"The password field is required.\" } ] }", "key" => 'errors'], // Password Blank
+            ['TestCase' => 'verifyLoginWithBlankPassword', 'code' => "400", "postBody" => ['email' => 'footballautomation@gmail.com', 'password' => ''], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Password\", \"error\": \"The password field is required.\" } ] }", "key" => 'errors'], // Password Blank
             ['TestCase' => 'verifyLoginWithBlankEmail&Password', 'code' => "400", "postBody" => ['email' => '', 'password' => ''], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email field is required.\" } ,{ \"code\": \"invalid_attribute\", \"title\": \"Invalid Password\", \"error\": \"The password field is required.\" }] }", "key" => 'errors'], // Email/Password Blank
             ['TestCase' => 'verifyLoginWithInvalidEmail&Password', 'code' => "400", "postBody" => ['email' => 'test@', 'password' => ''], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email must be a valid email address.\" },{ \"code\": \"invalid_attribute\", \"title\": \"Invalid Password\", \"error\": \"The password field is required.\" } ] }", "key" => 'errors'], // Invalid Email/Blank Password
             ['TestCase' => 'verifyLoginWithInvalidEmail', 'code' => "400", "postBody" => ['email' => 'test@', 'password' => 'test'], "expResponse" => "{\"errors\":[ { \"code\": \"invalid_attribute\", \"title\": \"Invalid Email\", \"error\": \"The email must be a valid email address.\" } ] }", "key" => 'errors'] // Invalid Email
@@ -143,7 +143,7 @@ class LoginCest
     protected function forgotPasswordScenarios()
     {
         return [
-            ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'autouser@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
+            ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'footballautomation@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
             ['TestCase' => 'verifyForgotPasswordWithNoEmailRegistered', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
         ];
     }

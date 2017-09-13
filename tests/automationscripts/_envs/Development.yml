@@ -2,6 +2,11 @@ modules:
   config:
     REST:
       url: "http://localhost:8000"
+      timeout: 500
+    PhpBrowser:
+       url: ''
+       curl:
+            CURLOPT_TIMEOUT: 500
     Db:
       dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
       user: 'root'
@@ -10,7 +15,7 @@ modules:
            - Codeception\Lib\Driver\Db
 
 login:
-   email : "autouser@gmail.com"
+   email : "footballautomation@gmail.com"
    password : "password123"
    emailNoRole : "autouser_norole@gmail.com"
    passwordNoRole : "password123"
