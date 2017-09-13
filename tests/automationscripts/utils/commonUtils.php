@@ -172,7 +172,7 @@ class CommonUtils
      */
     public function waitTimeCall()
     {
-        return sleep(10);
+        return sleep(0);
     }
 
     /**
