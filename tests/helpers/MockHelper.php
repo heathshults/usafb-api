@@ -147,7 +147,7 @@ class MockHelper
     static function user($data = [], $userResponse = null)
     {
         if (is_null($userResponse)) {
-            return new User(array_merge(MockHelper::normalizedUser(), $data));
+            return new User(array_merge(MockHelper::userResponse(), $data));
         }
 
         return new User($userResponse);
@@ -204,7 +204,7 @@ class MockHelper
      */
     static function authenticateMiddlewareMock($hasUser = true)
     {
-        $user = $hasUser ? MockHelper::normalizedUser() : null;
+        $user = $hasUser ? MockHelper::user() : null;
         $mockMiddleware = Mockery::mock(App\Http\Middleware\Authenticate::class);
         $mockMiddleware->shouldReceive('handle')->once()
             ->andReturnUsing(
@@ -227,13 +227,13 @@ class MockHelper
      */
     static function authServiceMock($hasUser = true, $hasRole = true)
     {
-        $user = $hasUser ? MockHelper::normalizedUser() : null;
+        $user = $hasUser ? MockHelper::user() : null;
         $mockAuth = Mockery::mock(App\Http\Services\AuthService::class);
         $mockAuth->shouldReceive('hasRoles')
             ->andReturn($hasRole)
             ->shouldReceive('isSuperUser')
             ->andReturn(true)
-            ->shouldReceive('isProClubAdmin')
+            ->shouldReceive('isAdmin')
             ->andReturn(false)
             ->shouldReceive('authenticatedUser')
             ->andReturn($user)

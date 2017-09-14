@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use App\Helpers\AuthHelper;
 
 class Authorize
 {
@@ -19,7 +20,7 @@ class Authorize
      */
     public function handle($request, Closure $next, ...$roles)
     {
-        if (!app('Auth')->hasRoles($request->user(), $roles)) {
+        if (!AuthHelper::hasRoles($request->user(), $roles)) {
             throw new AccessDeniedHttpException("Permission denied.");
         }
 

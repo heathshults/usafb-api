@@ -144,7 +144,7 @@ class AuthHelper
      */
     public static function isSuperUser($user)
     {
-        return AuthHelper::hasRoles($user, [Role::label(Role::USSF_ADMIN)]);
+        return AuthHelper::hasRoles($user, [Role::label(Role::SUPER_USER)]);
     }
 
      /**
@@ -190,7 +190,7 @@ class AuthHelper
             $users
         );
     }
-    
+
     /**
      * Returns corresponding property name of response base on user property
      *
@@ -200,7 +200,7 @@ class AuthHelper
     {
         return ucfirst(strtolower(preg_replace('/([^A-Z])([A-Z])/', "$1 $2", $property)));
     }
-    
+
     /**
      * Generate a hash from an id
      *

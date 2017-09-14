@@ -48,7 +48,38 @@ class AuthenticationController extends Controller
      */
     public function getAuthenticatedUser(Request $request)
     {
-        return $request->user();
+       // TODO Replace this with User Transformer (Fractal)
+        $user = $request->user();
+        $response = [
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName(),
+            'phone_number' => $user->getPhoneNumber(),
+            'city' => $user->getCity(),
+            'state' => $user->getState(),
+            'postal_code' => $user->getPostalCode(),
+            'roles' => $user->getRoles(),
+            'email_verified' => (boolean) $user->getEmailVerified(),
+            'picture' => $user->getPicture(),
+            'status' => $user->getStatus(),
+            'updated_at' => $user->getUpdatedAt(),
+            'created_at' => $user->getCreatedAt(),
+            'last_login' => $user->getLastLogin()
+        ];
+
+        if (!is_null($user->getNickname())) {
+            $response['nickname'] = $user->getNickname();
+        }
+
+        if (!is_null($user->getUpdatedBy())) {
+            $response['updated_by'] = $user->getUpdatedBy();
+        }
+
+        if (!is_null($user->getCreatedBy())) {
+            $response['created_by'] = $user->getCreatedBy();
+        }
+        return $response;
     }
 
     /**

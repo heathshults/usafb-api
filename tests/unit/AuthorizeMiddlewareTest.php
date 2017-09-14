@@ -8,33 +8,45 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Models\Enums\Role;
 use Illuminate\Http\Request;
 use Tests\Helpers\MockHelper;
+use App\Helpers\AuthHelper;
 
 
 class AuthorizeMiddlewareTest extends \TestCase
 {
+    protected static $request;
+    protected static $middleware;
+    protected static $roles;
+
+    public static function setUpBeforeClass()
+    {
+        self::$request = Request::create('/users', 'GET', []);
+        self::$middleware = new \App\Http\Middleware\Authorize();
+        self::$roles = Role::label(Role::SUPER_USER);
+    }
+
     /**
      * Test function to determine if user has some roles
      * Successfull
+     *
      * @return void
      */
     public function testHasRolesSuccessfull()
     {
-        $service = new AuthService();
         $roles = [Role::label(Role::SUPER_USER)];
-        $hasRole = $service->hasRoles(MockHelper::normalizedUser(), $roles);
+        $hasRole = AuthHelper::hasRoles(MockHelper::user(), $roles);
         $this->assertTrue($hasRole);
     }
 
     /**
      * Test function to determine if user has some roles
      * Failure
+     *
      * @return void
      */
     public function testFailedHasRoles()
     {
-        $service = new AuthService();
         $roles = [Role::label(Role::ADMIN_USER)];
-        $hasRole = $service->hasRoles(MockHelper::normalizedUser(), $roles);
+        $hasRole = AuthHelper::hasRoles(MockHelper::user(), $roles);
         $this->assertFalse($hasRole);
     }
 
@@ -45,13 +57,16 @@ class AuthorizeMiddlewareTest extends \TestCase
      */
     public function testSuccessfullRequestAuthorizedUser()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $request = Request::create('/users', 'GET', []);
-        $middleware = new \App\Http\Middleware\Authorize();
-        $response = $middleware->handle(
-            $request, function () {
-                return ['status' => 200];
+        self::$request->setUserResolver(
+            function () {
+                return MockHelper::user();
             }
+        );
+        $response = self::$middleware->handle(
+            self::$request, function () {
+                return ['status' => 200];
+            },
+            self::$roles
         );
         $this->assertEquals(
             $response,
@@ -66,15 +81,24 @@ class AuthorizeMiddlewareTest extends \TestCase
      */
     public function testExceptionNotAuthorizedUser()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock(false, false));
-        $request = Request::create('/users', 'GET', []);
-        $middleware = new \App\Http\Middleware\Authorize();
+        self::$request->setUserResolver(
+            function () {
+                return MockHelper::user(
+                    [
+                        getenv('AUTH_METADATA') => [
+                            'roles' => [Role::label(Role::TEST)]
+                        ]
+                    ]
+                );
+            }
+        );
 
         $this->expectException(AccessDeniedHttpException::class);
-        $response = $middleware->handle(
-            $request, function () {
+        self::$middleware->handle(
+            self::$request, function () {
                 /* do nothing */
-            }
+            },
+            self::$roles
         );
 
     }
@@ -86,15 +110,24 @@ class AuthorizeMiddlewareTest extends \TestCase
      */
     public function testExceptionMessageNotAuthorizedUser()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock(false, false));
-        $request = Request::create('/users', 'GET', []);
-        $middleware = new \App\Http\Middleware\Authorize();
+        self::$request->setUserResolver(
+            function () {
+                return MockHelper::user(
+                    [
+                        getenv('AUTH_METADATA') => [
+                            'roles' => [Role::label(Role::PARTNER_USER)]
+                        ]
+                    ]
+                );
+            }
+        );
 
         $this->expectExceptionMessage('Permission denied.');
-        $response = $middleware->handle(
-            $request, function () {
+        self::$middleware->handle(
+            self::$request, function () {
                 /* do nothing */
-            }
+            },
+            self::$roles
         );
     }
 
