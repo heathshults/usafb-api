@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use App\Helpers\PaginationHelper;
+use App\Helpers\AuthHelper;
 
 /**
  * UsersController
@@ -33,7 +34,7 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $user = $request->user();
-        $isUSSFStaff = app('Auth')->isSuperUser($user);
+        $isUSSFStaff = AuthHelper::isSuperUser($user);
 
         $validationRules = [
             'first_name' => 'required',
@@ -50,7 +51,6 @@ class UsersController extends Controller
             $request,
             $validationRules
         );
-
         $user = [
             'email' => $request->input('email'),
             'connection' => getenv('AUTH_CONNECTION'),
@@ -63,9 +63,10 @@ class UsersController extends Controller
                 'state' => $request->input('state'),
                 'postal_code' => $request->input('postal_code'),
                 'roles' => [$role],
-                'created_by' => $user['id']
+                'created_by' => $user->getId()
             ]
         ];
+
         return app('Auth')->createUser($user);
     }
 

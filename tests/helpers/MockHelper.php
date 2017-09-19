@@ -4,6 +4,7 @@ namespace Tests\Helpers;
 
 use Mockery;
 use App\Models\Enums\Role;
+use App\Models\User;
 
 class MockHelper
 {
@@ -105,13 +106,26 @@ class MockHelper
      *
      * @return Mock
      */
-    static function authenticationMock($token = 'token123')
+    static function authenticationMock($token = 'token123', $exceptionCode = null)
     {
         $mockAuth = Mockery::mock(\Auth0\SDK\API\Authentication::class);
-        $mockAuth->shouldReceive('userinfo')
-            ->andReturn(
-                MockHelper::userResponse()
-            )->shouldReceive('dbconnections_change_password')
+
+        if (is_null($exceptionCode)) {
+            $mockAuth->shouldReceive('userinfo')
+                ->andReturn(MockHelper::userResponse());
+        } else {
+            $exceptionResponse = Mockery::mock(\GuzzleHttp\Psr7\Response::class);
+            $exceptionResponse->shouldReceive('getStatusCode')
+                ->andReturn($exceptionCode);
+
+            $exceptionMock = Mockery::mock(\GuzzleHttp\Exception\ClientException::class);
+            $exceptionMock->shouldReceive('getResponse')
+                ->andReturn($exceptionResponse);
+
+            $mockAuth->shouldReceive('userinfo')
+                ->andThrow($exceptionMock);
+        }
+        $mockAuth->shouldReceive('dbconnections_change_password')
             ->andReturn(
                 "Email sent"
             )->shouldReceive('client_credentials')
@@ -120,8 +134,43 @@ class MockHelper
                     'access_token' => $token
                 ]
             );
-
         return $mockAuth;
+    }
+
+    /**
+     * Return a user model based from auth0 response
+     *
+     * @param array $data Additional fields information
+     *
+     * @return array
+     */
+    static function user($data = [], $userResponse = null)
+    {
+        if (is_null($userResponse)) {
+            return new User(array_merge(MockHelper::userResponse(), $data));
+        }
+
+        return new User($userResponse);
+    }
+
+    /**
+     * Mock Client Exception
+     *
+     * @param string $exceptionCode status code
+     *
+     * @return Mock
+     */
+    static function clientExceptionMock($exceptionCode)
+    {
+        $exceptionResponse = Mockery::mock(\GuzzleHttp\Psr7\Response::class);
+        $exceptionResponse->shouldReceive('getStatusCode')
+            ->andReturn($exceptionCode);
+
+        $exceptionMock = Mockery::mock(\GuzzleHttp\Exception\ClientException::class);
+        $exceptionMock->shouldReceive('getResponse')
+            ->andReturn($exceptionResponse);
+
+        return $exceptionMock;
     }
 
     /**
@@ -155,7 +204,7 @@ class MockHelper
      */
     static function authenticateMiddlewareMock($hasUser = true)
     {
-        $user = $hasUser ? MockHelper::normalizedUser() : null;
+        $user = $hasUser ? MockHelper::user() : null;
         $mockMiddleware = Mockery::mock(App\Http\Middleware\Authenticate::class);
         $mockMiddleware->shouldReceive('handle')->once()
             ->andReturnUsing(
@@ -178,13 +227,13 @@ class MockHelper
      */
     static function authServiceMock($hasUser = true, $hasRole = true)
     {
-        $user = $hasUser ? MockHelper::normalizedUser() : null;
+        $user = $hasUser ? MockHelper::user() : null;
         $mockAuth = Mockery::mock(App\Http\Services\AuthService::class);
         $mockAuth->shouldReceive('hasRoles')
             ->andReturn($hasRole)
             ->shouldReceive('isSuperUser')
             ->andReturn(true)
-            ->shouldReceive('isProClubAdmin')
+            ->shouldReceive('isAdmin')
             ->andReturn(false)
             ->shouldReceive('authenticatedUser')
             ->andReturn($user)

@@ -11,8 +11,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Exceptions\InternalException;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Enums\Role;
+use App\Helpers\AuthHelper;
+use App\Models\User;
 
 /**
  * AuthService
@@ -30,6 +33,10 @@ class AuthService
     const EXISTENT_USER_MSG = "The email address submitted already exists in the system.";
     const PERMISSION_DENIED_MSG = "Permission denied.";
     const USER_METADATA = "user_metadata";
+
+    const RETRY_INTERVALS = [1, 4, 8, 16, 32];
+
+    const RATE_LIMIT_CODE = 429;
 
     /**
      * Initialize authentication client with auth credentials
@@ -204,22 +211,37 @@ class AuthService
 
     /**
      * Get authenticated user profile by token provided in header
+     * Retry if a Too Many Request Exception is thrown
      *
      * @param array $requestHeaders
      *
-     * @return json
+     * @return User|null user if response is not null or null otherwise
+     * @throws UnauthorizedHttpException if user could not be authenticated
+     * @throws InternalException if all retries were attempted
      */
     public function authenticatedUser($requestHeaders)
     {
-        $token = $this->getHeaderToken($requestHeaders);
-        try {
-            $user = $this->authentication->userinfo($token);
-            if ($user !== null) {
-                $user = $this->normalizeUser($user);
+        $token = AuthHelper::getHeaderToken($requestHeaders);
+
+        $intervals = self::RETRY_INTERVALS;
+        $lastInterval = end($intervals);
+        foreach ($intervals as $interval) {
+            try {
+                $userResponse = $this->authentication->userinfo($token);
+                /*if ($userResponse !== null) {
+                    $userResponse = $this->normalizeUser($userResponse);
+                }*/
+                return new User($userResponse);
+            } catch (ClientException $e) {
+                if ($this->isTooManyRequestsException($e)) {
+                    if ($interval === $lastInterval) {
+                        throw new InternalException('Server not available. Please try again later.');
+                    }
+                    sleep($interval);
+                    continue;
+                }
+                throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
             }
-            return $user;
-        } catch (ClientException $e) {
-            throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
         }
     }
 
@@ -268,6 +290,18 @@ class AuthService
             }
         }
         return false;
+    }
+
+    /**
+     * Determines if a client exception refers to Too many request exception
+     *
+     * @param GuzzleHttp\Exception\ClientException $exception
+     *
+     * @return boolean
+     */
+    public static function isTooManyRequestsException(ClientException $exception)
+    {
+        return $exception->getResponse()->getStatusCode() === self::RATE_LIMIT_CODE;
     }
 
     /**

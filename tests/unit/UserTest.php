@@ -26,23 +26,6 @@ class UserTest extends \TestCase
     }
 
     /**
-     * Test sucessfull get user info when token is provided
-     *
-     * @return void
-     */
-    public function testSuccefullGetUser()
-    {
-        $mockAuth = MockHelper::authenticationMock();
-        $service = new AuthService();
-        $service->setAuthentication($mockAuth);
-        $headers = [
-            'Authorization' => ['Bearer token123']
-        ];
-        $data = $service->authenticatedUser($headers);
-        $this->assertEquals($data, MockHelper::normalizedUser());
-    }
-
-    /**
      * Test exception thrown in get user info when token is not provided
      *
      * @return void
