@@ -14,7 +14,7 @@ suites:
                  - PhpBrowser
             config:
                  Db:
-                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+                      dsn: 'pgsql:host=localhost;dbname=npdb-usafb;port=5432'
                       user: 'root'
                       password: 'root'
                       enabled:

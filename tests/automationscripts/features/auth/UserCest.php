@@ -12,6 +12,7 @@ class UserCest
     public $getUserProfileUrl = "/me";
     public $postCreateUserUrl = "/users";
     public $getUserByIDUrl = "/users/";
+    public $getUsersUrl = "/users?page[number]=";
 
     /**
      * @var helper\auth\loginHelper
@@ -187,6 +188,106 @@ class UserCest
         $this->validator->validateResponse($createUserResponse, $dataBuilder['expResponse'], $I, $this->common);
     }
 
+
+    /**
+     * Tests to verify get users
+     * @group release
+     * @group sanity
+     * @group regression
+     * @group auth
+     * @dataprovider getUsers
+     */
+    public function verifyGetUsers(ApiTester $I, \Codeception\Example $dataBuilder, \Codeception\Scenario $scenario)
+    {
+        $I->wantToTest($dataBuilder['TestCase']);
+        $I->comment($dataBuilder['TestCase']);
+
+        // Login Call
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+        if ($dataBuilder['key'] == "invalid") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
+        // Get Users
+        $this->common->waitTimeCall();
+        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&page[size]='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
+        $I->seeResponseCodeIs($dataBuilder['code']);
+        $I->seeResponseIsJson();
+        if ($dataBuilder['expResponse'] != null) {
+            if ($dataBuilder['expResponse'] == 'emptyList') {
+                $I->assertEquals(count($I->grabDataFromResponseByJsonPath('data')[0]), 0);
+            } else {
+                $Data = $I->grabDataFromResponseByJsonPath('data');
+                $this->validator->validateKeyEquals(json_encode($Data[0][0]), "email", $dataBuilder['expResponse'][0], $I, $this->common);
+                $this->validator->validateKeyEquals(json_encode($Data[0][1]), "email", $dataBuilder['expResponse'][1], $I, $this->common);
+                $this->validator->validateKeyEquals(json_encode($Data[0][2]), "email", $dataBuilder['expResponse'][2], $I, $this->common);
+            }
+        }
+
+    }
+
+
+    /**
+     * Tests to verify get users other scenarios
+     * @group regression
+     * @group auth
+     * @dataprovider getUsersOtherScenarios
+     */
+    public function verifyGetUsersOtherScenarios(ApiTester $I, \Codeception\Example $dataBuilder, \Codeception\Scenario $scenario)
+    {
+        $I->wantToTest($dataBuilder['TestCase']);
+        $I->comment($dataBuilder['TestCase']);
+
+        // Login Call
+        // Login Call
+        if ($dataBuilder['key'] == "noaccess") {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("norole", $I), $this->common->getEnvPassword("norole", $I));
+        } else  if ($dataBuilder['key'] == "adminrole")  {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("adminrole", $I), $this->common->getEnvPassword("adminrole", $I));
+        }
+        else
+        {
+            $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
+        }
+        $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
+        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $tokenParam = $token[0];
+
+        if ($dataBuilder['key'] == "invalid") {
+            $tokenParam = "ABCDEFGHIJ";
+        }
+
+        // Get Users
+        $this->common->waitTimeCall();
+        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&page[size]='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
+        $I->seeResponseCodeIs($dataBuilder['code']);
+        $I->seeResponseIsJson();
+
+        if ($dataBuilder['expResponse'] != null) {
+            if ($dataBuilder['expResponse'] == 'emptyList') {
+
+                $I->assertEquals(count($I->grabDataFromResponseByJsonPath('data')[0]), 0);
+            } else {
+                $Data = $I->grabDataFromResponseByJsonPath('data');
+                $this->validator->validateKeyEquals(json_encode($Data[0][0]), "email", $dataBuilder['expResponse'][0], $I, $this->common);
+                $this->validator->validateKeyEquals(json_encode($Data[0][1]), "email", $dataBuilder['expResponse'][1], $I, $this->common);
+                $this->validator->validateKeyEquals(json_encode($Data[0][2]), "email", $dataBuilder['expResponse'][2], $I, $this->common);
+            }
+        }
+
+    }
+
+
 // Data Providers for the Tests to be provided within Cest Classes
 
     /**
@@ -241,4 +342,35 @@ class UserCest
             ['TestCase' => 'verifyCreateUserInvalidEmail', 'code' => "400", "postBodyUser" => ['first_name' => '', 'last_name' => '', 'city' => 'Frisco', 'state' => 'TX', 'postal_code' => '', 'role' => '', 'email' => 'autouser', 'phone_number' => '1234567890'], "expResponse" => "{\"errors\":[{\"code\":\"invalid_attribute\",\"title\":\"Invalid First_name\",\"error\":\"The first name field is required.\"},{\"code\":\"invalid_attribute\",\"title\":\"Invalid Last_name\",\"error\":\"The last name field is required.\"},{\"code\":\"invalid_attribute\",\"title\":\"Invalid Email\",\"error\":\"The email must be a valid email address.\"},{\"code\":\"invalid_attribute\",\"title\":\"Invalid Role\",\"error\":\"The role field is required.\"}]}", 'key' => 'validations']
         ];
     }
+
+    /**
+     * @return array
+     */
+    protected function getUsers()
+    {
+        return [
+            ['TestCase' => 'verifyListUsersWithValidLogin(Super User)', 'code' => "200", 'pageNo' => 1, 'pageSize' => 30, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'valid', 'expResponse' => null],
+            ['TestCase' => 'verifySearchUsersWithValidLogin(Super User)', 'code' => "200", 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getUsersOtherScenarios()
+    {
+        return [
+            ['TestCase' => 'verifyListUsersWithInValidLogin(Super User)', 'code' => "403", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'noaccess', 'expResponse' => null],
+            ['TestCase' => 'verifySearchUsersWithInValidLogin(Super User)', 'code' => "403", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'noaccess', 'expResponse' => null],
+            ['TestCase' => 'verifyListUsersWithNoToken(Super User)', 'code' => "401", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'invalid', 'expResponse' => null],
+            ['TestCase' => 'verifySearchUsersWithNoToken(Super User)', 'code' => "401", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'invalid', 'expResponse' => null],
+            ['TestCase' => 'verifySearchUsersWithInvalidUser(Admin User)', 'code' => "403", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'adminrole', 'expResponse' => null],
+            ['TestCase' => 'verifyListUsersNoResults(Super User)', 'code' => "200", 'pageNo' => 2, 'pageSize' => 10, 'Sortable' => '+created_at', 'SearchString' => 'norole', 'key' => 'valid',  'expResponse' => null],
+            ['TestCase' => 'verifyListUsersNoSearchNoResults(Super User)', 'code' => "200", 'pageNo' => 50, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'valid',  'expResponse' => null],
+            ['TestCase' => 'verifySearchUsersNoResults(Super User)', 'code' => "200", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'random', 'key' => 'valid',  'expResponse' => null],
+            ['TestCase' => 'verifyUsersSortSearchWithResultsASC(Super User)', 'code' => 200, 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']],
+            ['TestCase' => 'verifyUsersSortSearchWithResultsDESC(Super User)', 'code' => 200, 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '-email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouseradmin@gmail.com','autouser_norole@gmail.com', 'autouser@gmail.com']]
+        ];
+    }
+
 }

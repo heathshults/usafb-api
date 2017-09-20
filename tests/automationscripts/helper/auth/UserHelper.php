@@ -83,4 +83,22 @@ class UserHelper
         $I->sendDELETE(str_replace("|", "%7C", $url));
         return $I->grabResponse();
     }
+
+    /**
+     * Function for get call for users
+     * @param ApiTester $I
+     * @param $url
+     * @param $token
+     * @param $userID
+     * @return string
+     */
+    public function getUsers(ApiTester $I, $url, $token)
+    {
+        $I->clearHeaders();
+        $I->setHeaders();
+        $I->amBearerAuthenticated($token);
+        codecept_debug("URL".$url);
+        $I->sendGET($url);
+        return $I->grabResponse();
+    }
 }
