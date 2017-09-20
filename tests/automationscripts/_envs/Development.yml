@@ -8,7 +8,7 @@ modules:
        curl:
             CURLOPT_TIMEOUT: 500
     Db:
-      dsn: 'pgsql:host=localhost;dbname=npdb-usafb'
+      dsn: 'pgsql:host=localhost;dbname=npdb-usafb;port=5432'
       user: 'root'
       password: 'root'
       enabled:
