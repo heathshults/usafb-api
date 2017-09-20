@@ -12,7 +12,7 @@ class UserCest
     public $getUserProfileUrl = "/me";
     public $postCreateUserUrl = "/users";
     public $getUserByIDUrl = "/users/";
-    public $getUsersUrl = "/users?page=";
+    public $getUsersUrl = "/users?page[number]=";
 
     /**
      * @var helper\auth\loginHelper
@@ -220,7 +220,7 @@ class UserCest
         }
         // Get Users
         $this->common->waitTimeCall();
-        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&per_page='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
+        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&page[size]='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
         if ($dataBuilder['expResponse'] != null) {
@@ -269,7 +269,7 @@ class UserCest
 
         // Get Users
         $this->common->waitTimeCall();
-        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&per_page='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
+        $getUsersResponse = $this->helper->getUsers($I, $this->getUsersUrl . $dataBuilder['pageNo'] . '&page[size]='. $dataBuilder['pageSize'] . '&sort=' . $dataBuilder['Sortable'] . '&q=' . $dataBuilder['SearchString'], $tokenParam);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
 
@@ -350,7 +350,7 @@ class UserCest
     {
         return [
             ['TestCase' => 'verifyListUsersWithValidLogin(Super User)', 'code' => "200", 'pageNo' => 1, 'pageSize' => 30, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'valid', 'expResponse' => null],
-            ['TestCase' => 'verifySearchUsersWithValidLogin(Super User)', 'code' => "200", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']]
+            ['TestCase' => 'verifySearchUsersWithValidLogin(Super User)', 'code' => "200", 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']]
         ];
     }
 
@@ -368,8 +368,8 @@ class UserCest
             ['TestCase' => 'verifyListUsersNoResults(Super User)', 'code' => "200", 'pageNo' => 2, 'pageSize' => 10, 'Sortable' => '+created_at', 'SearchString' => 'norole', 'key' => 'valid',  'expResponse' => null],
             ['TestCase' => 'verifyListUsersNoSearchNoResults(Super User)', 'code' => "200", 'pageNo' => 50, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => '', 'key' => 'valid',  'expResponse' => null],
             ['TestCase' => 'verifySearchUsersNoResults(Super User)', 'code' => "200", 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'random', 'key' => 'valid',  'expResponse' => null],
-            ['TestCase' => 'verifyUsersSortSearchWithResultsASC(Super User)', 'code' => 200, 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']],
-            ['TestCase' => 'verifyUsersSortSearchWithResultsDESC(Super User)', 'code' => 200, 'pageNo' => 1, 'pageSize' => 10, 'Sortable' => '-email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouseradmin@gmail.com','autouser_norole@gmail.com', 'autouser@gmail.com']]
+            ['TestCase' => 'verifyUsersSortSearchWithResultsASC(Super User)', 'code' => 200, 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '+email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouser@gmail.com', 'autouser_norole@gmail.com','autouseradmin@gmail.com']],
+            ['TestCase' => 'verifyUsersSortSearchWithResultsDESC(Super User)', 'code' => 200, 'pageNo' => 0, 'pageSize' => 10, 'Sortable' => '-email', 'SearchString' => 'autouser', 'key' => 'valid', 'expResponse' => ['autouseradmin@gmail.com','autouser_norole@gmail.com', 'autouser@gmail.com']]
         ];
     }
 
