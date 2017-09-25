@@ -6,6 +6,7 @@ use App\Http\Services\ImportCsv\ImportCsvService;
 use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use App\Http\Services\ImportCsv\ImportCsvUtils;
+use App\Http\Services\AwsService;
 
 class UploadController extends Controller
 {
@@ -13,6 +14,21 @@ class UploadController extends Controller
     const TYPE_COACH = 'COACH';
     const CSV_MAX_ROWS = 2500;
 
+    /**
+     * The AwsService instance.
+     */
+    protected $awsService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param  AwsService  $awsService
+     * @return void
+     */
+    public function __construct(AwsService $awsService)
+    {
+        $this->awsService = $awsService;
+    }
     /**
      * Will retun a json object with processed and errors keys
      * @param Illuminate\Http\Request $request with a csv_file
@@ -42,6 +58,38 @@ class UploadController extends Controller
         return response()->
                 json(
                     $importService->importCsvFile($request->file('csv_file'), $request->input('type'))
+                );
+    }
+
+    /**
+     * Will retun a json object with s3 upload info
+     * @param Illuminate\Http\Request $request with a csv_file
+     * @return JsonObject holding the message if the file could be uploaded to the s3 successfuly
+     */
+    public function uploadFile(Request $request)
+    {
+        $request->replace(['type' => strtoupper($request->input('type'))]);
+
+        $this->validate(
+            $request,
+            [
+                'csv_file' => 'required|mimes:csv,txt',
+                'type' => 'required|in:' . self::TYPE_PLAYER . ','. self::TYPE_COACH
+            ],
+            [
+                'type.in' => "The selected type is invalid. " .
+                "Allowed types: " . self::TYPE_PLAYER . ", " . self::TYPE_COACH
+            ]
+        );
+
+        $type = $request->input('type');
+        $loggedUserEmail = $request->user()->getEmail();
+        $filePath = $request->file('csv_file')->getRealPath();
+        $result = $this->awsService->uploadFile($request->file('csv_file'), $request->input('type'), $loggedUserEmail);
+
+        return response()->
+                json(
+                    $result
                 );
     }
 }

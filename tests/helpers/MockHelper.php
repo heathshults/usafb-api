@@ -5,6 +5,7 @@ namespace Tests\Helpers;
 use Mockery;
 use App\Models\Enums\Role;
 use App\Models\User;
+use Aws\Result;
 
 class MockHelper
 {
@@ -248,5 +249,20 @@ class MockHelper
                 ]
             );
         return $mockAuth;
+    }
+
+    /**
+     * Mock AwsService
+     *
+     * @return Mock
+     */
+    static function awsServiceMock()
+    {
+        $mockAws = Mockery::mock('App\Http\Services\AwsService')->makePartial();
+        $mockAws->shouldReceive('s3PutObject')
+            ->andReturn(new \Aws\Result(['ObjectURL' => 'http://xxx.xxx']))
+	    ->mock();
+
+        return $mockAws;
     }
 }

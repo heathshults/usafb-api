@@ -228,9 +228,6 @@ class AuthService
         foreach ($intervals as $interval) {
             try {
                 $userResponse = $this->authentication->userinfo($token);
-                /*if ($userResponse !== null) {
-                    $userResponse = $this->normalizeUser($userResponse);
-                }*/
                 return new User($userResponse);
             } catch (ClientException $e) {
                 if ($this->isTooManyRequestsException($e)) {
@@ -353,7 +350,6 @@ class AuthService
         if (empty($id)) {
             throw new BadRequestHttpException("Invalid id");
         }
-        $userToDelete = $this->getUserById($id);
         return $this->getManagement()->users->delete($id);
     }
 

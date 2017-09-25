@@ -4,8 +4,8 @@ namespace Tests\Unit;
 use Illuminate\Http\UploadedFile;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamFile;
-use WithoutMiddleware;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Tests\Helpers\MockHelper;
 
 class UploadControllerTest extends \TestCase
 {
@@ -39,13 +39,15 @@ class UploadControllerTest extends \TestCase
     */
     public function testSuccessfulUploadingPlayerCsv()
     {
+        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('App\Http\Services\AwsService', MockHelper::awsServiceMock());
         $structure = [
             'csv' => [
                 'input.csv' => self::PLAYERS_CSV
             ]
         ];
 
-        $this->withoutMiddleware();
     	$response = $this->call('POST', '/registrants/import?type=player',
             [],
             [],
@@ -53,26 +55,8 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-    }
-    /**
-    * Should test EndPoint responds expected json
-    */
-    public function testShouldReturnAmountOfProcesedAndErrorsPlayerCsv()
-    {
-        $structure = [
-            'csv' => [
-                'input.csv' => self::PLAYERS_CSV
-            ]
-        ];
-
-        $this->withoutMiddleware();
-    	$response = $this->call('POST', '/registrants/import?type=player',
-            [],
-            [],
-            ['csv_file' => $this->createCsvUploadFile($structure)]
-        );
-        
-        $this->assertEquals($response->getOriginalContent(), array('processed' => 1, 'errors' => 0));
+        $this->assertArrayHasKey('report', $response->getOriginalContent());
+        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 
     /**
@@ -80,13 +64,15 @@ class UploadControllerTest extends \TestCase
     */
     public function testSuccessfulUploadingCoachCsv()
     {
+        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('App\Http\Services\AwsService', MockHelper::awsServiceMock());
         $structure = [
             'csv' => [
                 'input.csv' => self::COACHES_CSV
             ]
         ];
 
-        $this->withoutMiddleware();
         $response = $this->call('POST', '/registrants/import?type=coach',
             [],
             [],
@@ -94,25 +80,7 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-    }
-    /**
-    * Should test EndPoint responds expected json
-    */
-    public function testShouldReturnAmountOfProcesedAndErrorsCoachCsv()
-    {
-        $structure = [
-            'csv' => [
-                'input.csv' => self::COACHES_CSV
-            ]
-        ];
-
-        $this->withoutMiddleware();
-        $response = $this->call('POST', '/registrants/import?type=coach',
-            [],
-            [],
-            ['csv_file' => $this->createCsvUploadFile($structure)]
-        );
-        
-        $this->assertEquals($response->getOriginalContent(), array('processed' => 1, 'errors' => 0));
+        $this->assertArrayHasKey('report', $response->getOriginalContent());
+        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 }
