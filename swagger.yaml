@@ -23,14 +23,6 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-    # https://github.com/awslabs/serverless-application-model/issues/66
-    
-  ApiAuthKey:
-    description: bla bla bla
-    type: apiKey
-    in: header
-    name: X-API-KEY
-    # https://symfony.com/doc/current/security/api_key_authentication.html
 
 responses:
 
@@ -101,7 +93,7 @@ responses:
       
 paths:
 
-  /me:
+  /Auth/User:
     get:
       summary: Returns current user's informatoin.
       description: Returns current user's information.
@@ -117,7 +109,7 @@ paths:
         401:
           $ref: '#/responses/UnauthorizedError'
           
-  /users:
+  /Users:
   
     post:
       summary: Creates a New User.
@@ -210,7 +202,7 @@ paths:
         404:
            $ref: '#/responses/NotFoundError'
 
-  /users/{id}:
+  /Users/{id}:
     get:
       summary: Returns a single user.
       description: Returns a single user.
@@ -436,7 +428,7 @@ paths:
         - Register
 
       security:
-        - ApiAuthKey: []
+        - Bearer: []
 
       parameters:
           
@@ -469,7 +461,7 @@ paths:
         - Register
 
       security:
-        - ApiAuthKey: []
+        - Bearer: []
 
       parameters:
           
@@ -510,7 +502,7 @@ paths:
         - Register
 
       security:
-        - ApiAuthKey: []
+        - Bearer: []
 
       parameters:
           
@@ -543,7 +535,7 @@ paths:
         - Register
 
       security:
-        - ApiAuthKey: []
+        - Bearer: []
 
       parameters:
           
@@ -835,6 +827,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Guardian'
+
+      external_id:
+        description: The 3rd party id used you use to identify the player
+        type: string
           
 #     player_salesforce_id:
 #       description: Foreign key
@@ -950,6 +946,10 @@ definitions:
         type: string
         # Pushed over when HUF is connected via API
         
+      external_id:
+        description: The 3rd party id used you use to identify the coach
+        type: string
+        
 #     coach_salesforce_id:
 #       description: Foreign key?
 #       type: string
@@ -1044,10 +1044,6 @@ definitions:
         type: string
         # Pushed over once season is 'live' - not entered during registration
         
-      external_id:
-        description: The id used you use to identify the user/registeration
-        type: string
-        
       right_to_market:
         description: Does USAFB have right to market to user = [true, false]
         type: boolean
@@ -1070,6 +1066,10 @@ definitions:
         type: string
         items:
           $ref: '#/definitions/Positions'
+        
+      external_id:
+        description: The 3rd party id used you use to identify the player registeration
+        type: string
   
   #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
   
@@ -1124,10 +1124,6 @@ definitions:
         type: string
         # Pushed over once season is 'live' - not entered during registration
         
-      external_id:
-        description: The id used you use to identify the user/registeration
-        type: string
-        
       right_to_market:
         description: Does USAFB have right to market to user = [true, false]
         type: boolean
@@ -1143,6 +1139,10 @@ definitions:
         
       school_state:
         description: The name of the school state the team is associated with. Only if user selects Youth as level of play
+        type: string
+        
+      external_id:
+        description: The 3rd party id used you use to identify the coach registeration
         type: string
 
    #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
