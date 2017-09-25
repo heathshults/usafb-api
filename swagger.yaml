@@ -691,7 +691,6 @@ definitions:
     
     required:
       - first_name
-      - middle_name
       - last_name
       - email
       - gender
@@ -728,9 +727,9 @@ definitions:
         type: string
       
       gender:
-        description: The sex of the player = ['mail', 'femail']
+        description: The sex of the player = ['male', 'female']
         type: string
-        enum: ['mail', 'femail']
+        enum: ['male', 'female']
         
       height:
         description: The player's height (in inches)
@@ -753,7 +752,7 @@ definitions:
         type: string
       
       city:
-        description: The city the player was boarn in
+        description: The city the player was born in
         type: string
         
       state:
@@ -804,13 +803,13 @@ definitions:
         type: integer
       
       sports:
-        description: Other sports the player is participating in (commer seperated list) = ['Basketball', 'Baseball', 'Soccer', 'LaCross', 'Swimming', 'Volleyball', 'Softball',  'Hockey', 'Tennis', 'Golf', 'Rugby', 'Other']
+        description: Other sports the player is participating in (comma separated list) = ['Basketball', 'Baseball', 'Soccer', 'LaCross', 'Swimming', 'Volleyball', 'Softball',  'Hockey', 'Tennis', 'Golf', 'Rugby', 'Other']
         type: string
         items:
           $ref: '#/definitions/Sports'
 
       years_in_sport:
-        description: The number of years playing footbal = 0 .. 50
+        description: The number of years playing football = 0 .. 50
         type: integer
         minimum: 1
         maximum: 50
@@ -842,7 +841,6 @@ definitions:
     
     required:
       - first_name
-      - middle_name
       - last_name
       - email
       - gender
@@ -872,13 +870,13 @@ definitions:
         type: string
 
       birth_date:
-        description: The data of birth of the coach y-m-d (2008-08-24)
+        description: The date of birth of the coach y-m-d (2008-08-24)
         type: string
 
       gender:
-        description: The sex of the coach = ['mail', 'femail']
+        description: The sex of the coach = ['male', 'female']
         type: string
-        enum: ['mail', 'femail']
+        enum: ['male', 'female']
       
       address_first_line:
         description: The first line of the address for the coach's primary residence
@@ -889,7 +887,7 @@ definitions:
         type: string
 
       city:
-        description: The city the coach was boarn in
+        description: The city the coach was born in
         type: string
 
       state:
@@ -935,14 +933,14 @@ definitions:
         # Pushed over once season is 'live' - not entered during registration
         
       roles:
-        description: Games coached (commer seperated list) = ['Head Coach', 'Quarterback Coach', 'Wide Reciever Coach', 'Linebacker Coach', 'Offensive Coordinator', 'Special Teams', 'Assistant Coach', 'Tight End Coach', 'Running Back Coach', 'Defensive Back Coach', 'Defensive Coordinator']
+        description: Games coached (comma separated list) = ['Head Coach', 'Quarterback Coach', 'Wide Reciever Coach', 'Linebacker Coach', 'Offensive Coordinator', 'Special Teams', 'Assistant Coach', 'Tight End Coach', 'Running Back Coach', 'Defensive Back Coach', 'Defensive Coordinator']
         type: string
         items:
           $ref: '#/definitions/GamesCoached'
         # Pushed over once season is 'live' - not entered during registration
       
       certifications:
-        description: Certificates held (comma seperated list)
+        description: Certificates held (comma separated list)
         type: string
         # Pushed over when HUF is connected via API
         
@@ -1020,9 +1018,9 @@ definitions:
         # Pushed over once season is 'live' - not entered during registration
 
       team_gender:
-        description: The gender of the team registering for = ['mail', 'femail', 'co-ed']
+        description: The gender of the team registering for =['male', 'female', 'co-ed']
         type: string
-        enum: ['mail', 'femail', 'co-ed']
+        enum: ['male', 'female', 'co-ed']
         # Pushed over once season is 'live' - not entered during registration
         
 #      team_age_group:
@@ -1062,13 +1060,13 @@ definitions:
         type: string
     
       position:
-        description: The position the user is in (commer seperated list) = ['Quarterback', 'Center', 'Running Back', 'Fullback', 'Wide Receiver', 'Tight End', 'Left Guard', 'Right Guard', 'Left Tackle', 'Right Tackle', 'Defensive Tackle', 'Defensive End', 'Linebacker', 'Safety', 'Cornerback', 'Punter']
+        description: The position the user is in (comma separated list) = ['Quarterback', 'Center', 'Running Back', 'Fullback', 'Wide Receiver', 'Tight End', 'Left Guard', 'Right Guard', 'Left Tackle', 'Right Tackle', 'Defensive Tackle', 'Defensive End', 'Linebacker', 'Safety', 'Cornerback', 'Punter']
         type: string
         items:
           $ref: '#/definitions/Positions'
         
       external_id:
-        description: The 3rd party id used you use to identify the player registeration
+        description: The 3rd party id used you use to identify the player registration
         type: string
   
   #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
@@ -1101,9 +1099,9 @@ definitions:
         # Pushed over once season is 'live' - not entered during registration
 
       team_gender:
-        description: The gender of the team registering for = ['mail', 'femail', 'co-ed']
+        description: The gender of the team registering for = ['male', 'female', 'co-ed']
         type: string
-        enum: ['mail', 'femail', 'co-ed']
+        enum: ['male', 'female', 'co-ed']
           
         #  $ref: '#definitions/TeamGender'
 
@@ -1142,7 +1140,7 @@ definitions:
         type: string
         
       external_id:
-        description: The 3rd party id used you use to identify the coach registeration
+        description: The 3rd party id used you use to identify the coach registration
         type: string
 
    #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
