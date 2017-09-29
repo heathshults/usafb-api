@@ -72,7 +72,9 @@ class UploadCoachCest
         $response = $this->helper->uploadCall($I, $this->uploadCoachUrl . 'coach', $tokenParam, $filename, $dataBuilder['key']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        if ($dataBuilder['expResponse'] != null) {
+            $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        }
     }
 
     /**
@@ -106,8 +108,8 @@ class UploadCoachCest
     protected function uploadcoach()
     {
         return [
-            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
-            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadCoach_Scenario2.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadCoach', 'code' => "200", "expResponse" =>null, "FileName" => "UploadCoach_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadCoachNullColumns', 'code' => "200", "expResponse" => null, "FileName" => "UploadCoach_Scenario2.csv", 'key' => ''],
             ['TestCase' => 'validateUploadCoachInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'unauthorized'],
             ['TestCase' => 'validateUploadCoachNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", "FileName" => "UploadCoach_Scenario2.csv",'key' => 'noaccess']
         ];
