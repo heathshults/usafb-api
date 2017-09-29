@@ -16,6 +16,7 @@ use GuzzleHttp\Exception\ClientException;
 use App\Models\Enums\Role;
 use App\Helpers\AuthHelper;
 use App\Models\User;
+use Log;
 
 /**
  * AuthService
@@ -29,6 +30,7 @@ class AuthService
 {
     protected $management;
     protected $authentication;
+    protected $verifier;
 
     const EXISTENT_USER_MSG = "The email address submitted already exists in the system.";
     const PERMISSION_DENIED_MSG = "Permission denied.";
@@ -51,6 +53,12 @@ class AuthService
             getenv('AUTH_CLIENT_SECRET'),
             getenv('AUTH_AUDIENCE')
         );
+
+        $this->verifier = new JWTVerifier([
+            'supported_algs' => [getenv('AUTH_ALG')],
+            'valid_audiences' => [getenv('AUTH_CLIENT_ID')],
+            'authorized_iss' => [getenv('AUTH_ISS')]
+        ]);
     }
 
     public function getAccessTokenClient()
@@ -222,23 +230,11 @@ class AuthService
     public function authenticatedUser($requestHeaders)
     {
         $token = AuthHelper::getHeaderToken($requestHeaders);
-
-        $intervals = self::RETRY_INTERVALS;
-        $lastInterval = end($intervals);
-        foreach ($intervals as $interval) {
-            try {
-                $userResponse = $this->authentication->userinfo($token);
-                return new User($userResponse);
-            } catch (ClientException $e) {
-                if ($this->isTooManyRequestsException($e)) {
-                    if ($interval === $lastInterval) {
-                        throw new InternalException('Server not available. Please try again later.');
-                    }
-                    sleep($interval);
-                    continue;
-                }
-                throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
-            }
+        try {
+            return new User(json_decode(json_encode($this->verifier->verifyAndDecode($token)), true));
+        } catch (\Auth0\SDK\Exception\CoreException $e) {
+            Log::error($e->getMessage());
+            throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
         }
     }
 
@@ -316,7 +312,7 @@ class AuthService
                 $userCreated["email"],
                 getenv('AUTH_CONNECTION')
             );
-            return $userCreated;
+            return new User($userCreated);
         } catch (ClientException $e) {
             $message = $e->getMessage();
             if (strpos($message, 'The user already exists') !== false) {
@@ -329,13 +325,14 @@ class AuthService
     /**
      * Get user by id
      *
-     * @param string $id
+     * @param string $userId
      *
      * @return json
      */
-    public function getUserById($id)
+    public function getUserById($userId)
     {
-        return $this->getManagement()->users->get($id);
+        $user = $this->getManagement()->users->get($userId);
+        return new User($user);
     }
 
     /**
@@ -416,7 +413,7 @@ class AuthService
      *
      * @return json
      */
-    public function updateUser($id, $data)
+    public function updateUser($userId, $data)
     {
         if (isset($data['role'])) {
             throw new BadRequestHttpException("Role can not be changed.");
@@ -428,8 +425,7 @@ class AuthService
             $data['client_id'] = getenv('AUTH_CLIENT_ID');
         }
         $metadata = [];
-        $metadata_fields = $this->metadataFields();
-        foreach ($metadata_fields as $field) {
+        foreach (AuthHelper::METADATA_FIELDS as $field) {
             if (isset($data[$field])) {
                 $metadata[$field] = $data[$field];
                 unset($data[$field]);
@@ -440,7 +436,8 @@ class AuthService
         }
 
         try {
-            return $this->getManagement()->users->update($id, $data);
+            $updatedUserResponse = $this->getManagement()->users->update($userId, $data);
+            return new User($updatedUserResponse);
         } catch (ClientException $e) {
             $message = $e->getMessage();
             if (strpos($message, 'The specified new email already exists') !== false) {
@@ -463,42 +460,33 @@ class AuthService
         $options = [
             "search_engine" => "v2",
             "include_totals" => true,
-            "per_page" => 10,
-            "page" => 0
+            'per_page' => 10,
+            'page' => 0
         ];
         if (isset($criteria['page'])) {
-            $page = $criteria['page'];
-            if (isset($page['number'])) {
-                $options['page'] = $page['number'];
-            }
-            if (isset($page['size'])) {
-                $options['per_page'] = $page['size'];
-            }
+            $options['page'] = $criteria['page'] - 1;
+        }
+        if (isset($criteria['per_page'])) {
+            $options['per_page'] = $criteria['per_page'];
         }
         if (isset($criteria['sort'])) {
-            $options['sort'] = $this->extractSortField($criteria['sort']);
+            $options['sort'] = AuthHelper::extractSortField($criteria['sort']);
         }
 
         if (isset($criteria['q'])) {
-            $options['q'] = $this->createFilterQuery($criteria['q']);
+            $options['q'] = AuthHelper::createFilterQuery($criteria['q']);
         }
 
         $result = $this->getManagement()->users->getAll($options);
-
-        $users = [];
+        $users = [
+            "page" => $options['page'] + 1,
+            "per_page" => $options['per_page'],
+            "total" => 0,
+            "data" => []
+        ];
         if (!empty($result['users'])) {
-            $totalUsers = $result['total'];
-            $pageSize = intval($options['per_page']);
-            $totalPages = intval(ceil($totalUsers/$pageSize));
-            $currentPage = intval($options['page']);
-            $users = [
-                "meta" => [
-                    "total_pages" => $totalPages,
-                    "total_users" => $totalUsers
-                ],
-                "data" => $result['users'],
-                "links" => $this->createLinksPagination($currentPage, $pageSize, $totalPages)
-            ];
+            $users["total"] = $result['total'];
+            $users["data"] = AuthHelper::getUserList($result['users']);
         }
         return $users;
     }
@@ -576,5 +564,17 @@ class AuthService
             "next" =>  $next,
             "last" => $usersUrl.$pageNumberParam.$lastPage.$pageSizeParam.$pageSize
         ];
+    }
+
+    /**
+     * Set TokenVerifier
+     *
+     * @param Auth0\SDK\JWTVerifier $verifier
+     *
+     * @return void
+     */
+    public function setVerifier($verifier)
+    {
+        $this->verifier =  $verifier;
     }
 }

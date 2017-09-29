@@ -7,7 +7,7 @@ use App\Http\Services\AuthService;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use App\Models\Enums\Role;
 use Illuminate\Http\Request;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
 
 
 class AuthenticateMiddlewareTest extends \TestCase
@@ -49,7 +49,7 @@ class AuthenticateMiddlewareTest extends \TestCase
     {
 
         $service = new AuthService();
-        $service->setAuthentication(MockHelper::authenticationMock());
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
         $this->assertEquals($service->getAccessTokenClient(), 'token123');
     }
 
@@ -61,7 +61,7 @@ class AuthenticateMiddlewareTest extends \TestCase
     public function testAccessTokenClientFailure()
     {
         $service = new AuthService();
-        $service->setAuthentication(MockHelper::authenticationMock(null));
+        $service->setAuthentication(AuthMockHelper::authenticationMock(null));
         $this->assertEquals($service->getAccessTokenClient(), null);
     }
 
@@ -72,7 +72,7 @@ class AuthenticateMiddlewareTest extends \TestCase
      */
     public function testSuccessfullRequestAuthenticatedUser()
     {
-        $mockAuth = MockHelper::authServiceMock();
+        $mockAuth = AuthMockHelper::authServiceMock();
         $this->app->instance('Auth', $mockAuth);
         $request = Request::create('/users', 'GET', []);
         $request->headers->add(['Authorization' => ['Bearer token123']]);
@@ -95,7 +95,7 @@ class AuthenticateMiddlewareTest extends \TestCase
      */
     public function testExceptionNotAuthenticatedUser()
     {
-        $mockAuth = MockHelper::authServiceMock(false);
+        $mockAuth = AuthMockHelper::authServiceMock(false);
         $this->app->instance('Auth', $mockAuth);
         $request = Request::create('/users', 'GET', []);
         $request->headers->add(['Authorization' => ['Bearer token123']]);
@@ -117,7 +117,7 @@ class AuthenticateMiddlewareTest extends \TestCase
      */
     public function testExceptionMessageNotAuthenticatedUser()
     {
-        $mockAuth = MockHelper::authServiceMock(false);
+        $mockAuth = AuthMockHelper::authServiceMock(false);
         $this->app->instance('Auth', $mockAuth);
         $request = Request::create('/users', 'GET', []);
         $request->headers->add(['Authorization' => ['Bearer token123']]);

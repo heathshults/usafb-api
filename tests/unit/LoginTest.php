@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Mockery;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
 
 class LoginTest extends \TestCase
 {
@@ -14,7 +14,7 @@ class LoginTest extends \TestCase
      */
     public function testSuccessfulLogin()
     {
-        $mockAuthService = MockHelper::authServiceMock();
+        $mockAuthService = AuthMockHelper::authServiceMock();
         $this->app->instance('Auth', $mockAuthService);
 
         $data = $mockAuthService->login('test1@gmail.com', 'test1');

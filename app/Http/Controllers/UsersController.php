@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Enums\Role;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -12,6 +13,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use App\Helpers\PaginationHelper;
 use App\Helpers\AuthHelper;
+use App\Transformers\UserTransformer;
+use App\Transformers\UserLogTransformer;
+
+use League\fractalService\Pagination\IlluminatePaginatorAdapter;
+use League\fractalService\Manager;
+use League\fractalService\Resource\Collection;
+use League\fractalService\Resource\Item;
+use App\Models\Enums\LogEvent;
 
 /**
  * UsersController
@@ -23,6 +32,27 @@ use App\Helpers\AuthHelper;
  */
 class UsersController extends Controller
 {
+
+    protected $authService;
+    protected $fractalService;
+    protected $userTransformer;
+    protected $logsService;
+    protected $userLogTransformer;
+
+    /**
+     * Initialize auth service
+     *
+     * @constructor
+     */
+    public function __construct()
+    {
+        $this->authService = app('Auth');
+        $this->fractalService = app('Fractal');
+        $this->logsService = app('UserLog');
+
+        $this->userTransformer = new UserTransformer();
+        $this->userLogTransformer = new UserLogTransformer();
+    }
     /**
      * Create user
      * Url: POST /users
@@ -34,24 +64,24 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $user = $request->user();
-        $isUSSFStaff = AuthHelper::isSuperUser($user);
+        $roles = implode(",", Role::values());
 
         $validationRules = [
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'phone_number' => 'numeric'
+            'phone_number' => 'numeric',
+            'role' => 'required|in:'.$roles
         ];
-        $role = "";
-        if ($isUSSFStaff) {
-            $validationRules['role'] = 'required';
-            $role = Role::label($request->input('role'));
-        }
+
         $this->validate(
             $request,
-            $validationRules
+            $validationRules,
+            [
+                "role.in" => "The role should be one the defined types (".$roles.")"
+            ]
         );
-        $user = [
+        $newUser = [
             'email' => $request->input('email'),
             'connection' => getenv('AUTH_CONNECTION'),
             'password' => substr(hash('sha512', rand()), 0, 8),
@@ -62,12 +92,15 @@ class UsersController extends Controller
                 'phone_number' => $request->input('phone_number'),
                 'state' => $request->input('state'),
                 'postal_code' => $request->input('postal_code'),
-                'roles' => [$role],
+                'roles' => [$request->input('role')],
                 'created_by' => $user->getId()
             ]
         ];
 
-        return app('Auth')->createUser($user);
+        $userResponse = $this->authService->createUser($newUser);
+        $this->logsService->create(LogEvent::CREATE, $user, $userResponse);
+
+        return $this->fractalService->item($userResponse, $this->userTransformer);
     }
 
     /**
@@ -81,7 +114,24 @@ class UsersController extends Controller
     public function getAll(Request $request)
     {
         $criteria = $request->query();
-        return app('Auth')->getAllUsers($criteria);
+        $listResponse = $this->authService->getAllUsers($criteria);
+        $list = $listResponse['data'];
+        $usersPaginator = new LengthAwarePaginator(
+            $list,
+            $listResponse['total'],
+            $listResponse['per_page'],
+            $listResponse['page'],
+            [
+                'path' => $request->url()
+            ]
+        );
+
+        return $this->fractalService->paginatedCollection(
+            $list,
+            $this->userTransformer,
+            $usersPaginator,
+            PaginationHelper::additionalQueryParams($request->all())
+        );
     }
 
     /**
@@ -95,7 +145,7 @@ class UsersController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        return app('Auth')->deleteUser($id);
+        return $this->authService->deleteUser($id);
     }
 
     /**
@@ -109,7 +159,8 @@ class UsersController extends Controller
      */
     public function getById(Request $request, $id)
     {
-        return app('Auth')->getUserById($id);
+        $user = $this->authService->getUserById($userId);
+        return $this->fractalService->item($user, $this->userTransformer);
     }
 
     /**
@@ -117,13 +168,13 @@ class UsersController extends Controller
      * Url: PUT /users/{id}
      *
      * @param Request $request
-     * @param string $id User id
+     * @param string $userId User id
      *
      * @return json
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $userId)
     {
-        if (empty($id)) {
+        if (empty($userId)) {
             throw new NotFoundHttpException("User id required.");
         }
 
@@ -157,7 +208,13 @@ class UsersController extends Controller
         );
         $user = $request->user();
         $data['modified_by'] = $user['id'];
-        return app('Auth')->updateUser($id, $data);
+
+        $previousUser = $this->authService->getUserById($userId);
+        $updatedUser = $this->authService->updateUser($userId, $data);
+
+        $this->logsService->create(LogEvent::UPDATE, $admin, $updatedUser, $previousUser);
+
+        return $this->fractalService->item($updatedUser, $this->userTransformer);
     }
 
     /**
@@ -177,11 +234,12 @@ class UsersController extends Controller
 
         $userId = rawurldecode($userId);
 
-        $paginatedResult = app('UserLog')->getPaginatedList($userId, $itemsPerPage);
-
-        return PaginationHelper::paginationResponse(
-            $paginatedResult,
-            $request->input('per_page')
+        $list = $this->logsService->getPaginatedList($userId, $itemsPerPage);
+        return $this->fractalService->paginatedCollection(
+            $list,
+            $this->userLogTransformer,
+            null,
+            PaginationHelper::additionalQueryParams($request->all())
         );
     }
 }

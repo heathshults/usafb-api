@@ -2,6 +2,8 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+use League\Fractal\Manager;
+
 try {
     (new Dotenv\Dotenv(__DIR__.'/../'))->load();
 } catch (Dotenv\Exception\InvalidPathException $e) {
@@ -114,6 +116,20 @@ $app->singleton(
     'Auth',
     function ($app) {
         return new App\Http\Services\AuthService();
+    }
+);
+
+$app->singleton(
+    'Fractal',
+    function ($app) {
+        return new App\Http\Services\FractalService(new Manager());
+    }
+);
+
+$app->singleton(
+    'UserLog',
+    function ($app) {
+        return new App\Http\Services\UserLogService();
     }
 );
 

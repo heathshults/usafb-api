@@ -5,7 +5,8 @@ use Illuminate\Http\UploadedFile;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamFile;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
+use Tests\Helpers\AwsMockHelper;
 
 class UploadControllerTest extends \TestCase
 {
@@ -39,9 +40,9 @@ class UploadControllerTest extends \TestCase
     */
     public function testSuccessfulUploadingPlayerCsv()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
-        $this->app->instance('App\Http\Services\AwsService', MockHelper::awsServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
+        AwsMockHelper::mockAwsFacade();
         $structure = [
             'csv' => [
                 'input.csv' => self::PLAYERS_CSV
@@ -55,8 +56,6 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-        $this->assertArrayHasKey('report', $response->getOriginalContent());
-        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 
     /**
@@ -64,9 +63,9 @@ class UploadControllerTest extends \TestCase
     */
     public function testSuccessfulUploadingCoachCsv()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
-        $this->app->instance('App\Http\Services\AwsService', MockHelper::awsServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
+        AwsMockHelper::mockAwsFacade();
         $structure = [
             'csv' => [
                 'input.csv' => self::COACHES_CSV
@@ -80,7 +79,5 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-        $this->assertArrayHasKey('report', $response->getOriginalContent());
-        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 }

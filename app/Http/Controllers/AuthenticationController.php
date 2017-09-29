@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Validator;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use App\Transformers\UserTransformer;
+use App\Transformers\MessageTransformer;
 
 /**
  * AuthenticationController
@@ -18,6 +23,25 @@ class AuthenticationController extends Controller
 
     const INPUT_EMAIL = 'email';
     const INPUT_PWD = 'password';
+
+    protected $authService;
+    protected $fractal;
+    protected $userTransformer;
+    protected $messageTransformer;
+
+    /**
+     * Initialize auth service
+     *
+     * @constructor
+     */
+    public function __construct(Manager $fractal)
+    {
+        $this->authService = app('Auth');
+        $this->fractal = $fractal;
+        $this->userTransformer = new UserTransformer();
+        $this->messageTransformer = new MessageTransformer();
+    }
+
     /**
      * Login user by email and password
      * Url: /auth/login
@@ -35,7 +59,7 @@ class AuthenticationController extends Controller
                 self::INPUT_PWD => 'required'
             ]
         );
-        return app('Auth')->login($request->input(self::INPUT_EMAIL), $request->input(self::INPUT_PWD));
+        return $this->authService->login($request->input(self::INPUT_EMAIL), $request->input(self::INPUT_PWD));
     }
 
     /**
@@ -48,38 +72,8 @@ class AuthenticationController extends Controller
      */
     public function getAuthenticatedUser(Request $request)
     {
-       // TODO Replace this with User Transformer (Fractal)
-        $user = $request->user();
-        $response = [
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'first_name' => $user->getFirstName(),
-            'last_name' => $user->getLastName(),
-            'phone_number' => $user->getPhoneNumber(),
-            'city' => $user->getCity(),
-            'state' => $user->getState(),
-            'postal_code' => $user->getPostalCode(),
-            'roles' => $user->getRoles(),
-            'email_verified' => (boolean) $user->getEmailVerified(),
-            'picture' => $user->getPicture(),
-            'status' => $user->getStatus(),
-            'updated_at' => $user->getUpdatedAt(),
-            'created_at' => $user->getCreatedAt(),
-            'last_login' => $user->getLastLogin()
-        ];
-
-        if (!is_null($user->getNickname())) {
-            $response['nickname'] = $user->getNickname();
-        }
-
-        if (!is_null($user->getUpdatedBy())) {
-            $response['updated_by'] = $user->getUpdatedBy();
-        }
-
-        if (!is_null($user->getCreatedBy())) {
-            $response['created_by'] = $user->getCreatedBy();
-        }
-        return $response;
+        $user = new Item($request->user(), $this->userTransformer);
+        return $this->fractal->createData($user)->toArray();
     }
 
     /**
@@ -98,7 +92,10 @@ class AuthenticationController extends Controller
                 self::INPUT_EMAIL => 'required|email'
             ]
         );
-        return app('Auth')->forgotPassword($request->input(self::INPUT_EMAIL));
+        $response = $this->authService->forgotPassword($request->input(self::INPUT_EMAIL));
+
+        $user = new Item($response, $this->messageTransformer);
+        return $this->fractal->createData($user)->toArray();
     }
 
     /**
@@ -117,6 +114,6 @@ class AuthenticationController extends Controller
                 self::INPUT_EMAIL => 'required|email'
             ]
         );
-        return app('Auth')->resetPassword($request->input(self::INPUT_EMAIL));
+        return $this->authService->resetPassword($request->input(self::INPUT_EMAIL));
     }
 }

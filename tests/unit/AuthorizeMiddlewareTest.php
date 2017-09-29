@@ -7,7 +7,7 @@ use App\Http\Services\AuthService;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Models\Enums\Role;
 use Illuminate\Http\Request;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
 use App\Helpers\AuthHelper;
 
 
@@ -33,7 +33,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     public function testHasRolesSuccessfull()
     {
         $roles = [Role::label(Role::SUPER_USER)];
-        $hasRole = AuthHelper::hasRoles(MockHelper::user(), $roles);
+        $hasRole = AuthHelper::hasRoles(AuthMockHelper::user(), $roles);
         $this->assertTrue($hasRole);
     }
 
@@ -46,7 +46,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     public function testFailedHasRoles()
     {
         $roles = [Role::label(Role::ADMIN_USER)];
-        $hasRole = AuthHelper::hasRoles(MockHelper::user(), $roles);
+        $hasRole = AuthHelper::hasRoles(AuthMockHelper::user(), $roles);
         $this->assertFalse($hasRole);
     }
 
@@ -59,7 +59,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     {
         self::$request->setUserResolver(
             function () {
-                return MockHelper::user();
+                return AuthMockHelper::user();
             }
         );
         $response = self::$middleware->handle(
@@ -83,7 +83,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     {
         self::$request->setUserResolver(
             function () {
-                return MockHelper::user(
+                return AuthMockHelper::user(
                     [
                         getenv('AUTH_METADATA') => [
                             'roles' => [Role::label(Role::TEST)]
@@ -112,7 +112,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     {
         self::$request->setUserResolver(
             function () {
-                return MockHelper::user(
+                return AuthMockHelper::user(
                     [
                         getenv('AUTH_METADATA') => [
                             'roles' => [Role::label(Role::PARTNER_USER)]

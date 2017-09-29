@@ -25,6 +25,7 @@ class User
     protected $state;
     protected $picture;
     protected $lastLogin;
+    protected $country;
 
     /**
      * Initialize authentication client with auth credentials
@@ -73,6 +74,10 @@ class User
 
         if (empty($userMetadata) && isset($user[getenv('AUTH_METADATA')])) {
             $userMetadata = $user[getenv('AUTH_METADATA')];
+        }
+
+        if (isset($userMetadata['country'])) {
+            $this->country = $userMetadata['country'];
         }
 
         if (isset($userMetadata['first_name'])) {
@@ -294,5 +299,15 @@ class User
     public function getLastLogin()
     {
         return $this->lastLogin;
+    }
+
+    /**
+     * Returns user country
+     *
+     * @return array country
+     */
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

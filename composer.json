@@ -16,7 +16,8 @@
     "flow/jsonpath" : "^0.3.4",
     "illuminate/redis": "~5.4.0",
     "appzcoder/lumen-routes-list": "^1.0",
-    "predis/predis": "~1.0"
+    "predis/predis": "~1.0",
+    "pitpit/php-diff": "^1.0@dev"
 	},
 	"require-dev" : {
 		"fzaninotto/faker" : "~1.4",
@@ -26,7 +27,8 @@
 		"codeception/codeception" : "^2.3.5",
     "monolog/monolog" : "^1.23",
     "mikey179/vfsStream": "^1.6",
-    "aws/aws-sdk-php-laravel": "^3.1"
+    "aws/aws-sdk-php-laravel": "^3.1",
+    "league/fractal": "^0.17.0"
 	},
 	"autoload" : {
 		"psr-4" : {
