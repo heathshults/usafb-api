@@ -76,6 +76,11 @@ class UploadPlayerCest
         if ($dataBuilder['expResponse'] != null) {
             $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
         }
+        else
+        {
+            $playerCSV = $I->grabDataFromResponseByJsonPath('csv');
+            $playerReport = $I->grabDataFromResponseByJsonPath('report');
+        }
 
     }
 

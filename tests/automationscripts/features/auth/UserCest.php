@@ -93,7 +93,7 @@ class UserCest
      * Tests to validate create user
      * @group release
      * @group sanity
-     * @group regression_norun
+     * @group regression
      * @dataprovider createUser
      */
     public function verifyCreateUser(ApiTester $I, \Codeception\Example $dataBuilder)

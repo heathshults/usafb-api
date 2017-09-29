@@ -74,6 +74,11 @@ class UploadCoachCest
         $I->seeResponseIsJson();
         if ($dataBuilder['expResponse'] != null) {
             $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
+        }else
+        {
+            $coachCSV = $I->grabDataFromResponseByJsonPath('csv');
+            $coachReport = $I->grabDataFromResponseByJsonPath('report');
+
         }
     }
 
