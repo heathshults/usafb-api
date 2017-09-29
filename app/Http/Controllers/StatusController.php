@@ -20,7 +20,6 @@ class StatusController extends Controller
         return $this->getStatusApp() == 'OK'
             ? response()->json(['data' => 'OK'])
             : response()->json(['data' => 'System Unavailable. Check status.'], 503);
-        ;
     }
 
     public function status()
