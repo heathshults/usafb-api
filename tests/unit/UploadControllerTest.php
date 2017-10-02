@@ -55,8 +55,6 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-        $this->assertArrayHasKey('report', $response->getOriginalContent());
-        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 
     /**
@@ -80,7 +78,5 @@ class UploadControllerTest extends \TestCase
         );
 
         $this->assertEquals(200, $response->status());
-        $this->assertArrayHasKey('report', $response->getOriginalContent());
-        $this->assertArrayHasKey('csv', $response->getOriginalContent());
     }
 }

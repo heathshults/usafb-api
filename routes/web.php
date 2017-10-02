@@ -91,7 +91,7 @@ $app->group(
                 $app->post(
                     '/registrants/import',
                     [
-                        'uses' => 'UploadController@uploadFile'
+                        'uses' => 'UploadController@processFileUpload'
                     ]
                 );
             }
