@@ -23,6 +23,7 @@ class UserLogs extends Migration
                 $table->string('old_value')->nullable();
                 $table->string('new_value')->nullable();
                 $table->string('created_by');
+                $table->string('created_by_id');
                 $table->dateTime('created_at');
             }
         );
