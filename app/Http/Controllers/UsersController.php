@@ -153,11 +153,11 @@ class UsersController extends Controller
      * Url: GET /users/{id}
      *
      * @param Request $request
-     * @param Request $id
+     * @param Request $userId
      *
      * @return json
      */
-    public function getById(Request $request, $id)
+    public function getById(Request $request, $userId)
     {
         $user = $this->authService->getUserById($userId);
         return $this->fractalService->item($user, $this->userTransformer);
