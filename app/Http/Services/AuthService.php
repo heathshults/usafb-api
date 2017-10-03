@@ -170,11 +170,10 @@ class AuthService
     {
         $user = $this->getUserByEmail($email);
         if ($user !== null) {
-            $emailSentMessage = $this->authentication->dbconnections_change_password(
+            return $this->authentication->dbconnections_change_password(
                 $email,
                 getenv('AUTH_CONNECTION')
             );
-            return response()->json(["message" => $emailSentMessage]);
         }
         throw new NotFoundHttpException("User not found");
     }
