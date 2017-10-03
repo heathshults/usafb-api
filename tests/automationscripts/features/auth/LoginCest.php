@@ -143,7 +143,7 @@ class LoginCest
     protected function forgotPasswordScenarios()
     {
         return [
-            ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'footballautomation@gmail.com'], "expResponse" => "{ \"message\": \"We've just sent you an email to reset your password.\" }"],
+            ['TestCase' => 'verifyForgotPasswordWithValidEmail', 'code' => "200", "postBody" => ['email' => 'footballautomation@gmail.com'], "expResponse" => "{\"data\":{\"message\":\"We've just sent you an email to reset your password.\"}}"],
             ['TestCase' => 'verifyForgotPasswordWithNoEmailRegistered', 'code' => "404", "postBody" => ['email' => 'dummynotexists@gmail.com'], "expResponse" => "{ \"errors\":[ { \"error\": \"Record not found\" } ] }"],
         ];
     }

@@ -64,7 +64,7 @@ class UploadPlayerCest
 
 
         $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
-        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $token = $I->grabDataFromResponseByJsonPath('id_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";

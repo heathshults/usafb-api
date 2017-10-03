@@ -62,7 +62,7 @@ class UploadCoachCest
         }
 
         $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
-        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $token = $I->grabDataFromResponseByJsonPath('id_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
@@ -92,7 +92,7 @@ class UploadCoachCest
         $I->wantToTest($dataBuilder['TestCase']);
         $I->comment($dataBuilder['TestCase']);
         $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I)));
-        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $token = $I->grabDataFromResponseByJsonPath('id_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
