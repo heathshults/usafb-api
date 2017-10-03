@@ -248,7 +248,7 @@ class AuthService
      */
     public function isSuperUser($user)
     {
-        return $this->hasRoles($user, [Role::label(Role::SUPER_USER)]);
+        return $this->hasRoles($user, [Role::SUPER_USER]);
     }
 
     /**
@@ -261,7 +261,7 @@ class AuthService
      */
     public function isTestUser($user)
     {
-        return $this->hasRoles($user, [Role::label(Role::TEST)]);
+        return $this->hasRoles($user, [Role::TEST]);
     }
 
     /**
@@ -351,16 +351,6 @@ class AuthService
         // Because the user delete returns an empty response
         $this->getUserById($id);
         return $this->getManagement()->users->delete($id);
-    }
-
-    /**
-     * Get roles
-     *
-     * @return json
-     */
-    public function getRoles()
-    {
-        return response()->json(Role::labels());
     }
 
     /**

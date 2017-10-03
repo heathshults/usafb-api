@@ -29,7 +29,7 @@ class AuthMockHelper
                 'state' => '',
                 'country' => '',
                 'postal_code' => '',
-                'roles' => [Role::label(Role::SUPER_USER)],
+                'roles' => [Role::SUPER_USER],
                 'created_by' => 'auth0|456',
                 'updated_by' => 'auth0|789'
             ],

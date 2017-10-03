@@ -64,7 +64,7 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $user = $request->user();
-        $roles = implode(",", Role::values());
+        $roles = implode(",", Role::allRoles());
 
         $validationRules = [
             'first_name' => 'required',

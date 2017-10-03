@@ -28,7 +28,7 @@ class MockHelper
                 'phone_number'=> '',
                 'state'=> '',
                 'postal_code'=> '',
-                'roles'=> [Role::label(Role::SUPER_USER)]
+                'roles'=> [Role::SUPER_USER]
             ],
             'email_verified'=> false,
             'user_id'=> 'auth0|123',
@@ -64,7 +64,7 @@ class MockHelper
                 'phone_number'=> '',
                 'state'=> '',
                 'postal_code'=> '',
-                'roles'=> [Role::label(Role::SUPER_USER)]
+                'roles'=> [Role::SUPER_USER]
             ],
             'email_verified'=> false,
             'user_id'=> 'auth0|123',

@@ -21,7 +21,7 @@ class AuthorizeMiddlewareTest extends \TestCase
     {
         self::$request = Request::create('/users', 'GET', []);
         self::$middleware = new \App\Http\Middleware\Authorize();
-        self::$roles = Role::label(Role::SUPER_USER);
+        self::$roles = Role::SUPER_USER;
     }
 
     /**
@@ -32,7 +32,7 @@ class AuthorizeMiddlewareTest extends \TestCase
      */
     public function testHasRolesSuccessfull()
     {
-        $roles = [Role::label(Role::SUPER_USER)];
+        $roles = [Role::SUPER_USER];
         $hasRole = AuthHelper::hasRoles(AuthMockHelper::user(), $roles);
         $this->assertTrue($hasRole);
     }
@@ -45,7 +45,7 @@ class AuthorizeMiddlewareTest extends \TestCase
      */
     public function testFailedHasRoles()
     {
-        $roles = [Role::label(Role::ADMIN_USER)];
+        $roles = [Role::ADMIN_USER];
         $hasRole = AuthHelper::hasRoles(AuthMockHelper::user(), $roles);
         $this->assertFalse($hasRole);
     }
@@ -86,7 +86,7 @@ class AuthorizeMiddlewareTest extends \TestCase
                 return AuthMockHelper::user(
                     [
                         getenv('AUTH_METADATA') => [
-                            'roles' => [Role::label(Role::TEST)]
+                            'roles' => [Role::TEST]
                         ]
                     ]
                 );
@@ -115,7 +115,7 @@ class AuthorizeMiddlewareTest extends \TestCase
                 return AuthMockHelper::user(
                     [
                         getenv('AUTH_METADATA') => [
-                            'roles' => [Role::label(Role::PARTNER_USER)]
+                            'roles' => [Role::PARTNER_USER]
                         ]
                     ]
                 );

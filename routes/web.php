@@ -33,7 +33,7 @@ $app->group(
         $app->group(
             ['middleware' =>
                 [
-                    'authorize:'.Role::label(Role::SUPER_USER)
+                    'authorize:'.Role::SUPER_USER
                 ]
             ],
             function () use ($app) {
@@ -78,7 +78,7 @@ $app->group(
         $app->group(
             ['middleware' =>
                 [
-                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::ADMIN_USER)
+                    'authorize:'.Role::SUPER_USER.','.Role::ADMIN_USER
                 ]
             ],
             function () use ($app) {
@@ -105,7 +105,7 @@ $app->group(
         $app->group(
             ['middleware' =>
                 [
-                    'authorize:'.Role::label(Role::SUPER_USER).','.Role::label(Role::TEST)
+                    'authorize:'.Role::SUPER_USER.','.Role::TEST
                 ]
             ],
             function () use ($app) {
