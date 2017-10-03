@@ -2666,16 +2666,16 @@
     "packages-dev": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.36.18",
+            "version": "3.36.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "80a150c061f36276a1618fa858e763c874309365"
+                "reference": "bed7567b2ed8e70fbf5e1ecf927100e91955b29a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/80a150c061f36276a1618fa858e763c874309365",
-                "reference": "80a150c061f36276a1618fa858e763c874309365",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bed7567b2ed8e70fbf5e1ecf927100e91955b29a",
+                "reference": "bed7567b2ed8e70fbf5e1ecf927100e91955b29a",
                 "shasum": ""
             },
             "require": {
@@ -2742,7 +2742,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2017-10-02T19:28:24+00:00"
+            "time": "2017-10-03T15:53:57+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
