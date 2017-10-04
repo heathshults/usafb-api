@@ -4,44 +4,29 @@ namespace App\Models\Enums;
 
 class Role
 {
-    const SUPER_USER        = 1;
-    const ADMIN_USER   = 2;
-    const STAKEHOLDER_USER   = 3;
-    const PARTNER_USER   = 4;
-    const LEAGUE_CLUB_TEAM_USER   = 5;
-    const TEST = 6;
+    const SUPER_USER            = 'Super User';
+    const ADMIN_USER            = 'Admin User';
+    const STAKEHOLDER_USER      = 'Stakeholder User';
+    const PARTNER_USER          = 'Partner User';
+    const LEAGUE_CLUB_TEAM_USER = 'League/Club/Team User';
+    const TEST                  = 'Automation Test';
 
-    protected static $typeLabels = array(
-        self::SUPER_USER        => 'Super User',
-        self::ADMIN_USER   => 'Admin User',
-        self::STAKEHOLDER_USER   => 'Stakeholder User',
-        self::PARTNER_USER   => 'Partner User',
-        self::LEAGUE_CLUB_TEAM_USER   => 'League/Club/Team User',
-        self::TEST   => 'Automation Test'
-    );
-
-    /**
-     * @param int $typeValue
-     * @return string
-     */
-    public static function label($typeValue)
-    {
-        return isset(static::$typeLabels[$typeValue]) ? static::$typeLabels[$typeValue] : '';
-    }
+    protected static $allRoles = [
+        self::SUPER_USER,
+        self::ADMIN_USER,
+        self::STAKEHOLDER_USER,
+        self::PARTNER_USER,
+        self::LEAGUE_CLUB_TEAM_USER,
+        self::TEST
+    ];
 
     /**
+     * Returns all roles
+     *
      * @return array
      */
-    public static function labels()
+    public static function allRoles()
     {
-        return static::$typeLabels;
-    }
-
-    /**
-     * @return array
-     */
-    public static function values()
-    {
-        return array_keys(static::$typeLabels);
+        return static::$allRoles;
     }
 }

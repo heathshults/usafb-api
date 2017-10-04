@@ -16,6 +16,18 @@ use App\Helpers\FileHelper;
  */
 class AwsService
 {
+    protected $s3Client;
+
+    /**
+     * Initialize auth service
+     *
+     * @constructor
+     */
+    public function __construct()
+    {
+        $this->s3Client = AwsFacade::createClient('s3');
+    }
+
     /**
      * This generates the report json and unique files names to upload it to s3 bucket
      * @param  File $file        The uploading file
@@ -84,9 +96,7 @@ class AwsService
     public function s3PutObject($filePath, $objectKey)
     {
         try {
-            $s3Client = AwsFacade::createClient('s3');
-
-            $result = $s3Client->putObject(
+            $result = $this->s3Client->putObject(
                 [
                     'Bucket'     => getenv('AWS_UPLOAD_BUCKET'),
                     'Key'        => $objectKey,

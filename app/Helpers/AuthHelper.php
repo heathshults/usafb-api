@@ -144,21 +144,7 @@ class AuthHelper
      */
     public static function isSuperUser($user)
     {
-        return AuthHelper::hasRoles($user, [Role::label(Role::SUPER_USER)]);
-    }
-
-     /**
-      * Determines if a user is Pro Club Admin
-      * This user will have full access to all api endpoints
-      * but limited data
-      *
-      * @param User $user
-      *
-      * @return boolean
-      */
-    public static function isProClubAdmin($user)
-    {
-        return AuthHelper::hasRoles($user, [Role::label(Role::PRO_CLUB_ADMIN)]);
+        return AuthHelper::hasRoles($user, [Role::SUPER_USER]);
     }
 
     /**
@@ -171,7 +157,7 @@ class AuthHelper
      */
     public static function isTestUser($user)
     {
-        return AuthHelper::hasRoles($user, [Role::label(Role::TEST)]);
+        return AuthHelper::hasRoles($user, [Role::TEST]);
     }
 
     /**

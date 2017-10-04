@@ -5,16 +5,16 @@ namespace Tests\Helpers;
 use Mockery;
 use App\Models\Enums\Role;
 use App\Models\User;
-use Aws\Result;
+use App\Transformers\UserTransformer;
 
-class MockHelper
+class AuthMockHelper
 {
     /**
      * User profile returned by auth
      *
      * @return array
      */
-    static function userResponse()
+    static function authUserResponse()
     {
         return [
             'sub' => 'auth0|123',
@@ -22,13 +22,16 @@ class MockHelper
             'email' => 'smith@gmail.com',
             'connection' => 'connection',
             getenv('AUTH_METADATA') => [
-                'first_name'=> 'Jhon',
-                'last_name'=> 'Smith',
-                'city'=> '',
-                'phone_number'=> '',
-                'state'=> '',
-                'postal_code'=> '',
-                'roles'=> [Role::SUPER_USER]
+                'first_name' => 'Jhon',
+                'last_name' => 'Smith',
+                'city' => '',
+                'phone_number' => '',
+                'state' => '',
+                'country' => '',
+                'postal_code' => '',
+                'roles' => [Role::SUPER_USER],
+                'created_by' => 'auth0|456',
+                'updated_by' => 'auth0|789'
             ],
             'email_verified'=> false,
             'user_id'=> 'auth0|123',
@@ -41,7 +44,8 @@ class MockHelper
                 'isSocial'=> false
             ],
             'updated_at'=> '2017-07-24T20:45:26.793Z',
-            'created_at'=> '2017-07-24T20:45:26.793Z'
+            'created_at'=> '2017-07-24T20:45:26.793Z',
+            'last_login'=> '2017-07-24T20:45:26.793Z'
         ];
     }
 
@@ -50,35 +54,26 @@ class MockHelper
      *
      * @return array
      */
-    static function normalizedUser()
+    static function userResponse()
     {
-        return [
-            'id' => 'auth0|123',
-            'name' => 'Jhon Smith',
-            'email' => 'smith@gmail.com',
-            'connection' => 'connection',
-            'user_metadata' => [
-                'first_name'=> 'Jhon',
-                'last_name'=> 'Smith',
-                'city'=> '',
-                'phone_number'=> '',
-                'state'=> '',
-                'postal_code'=> '',
-                'roles'=> [Role::SUPER_USER]
-            ],
-            'email_verified'=> false,
-            'user_id'=> 'auth0|123',
-            'picture'=> 'https://s.gravatar.com/avatar/123.png',
-            'nickname'=> 'Jhon Smith',
-            'identities'=> [
-                'connection'=> 'Username-Password-Authentication',
-                'user_id'=> '123',
-                'provider'=> 'auth0',
-                'isSocial'=> false
-            ],
-            'updated_at'=> '2017-07-24T20:45:26.793Z',
-            'created_at'=> '2017-07-24T20:45:26.793Z'
-        ];
+        $userTransformer = new UserTransformer();
+        return $userTransformer->transform(AuthMockHelper::user());
+    }
+
+    /**
+     * Return a user model based from auth0 response
+     *
+     * @param array $data Additional fields information
+     *
+     * @return array
+     */
+    static function user($data = [], $userResponse = null)
+    {
+        if (is_null($userResponse)) {
+            return new User(array_merge(AuthMockHelper::authUserResponse(), $data));
+        }
+
+        return new User($userResponse);
     }
 
 
@@ -93,6 +88,7 @@ class MockHelper
             'first_name'=> 'Jhon',
             'last_name'=> 'Smith',
             'city'=> '',
+            'cuntry'=> '',
             'phone_number'=> '',
             'state'=> '',
             'postal_code'=> '',
@@ -113,7 +109,7 @@ class MockHelper
 
         if (is_null($exceptionCode)) {
             $mockAuth->shouldReceive('userinfo')
-                ->andReturn(MockHelper::userResponse());
+                ->andReturn(AuthMockHelper::authUserResponse());
         } else {
             $exceptionResponse = Mockery::mock(\GuzzleHttp\Psr7\Response::class);
             $exceptionResponse->shouldReceive('getStatusCode')
@@ -136,22 +132,6 @@ class MockHelper
                 ]
             );
         return $mockAuth;
-    }
-
-    /**
-     * Return a user model based from auth0 response
-     *
-     * @param array $data Additional fields information
-     *
-     * @return array
-     */
-    static function user($data = [], $userResponse = null)
-    {
-        if (is_null($userResponse)) {
-            return new User(array_merge(MockHelper::userResponse(), $data));
-        }
-
-        return new User($userResponse);
     }
 
     /**
@@ -184,7 +164,7 @@ class MockHelper
     static function managementMock($data = [], $userList = [])
     {
 
-        $userUpdated = array_merge(MockHelper::userResponse(), $data);
+        $userUpdated = array_merge(AuthMockHelper::authUserResponse(), $data);
         $mockManagement = Mockery::mock(\Auth0\SDK\API\Management::class);
         $mockManagement->users = Mockery::mock(\Auth0\SDK\API\Management\Users::class);
         $mockManagement->users->shouldReceive('update')
@@ -192,7 +172,7 @@ class MockHelper
                 $userUpdated
             )
             ->shouldReceive('create')
-            ->andReturn(MockHelper::userResponse())
+            ->andReturn(AuthMockHelper::authUserResponse())
             ->shouldReceive('getAll')
             ->andReturn($userList);
         return $mockManagement;
@@ -205,7 +185,7 @@ class MockHelper
      */
     static function authenticateMiddlewareMock($hasUser = true)
     {
-        $user = $hasUser ? MockHelper::user() : null;
+        $user = $hasUser ? AuthMockHelper::user() : null;
         $mockMiddleware = Mockery::mock(App\Http\Middleware\Authenticate::class);
         $mockMiddleware->shouldReceive('handle')->once()
             ->andReturnUsing(
@@ -228,7 +208,7 @@ class MockHelper
      */
     static function authServiceMock($hasUser = true, $hasRole = true)
     {
-        $user = $hasUser ? MockHelper::user() : null;
+        $user = $hasUser ? AuthMockHelper::user() : null;
         $mockAuth = Mockery::mock(App\Http\Services\AuthService::class);
         $mockAuth->shouldReceive('hasRoles')
             ->andReturn($hasRole)
@@ -261,17 +241,47 @@ class MockHelper
     }
 
     /**
-     * Mock AwsService
+     * Mock filter query response
+     *
+     * @return string
+     */
+    static function filterQueryMock($criteria, $scapedCriteria)
+    {
+        return "user_metadata.first_name:*".$scapedCriteria."*"
+        ." OR user_metadata.last_name:*".$scapedCriteria."*"
+        .' OR email:"*'.$criteria.'*"'
+        ." OR user_metadata.roles:*".$scapedCriteria."*";
+    }
+
+    /**
+     * Mock TokenVerifier
      *
      * @return Mock
      */
-    static function awsServiceMock()
+    static function tokenVerifierMock($exception = null)
     {
-        $mockAws = Mockery::mock('App\Http\Services\AwsService')->makePartial();
-        $mockAws->shouldReceive('s3PutObject')
-            ->andReturn(new \Aws\Result(['ObjectURL' => 'http://xxx.xxx']))
-	    ->mock();
-
-        return $mockAws;
+        $mockVerifier = Mockery::mock(\Auth0\SDK\JWTVerifier::class);
+        if (is_null($exception)) {
+            $mockVerifier->shouldReceive('verifyAndDecode')
+                ->with('token123')
+                ->andReturn((object)AuthMockHelper::authUserResponse());
+        } else {
+            $mockVerifier->shouldReceive('verifyAndDecode')
+                ->with('token123')
+                ->andThrow($exception);
+        }
+        return $mockVerifier;
     }
+
+    /**
+     * Mock Auth0 Core Exception
+     *
+     * @return Mock
+     */
+    static function coreExceptionMock()
+    {
+        return Mockery::mock(\Auth0\SDK\Exception\CoreException::class);
+    }
+
+
 }

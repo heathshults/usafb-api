@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Users;
 
 use Mockery;
 use App\Http\Services\AuthService;
@@ -8,11 +8,18 @@ use \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Models\Enums\Role;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
 use Illuminate\Http\Request;
 
 class UpdateUserTest extends \TestCase
 {
+    protected static $userId;
+
+    public static function setUpBeforeClass()
+    {
+        self::$userId = AuthMockHelper::user()->getId();
+    }
+
     /**
      * Test successfull user update
      *
@@ -20,19 +27,19 @@ class UpdateUserTest extends \TestCase
      */
     public function testSuccefullUpdateUser()
     {
-        $data = array(
-            'name' => "Jhon Miler",
+        $data = [
+            'first_name' => "Jhon",
             'email' => 'john.miler@gmail.com'
-        );
+        ];
         $service = new AuthService();
-        $service->setManagement(MockHelper::managementMock($data));
-        $service->setAuthentication(MockHelper::authenticationMock());
-        $userId = MockHelper::userResponse()['user_id'];
+        $service->setManagement(AuthMockHelper::managementMock($data));
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
 
-        $updatedUser = $service->updateUser($userId, $data);
-        $this->assertEquals($updatedUser['name'], $data['name']);
-        $this->assertEquals($updatedUser['email'], $data['email']);
-        $this->assertEquals($updatedUser['nickname'], MockHelper::userResponse()['nickname']);
+        $updatedUser = $service->updateUser(self::$userId, $data);
+
+        $this->assertEquals($updatedUser->getFirstName(), $data['first_name']);
+        $this->assertEquals($updatedUser->getEmail(), $data['email']);
+        $this->assertEquals($updatedUser->getNickname(), AuthMockHelper::userResponse()['nickname']);
     }
 
     /**
@@ -42,7 +49,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedMissingId()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $this->json('PUT', '/users')
             ->seeJson(
@@ -60,13 +67,11 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedMissingData()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
-        $response = $this->json('PUT', '/users/auth0|123')
+        $this->json('PUT', '/users/auth0|123')
             ->seeJson(
-                [
-                    'error' => 'Data required.'
-                ]
+                ['error' => 'Data required.']
             )
             ->seeStatusCode(400);
     }
@@ -82,12 +87,11 @@ class UpdateUserTest extends \TestCase
         $data = [
             'role' => 1
         ];
-        $service->setManagement(MockHelper::managementMock($data));
-        $service->setAuthentication(MockHelper::authenticationMock());
-        $userId = MockHelper::userResponse()['user_id'];
+        $service->setManagement(AuthMockHelper::managementMock($data));
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
 
         $this->expectException(BadRequestHttpException::class);
-        $response = $service->updateUser($userId, $data);
+        $response = $service->updateUser(self::$userId, $data);
     }
 
     /**
@@ -101,12 +105,11 @@ class UpdateUserTest extends \TestCase
         $data = [
             'role' => 1
         ];
-        $service->setManagement(MockHelper::managementMock($data));
-        $service->setAuthentication(MockHelper::authenticationMock());
-        $userId = MockHelper::userResponse()['user_id'];
+        $service->setManagement(AuthMockHelper::managementMock($data));
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
 
         $this->expectExceptionMessage("Role can not be changed.");
-        $response = $service->updateUser($userId, $data);
+        $response = $service->updateUser(self::$userId, $data);
     }
 
     /**
@@ -116,7 +119,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedEmptyLastName()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $response = $this->json('PUT', '/users/auth0|123', [
             'last_name' => ''
@@ -135,7 +138,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedInvalidPhoneNumber()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $response = $this->json('PUT', '/users/auth0|123', [
             'phone_number' => 'test'
@@ -154,7 +157,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedEmptyEmail()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $response = $this->json('PUT', '/users/auth0|123', [
             'email' => ''
@@ -173,7 +176,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedInvalidEmail()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $response = $this->json('PUT', '/users/auth0|123', [
             'email' => 'test'
@@ -192,7 +195,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedEmptyFirstName()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $response = $this->json('PUT', '/users/auth0|123', [
             'first_name' => ''
@@ -211,7 +214,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedShortPassword()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 7);
         $response = $this->json('PUT', '/users/auth0|123', [
@@ -233,7 +236,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingSymbolAndLowercaseLetter()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^a-z]/", "A", $password);
@@ -258,7 +261,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingSymbolAndUppercase()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^A-Z]/", "a", $password);
@@ -283,7 +286,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingSymbolAndNumber()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^0-9]/", "a", $password);
@@ -308,7 +311,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingLowercaseAndUppercaseLetter()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^a-zA-Z]/", "*", $password);
@@ -332,7 +335,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingLetterAndNumber()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^a-z]/", "A", $password);
@@ -357,7 +360,7 @@ class UpdateUserTest extends \TestCase
      */
     public function testFailedWeakPasswordMissingUppercaseAndNumber()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
 
         $password = substr(hash('sha512', rand()), 0, 8);
         $password = preg_replace("/[^A-Z]/", "a", $password);

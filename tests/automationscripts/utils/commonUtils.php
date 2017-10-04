@@ -85,6 +85,7 @@ class CommonUtils
         $this->changeEnvironmentVariable("AWS_KEY", "AKIAJEVXDTNIVKJOOSVQ");
         $this->changeEnvironmentVariable("AWS_SECRET", "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");
         $this->changeEnvironmentVariable("AWS_UPLOAD_BUCKET", "alwaysrichard-upload");
+        $this->changeEnvironmentVariable("AUTH_ALG", "RS256");
     }
 
     /**
@@ -175,7 +176,7 @@ class CommonUtils
      */
     public function waitTimeCall()
     {
-        return sleep(0);
+        return sleep(10);
     }
 
     /**

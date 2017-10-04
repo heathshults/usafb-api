@@ -1,13 +1,14 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Users;
 
 use Mockery;
 use App\Http\Services\AuthService;
 use \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use App\Models\Enums\Role;
 use Illuminate\Http\Request;
-use Tests\Helpers\MockHelper;
+use Tests\Helpers\AuthMockHelper;
+use App\Models\User;
 
 
 class CreateUserTest extends \TestCase
@@ -17,26 +18,12 @@ class CreateUserTest extends \TestCase
         'first_name'=> 'Jhon',
         'last_name'=> 'Smith',
         'city'=> '',
+        'country'=> '',
         'phone_number'=> '',
         'state'=> '',
         'postal_code'=> '',
         'role'=> Role::SUPER_USER
     ];
-
-    /**
-     * Mock authenticated user
-     *
-     * @return Mock
-     */
-    public function setUpMockAuthenticatedUser()
-    {
-        $user = [
-            getenv('AUTH_METADATA') => [
-                'roles' => [Role::SUPER_USER]
-            ]
-        ];
-        return $user;
-    }
 
     /**
      * Test Management Service creation is singlenton
@@ -46,29 +33,9 @@ class CreateUserTest extends \TestCase
     public function testSinglentonManagementClient()
     {
         $service = new AuthService();
-        $mockManagement = MockHelper::managementMock();
+        $mockManagement = AuthMockHelper::managementMock();
         $service->setManagement($mockManagement);
         $this->assertEquals($service->getManagement(), $mockManagement);
-    }
-
-    /**
-     * Test function that determines if a user is Super admin
-     *
-     * @return void
-     */
-    public function testIsSuperUser()
-    {
-        $user = MockHelper::normalizedUser();
-        $service = new AuthService();
-        $service->setAuthentication(MockHelper::authenticationMock());
-        $this->assertTrue($service->isSuperUser($user));
-
-        $user = [
-            'user_metadata' => [
-                'roles' => []
-            ]
-        ];
-        $this->assertFalse($service->isSuperUser($user));
     }
 
     /**
@@ -76,14 +43,14 @@ class CreateUserTest extends \TestCase
      *
      * @return void
      */
-    public function testSuccefullCreateUser()
+    public function testSuccessfullCreateUser()
     {
         $service = new AuthService();
-        $service->setManagement(MockHelper::managementMock());
-        $service->setAuthentication(MockHelper::authenticationMock());
+        $service->setManagement(AuthMockHelper::managementMock());
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
 
         $userCreated = $service->createUser($this->userRequest);
-        $this->assertEquals($userCreated, MockHelper::userResponse());
+        $this->assertEquals($userCreated, AuthMockHelper::user());
 
     }
 
@@ -94,8 +61,8 @@ class CreateUserTest extends \TestCase
      */
     public function testMissingEmail()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
 
         $response = $this->json('POST', '/users', [
                 'first_name' => 'test',
@@ -113,8 +80,8 @@ class CreateUserTest extends \TestCase
      */
     public function testInvalidEmail()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
 
         $this->json('POST', '/users', [
                 'email' => 'test',
@@ -133,13 +100,13 @@ class CreateUserTest extends \TestCase
      */
     public function testMissingFirstName()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
 
         $this->json('POST', '/users', [
                 'email' => 'test@gmail.com',
                 'last_name' => 'test',
-                'role' => Role::SUPER_USER
+                'role' => ROLE::SUPER_USER
             ])->seeJson([
             'title' => 'Invalid First_name',
         ])->seeStatusCode(400);
@@ -152,13 +119,13 @@ class CreateUserTest extends \TestCase
      */
     public function testMissingLastName()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
 
         $this->json('POST', '/users', [
                 'email' => 'test@gmail.com',
                 'first_name' => 'test',
-                'role' => Role::SUPER_USER
+                'role' => ROLE::SUPER_USER
             ])->seeJson([
             'title' => 'Invalid Last_name',
         ])->seeStatusCode(400);
@@ -171,8 +138,8 @@ class CreateUserTest extends \TestCase
      */
     public function testMissingRole()
     {
-        $this->app->instance('Auth', MockHelper::authServiceMock());
-        $this->app->instance('App\Http\Middleware\Authenticate', MockHelper::authenticateMiddlewareMock());
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
 
         $this->json('POST', '/users', [
                 'email' => 'test@gmail.com',
@@ -183,6 +150,17 @@ class CreateUserTest extends \TestCase
             ])->seeStatusCode(400);
     }
 
-
-
+    public function testInvalidRoleWhenCreatingUser()
+    {
+        $this->app->instance('Auth', AuthMockHelper::authServiceMock());
+        $this->app->instance('App\Http\Middleware\Authenticate', AuthMockHelper::authenticateMiddlewareMock());
+        $this->json('POST', '/users', [
+                'email' => 'test@gmail.com',
+                'first_name' => 'test',
+                'last_name' => 'test',
+                'role' => 'some other role'
+            ])->seeJson([
+                'title' => 'Invalid Role',
+            ])->seeStatusCode(400);
+    }
 }

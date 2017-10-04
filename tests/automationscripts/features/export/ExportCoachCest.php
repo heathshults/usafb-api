@@ -58,7 +58,7 @@ class ExportCoachCest
             $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
         }
         $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
-        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $token = $I->grabDataFromResponseByJsonPath('id_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";
@@ -91,7 +91,7 @@ class ExportCoachCest
             $postbody = $this->common->loginPostRequest(null, $this->common->getEnvEmail("", $I), $this->common->getEnvPassword("", $I));
         }
         $loginResponse = $this->loginhelper->postCall($I, $this->getLoginUrl, $postbody);
-        $token = $I->grabDataFromResponseByJsonPath('access_token');
+        $token = $I->grabDataFromResponseByJsonPath('id_token');
         $tokenParam = $token[0];
         if ($dataBuilder['key'] == "unauthorized") {
             $tokenParam = "ABCDEFGHIJ";

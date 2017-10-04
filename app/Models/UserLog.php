@@ -18,5 +18,16 @@ class UserLog extends Model
 {
     protected $table = 'users_logs';
 
+    protected $fillable = [
+        'user_id',
+        'event_type',
+        'data_field',
+        'old_value',
+        'new_value',
+        'created_by',
+        'created_at',
+        'created_by_id'
+    ];
+
     public $timestamps = false;
 }
