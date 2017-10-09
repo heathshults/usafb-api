@@ -105,6 +105,10 @@ class User
             $this->city = $userMetadata['city'];
         }
 
+        if (isset($userMetadata['organization'])) {
+            $this->organization = $userMetadata['organization'];
+        }
+
         if (isset($userMetadata['roles'])) {
             $this->roles = $userMetadata['roles'];
         }
@@ -119,10 +123,6 @@ class User
 
         if (isset($user['last_login'])) {
             $this->lastLogin = $user['last_login'];
-        }
-
-        if (isset($user['organization'])) {
-            $this->organization = $user['organization'];
         }
     }
 
