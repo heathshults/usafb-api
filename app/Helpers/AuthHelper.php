@@ -23,6 +23,8 @@ class AuthHelper
         'phone_number',
         'state',
         'postal_code',
+        'country',
+        'organization',
         'updated_by'
     ];
 
