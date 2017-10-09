@@ -22,6 +22,7 @@ class CreateUserTest extends \TestCase
         'phone_number'=> '',
         'state'=> '',
         'postal_code'=> '',
+        'organization'=> '',
         'role'=> Role::SUPER_USER
     ];
 
