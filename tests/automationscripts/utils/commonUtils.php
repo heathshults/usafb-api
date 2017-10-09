@@ -247,4 +247,26 @@ class CommonUtils
 
         return $dbPwd;
     }
+
+    /**
+     * Function to remove key from json body
+     * @param $jsonBody
+     * @param $key
+     * @return mixed|string
+     *
+     */
+    public function unsetKeyJson($jsonBody, $key1)
+    {
+        $arrayList = array();
+        foreach ($jsonBody as $key => $jsons) {
+            foreach ($jsons as $key => $value) {
+                if ($key1 == $key) {
+                    unset($jsons[$key]);
+                }
+
+            }
+            array_push($arrayList, $jsons);
+        }
+        return $arrayList;
+    }
 }

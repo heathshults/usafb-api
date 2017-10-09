@@ -97,7 +97,6 @@ class UserHelper
         $I->clearHeaders();
         $I->setHeaders();
         $I->amBearerAuthenticated($token);
-        codecept_debug("URL".$url);
         $I->sendGET($url);
         return $I->grabResponse();
     }
