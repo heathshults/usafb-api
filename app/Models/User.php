@@ -26,6 +26,7 @@ class User
     protected $picture;
     protected $lastLogin;
     protected $country;
+    protected $organization;
 
     /**
      * Initialize authentication client with auth credentials
@@ -102,6 +103,10 @@ class User
 
         if (isset($userMetadata['city'])) {
             $this->city = $userMetadata['city'];
+        }
+
+        if (isset($userMetadata['organization'])) {
+            $this->organization = $userMetadata['organization'];
         }
 
         if (isset($userMetadata['roles'])) {
@@ -309,5 +314,15 @@ class User
     public function getCountry()
     {
         return $this->country;
+    }
+
+    /**
+     * Returns user organization
+     *
+     * @return array organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 }

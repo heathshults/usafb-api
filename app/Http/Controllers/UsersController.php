@@ -88,10 +88,12 @@ class UsersController extends Controller
             'user_metadata' => [
                 'first_name' => $request->input('first_name'),
                 'last_name' => $request->input('last_name'),
+                'country' => $request->input('country'),
                 'city' => $request->input('city'),
                 'phone_number' => $request->input('phone_number'),
                 'state' => $request->input('state'),
                 'postal_code' => $request->input('postal_code'),
+                'organization' => $request->input('organization'),
                 'roles' => [$request->input('role')],
                 'created_by' => $user->getId()
             ]
