@@ -73,15 +73,7 @@ class UploadPlayerCest
         $response = $this->helper->uploadCall($I, $this->uploadPlayerUrl . 'player', $tokenParam, $this->uploaddir . $dataBuilder['FileName']);
         $I->seeResponseCodeIs($dataBuilder['code']);
         $I->seeResponseIsJson();
-        if ($dataBuilder['expResponse'] != null) {
-            $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
-        }
-        else
-        {
-            $playerCSV = $I->grabDataFromResponseByJsonPath('csv');
-            $playerReport = $I->grabDataFromResponseByJsonPath('report');
-        }
-
+        $this->validator->validateUploadResponse($response, $dataBuilder['expResponse'], $I, $this->common);
     }
 
     /**
@@ -90,8 +82,8 @@ class UploadPlayerCest
     protected function uploadplayer()
     {
         return [
-            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => null, "FileName" => "UploadPlayer_Scenario1.csv", 'key' => ''],
-            ['TestCase' => 'validateUploadPlayerNullColumns', 'code' => "200", "expResponse" => null, "FileName" => "UploadPlayer_Scenario2.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadPlayer', 'code' => "200", "expResponse" => "{\"processed\":4,\"errors\":0}", "FileName" => "UploadPlayer_Scenario1.csv", 'key' => ''],
+            ['TestCase' => 'validateUploadPlayerNullColumns', 'code' => "200", "expResponse" => "{\"processed\":0,\"errors\":4}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => ''],
             ['TestCase' => 'validateUploadPlayersInvalidAuth', 'code' => "401", "expResponse" => "{\"errors\":[{\"error\":\"Invalid token.\"}]}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => 'unauthorized'],
             ['TestCase' => 'validateUploadPlayersNoAccess', 'code' => "403", "expResponse" => "{\"errors\":[{\"error\":\"Permission denied.\"}]}", "FileName" => "UploadPlayer_Scenario2.csv", 'key' => 'noaccess'],
 
