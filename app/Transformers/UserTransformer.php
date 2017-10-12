@@ -32,6 +32,7 @@ class UserTransformer extends TransformerAbstract
             'email_verified' => (boolean) $user->getEmailVerified(),
             'picture' => $user->getPicture(),
             'status' => $user->getStatus(),
+            'organization' => $user->getOrganization(),
             'updated_at' => $user->getUpdatedAt(),
             'created_at' => $user->getCreatedAt(),
             'last_login' => $user->getLastLogin()
