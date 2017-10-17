@@ -67,7 +67,7 @@ class Registration extends Model
           'state' => 'required',
           'address_first_line' => 'required',
           'address_second_line' => 'notRequired',
-          'country' => 'required',
+          'county' => 'required',
           'league' => 'required',
           'org_name' => 'required',
           'org_state' => 'required',

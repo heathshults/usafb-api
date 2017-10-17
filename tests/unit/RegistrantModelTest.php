@@ -29,7 +29,7 @@ class RegistrantModelTest extends \TestCase {
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->country = 'A country';
+        $entity->county = 'A county';
 
         $entity->save();
         $this->assertTrue(!is_null($entity->usafb_id));

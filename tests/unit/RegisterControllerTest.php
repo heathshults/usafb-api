@@ -22,7 +22,7 @@ class RegisterControllerTest extends \TestCase
         "city": "City",
         "state": "State",
         "zip_code": "1261",
-        "country": "US",
+        "county": "US",
         "email": "myemail@guest.com",
         "phone_number": "12345789",
         "game_type": [

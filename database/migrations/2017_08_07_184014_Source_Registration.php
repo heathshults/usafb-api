@@ -55,7 +55,7 @@ class SourceRegistration extends Migration
             $table->string('state');
             $table->string('address_first_line', 128);
             $table->string('address_second_line', 128)->nullable();
-            $table->string('country', 100);
+            $table->string('county', 100);
             $table->timestamps();
 
             $table->foreign('source_id')

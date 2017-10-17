@@ -76,7 +76,7 @@ class Registrant extends Model
           'state' => 'required',
           'address_first_line' => 'required',
           'address_second_line' => 'notRequired',
-          'country' => 'required'
+          'county' => 'required'
         ];
     }
 

@@ -700,7 +700,7 @@ definitions:
       - level
       - state
       - address_first_line
-      - country
+      - county
       - grade
       - graduation_year
       - height
@@ -763,8 +763,8 @@ definitions:
         description: The postal code
         type: string
 
-      country:
-        description: The country for the player's primary residence
+      county:
+        description: The county for the player's primary residence
         type: string
 
       email:
@@ -850,7 +850,7 @@ definitions:
       - level
       - state
       - address_first_line
-      - country
+      - county
       - years_of_experience
       - roles
       - certifications
@@ -898,8 +898,8 @@ definitions:
         description: The postal code
         type: string
 
-      country:
-        description: The country for the coach's primary residence
+      county:
+        description: The county for the coach's primary residence
         type: string
 
       phone_number:

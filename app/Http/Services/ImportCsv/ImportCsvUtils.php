@@ -27,7 +27,7 @@ class ImportCsvUtils
       '#_of_years_coaching' => 'years_of_experience',
       'coach_role' => 'roles',
       'city' => 'city',
-      'country' => 'country',
+      'county' => 'county',
       'email' => 'email',
       'first_name' => 'first_name',
       'game_type' => 'game_type',
