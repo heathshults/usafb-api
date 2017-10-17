@@ -133,4 +133,11 @@ $app->singleton(
     }
 );
 
+$app->singleton(
+    'Model',
+    function ($app) {
+        return new App\Http\Services\ModelService();
+    }
+);
+
 return $app;

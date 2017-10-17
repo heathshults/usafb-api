@@ -15,8 +15,8 @@ class Registrant extends Migration
     {
         Schema::create('registrant', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('type'); 
-            $table->string('usafb_id', 32)->nullable(); 
+            $table->string('type');
+            $table->string('usafb_id', 32)->nullable();
             $table->string('first_name', 40);
             $table->string('middle_name', 40)->nullable();
             $table->string('last_name', 80);
@@ -31,7 +31,7 @@ class Registrant extends Migration
             $table->string('state');
             $table->string('address_first_line', 128);
             $table->string('address_second_line', 128)->nullable();
-            $table->string('county', 100);
+            $table->string('country', 100);
             $table->timestamps();
         });
     }

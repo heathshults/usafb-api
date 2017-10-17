@@ -9,7 +9,7 @@ use App\Helpers\UsafbIdHelper;
 
 class RegistrantModelTest extends \TestCase {
     use DatabaseMigrations;
-  
+
     /**
     * Should test that an ussf_id is generated on create
     */
@@ -29,7 +29,7 @@ class RegistrantModelTest extends \TestCase {
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
         $this->assertTrue(!is_null($entity->usafb_id));

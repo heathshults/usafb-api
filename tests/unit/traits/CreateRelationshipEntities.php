@@ -45,7 +45,7 @@ trait CreateRelationshipEntities
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
 
@@ -86,7 +86,7 @@ trait CreateRelationshipEntities
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
 

@@ -17,7 +17,7 @@ class RegistrationModelTest extends \TestCase {
     * Should test that a registration is created ok
     */
     public function testShouldGenerateARegistrationSuccessfully() {
-        
+
         $entity = new Registration;
         $entity->source_id = $this->getSource()->id;
         $entity->registrant_id = $this->getRegistrant()->id;
@@ -45,7 +45,7 @@ class RegistrationModelTest extends \TestCase {
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
         $this->assertTrue(!is_null($entity->id));
@@ -56,7 +56,7 @@ class RegistrationModelTest extends \TestCase {
     */
     public function testShouldFailIFARegistrationIsCreatedWithoutSource() {
         $this->expectException(\PDOException::class);
-        
+
         $entity = new Registration;
         $entity->registrant_id = $this->getRegistrant()->id;
         $entity->type = 'PLAYER' ;
@@ -83,7 +83,7 @@ class RegistrationModelTest extends \TestCase {
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
     }
@@ -120,7 +120,7 @@ class RegistrationModelTest extends \TestCase {
         $entity->level = 'LEVEL';
         $entity->state = 'CALIFORNIA';
         $entity->address_first_line = 'An Address 1234';
-        $entity->county = 'A county';
+        $entity->country = 'A country';
 
         $entity->save();
     }
