@@ -131,7 +131,10 @@ class AuthHelper
         $filterQuery = "user_metadata.first_name:*".$escapedCriteria."*";
         $filterQuery .= " OR user_metadata.last_name:*".$escapedCriteria."*";
         $filterQuery .= ' OR email:"*'.$criteria.'*"';
-        $filterQuery .=" OR user_metadata.roles:*".$escapedCriteria."*";
+        $filterQuery .= " OR user_metadata.roles:*".$escapedCriteria."*";
+        $filterQuery .= " OR user_metadata.city:*".$escapedCriteria."*";
+        $filterQuery .= " OR user_metadata.state:*".$criteria."*";
+        $filterQuery .= " OR user_metadata.organization:*".$escapedCriteria."*";
 
         return $filterQuery;
     }
