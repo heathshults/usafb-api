@@ -18,12 +18,12 @@ class ParentGuardianModelTest extends \TestCase {
         $entityPlayerRegistration = $this->getPlayerRegistration();
 
         $entityParent = new ParentGuardian;
-        $entityParent->pg_mobile_phone = '123456789';
-        $entityParent->pg_email = 'parent1@email.com';
-        $entityParent->pg_first_name = 'parent1_first_name';
-        $entityParent->pg_last_name = 'parent1_last_name';
-        $entityParent->pg_home_phone = '123456';
-        $entityParent->pg_work_phone = '789010';
+        $entityParent->mobile_phone = '123456789';
+        $entityParent->email = 'parent1@email.com';
+        $entityParent->first_name = 'parent1_first_name';
+        $entityParent->last_name = 'parent1_last_name';
+        $entityParent->home_phone = '123456';
+        $entityParent->work_phone = '789010';
 
         $entityPlayerRegistration->parentsguardians()->save($entityParent);
         $this->assertTrue(!is_null($entityParent->id));
@@ -34,14 +34,14 @@ class ParentGuardianModelTest extends \TestCase {
     */
     public function testShouldFailIFAParentIsCreatedWithoutPlayerRegistration() {
         $this->expectException(\PDOException::class);
-        
+
         $entityParent = new ParentGuardian;
-        $entityParent->pg_mobile_phone = '123456789';
-        $entityParent->pg_email = 'parent1@email.com';
-        $entityParent->pg_first_name = 'parent1_first_name';
-        $entityParent->pg_last_name = 'parent1_last_name';
-        $entityParent->pg_home_phone = '123456';
-        $entityParent->pg_work_phone = '789010';
+        $entityParent->mobile_phone = '123456789';
+        $entityParent->email = 'parent1@email.com';
+        $entityParent->first_name = 'parent1_first_name';
+        $entityParent->last_name = 'parent1_last_name';
+        $entityParent->home_phone = '123456';
+        $entityParent->work_phone = '789010';
 
         $entityParent->save();
     }

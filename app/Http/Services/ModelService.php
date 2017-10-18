@@ -160,7 +160,7 @@ class ModelService
             ParentGuardian::insert($playerRegistrationId, $data);
         } elseif ($isMinor) {
             throw new BadRequestHttpException('The minor should have at least one '.
-                '                             parent/guardian contact information.');
+                                              'parent/guardian contact information.');
         }
     }
 

@@ -59,7 +59,8 @@ trait ValidationTrait
         if ($parsedDate) {
             return date(self::$DATE_FORMAT, strtotime($value));
         } else {
-            throw new BadRequestHttpException('Cant parse that date '. $item . ' - ' . $value . '. Date format: m/d/Y. e.g.: 12/01/2017');
+            throw new BadRequestHttpException('Cant parse that date '.
+                $item . ' - ' . $value . '. Date format: m/d/Y. e.g.: 12/01/2017');
         }
     }
 
@@ -75,7 +76,8 @@ trait ValidationTrait
         } elseif (strtoupper($value) === 'NO' || $value === '0'  || $value === 0 || $value === '' || $value === false) {
             return false;
         } else {
-            throw new BadRequestHttpException('Cant parse that string to boolean '. $item . ' - ' . $value . '. Boolean formats allowed: YES, 1, true - NO, 0, false');
+            throw new BadRequestHttpException('Cant parse that string to boolean
+                '. $item . ' - ' . $value . '. Boolean formats allowed: YES, 1, true - NO, 0, false');
         }
     }
 

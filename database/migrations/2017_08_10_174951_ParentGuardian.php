@@ -15,12 +15,12 @@ class ParentGuardian extends Migration
     {
         Schema::create('parent_guardian', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('pg_mobile_phone', 20)->nullable();
-            $table->string('pg_email')->nullable();
-            $table->string('pg_first_name', 40)->nullable();
-            $table->string('pg_last_name', 80)->nullable();
-            $table->string('pg_home_phone', 20)->nullable();
-            $table->string('pg_work_phone', 20)->nullable();
+            $table->string('mobile_phone', 20)->nullable();
+            $table->string('email')->nullable();
+            $table->string('first_name', 40)->nullable();
+            $table->string('last_name', 80)->nullable();
+            $table->string('home_phone', 20)->nullable();
+            $table->string('work_phone', 20)->nullable();
             $table->timestamps();
         });
     }

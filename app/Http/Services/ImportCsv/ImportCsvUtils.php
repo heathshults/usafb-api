@@ -44,18 +44,18 @@ class ImportCsvUtils
     ];
 
     const CSV_TABLE_MAPPING_GUARDIAN = [
-      'parent_/_guardian_1_cell_phone' => 'pg_mobile_phone',
-      'parent_/_guardian_1_email' => 'pg_email',
-      'parent_/_guardian_1_first_name' => 'pg_first_name',
-      'parent_/_guardian_1_last_name' => 'pg_last_name',
-      'parent_/_guardian_1_home_phone' => 'pg_home_phone',
-      'parent_/_guardian_1_work_phone' => 'pg_work_phone',
-      'parent_/_guardian_2_cell_phone' => 'pg_mobile_phone',
-      'parent_/_guardian_2_email' => 'pg_email',
-      'parent_/_guardian_2_first_name' => 'pg_first_name',
-      'parent_/_guardian_2_last_name' => 'pg_last_name',
-      'parent_/_guardian_2_home_phone' => 'pg_home_phone',
-      'parent_/_guardian_2_work_phone' => 'pg_work_phone'
+      'parent_/_guardian_1_cell_phone' => 'mobile_phone',
+      'parent_/_guardian_1_email' => 'email',
+      'parent_/_guardian_1_first_name' => 'first_name',
+      'parent_/_guardian_1_last_name' => 'last_name',
+      'parent_/_guardian_1_home_phone' => 'home_phone',
+      'parent_/_guardian_1_work_phone' => 'work_phone',
+      'parent_/_guardian_2_cell_phone' => 'mobile_phone',
+      'parent_/_guardian_2_email' => 'email',
+      'parent_/_guardian_2_first_name' => 'first_name',
+      'parent_/_guardian_2_last_name' => 'last_name',
+      'parent_/_guardian_2_home_phone' => 'home_phone',
+      'parent_/_guardian_2_work_phone' => 'work_phone'
     ];
 
     const CSV_TABLE_MAPPING_REGISTRATION = [
