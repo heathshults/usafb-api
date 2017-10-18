@@ -133,7 +133,7 @@ class ModelService
     public function createPlayerRegistration($registrationId)
     {
         $columns = $this->getTableColumns('player_registration');
-        $data = array_intersect_key($this->fileLine, $columns);
+        $data = array_intersect_key(array_merge($this->fileLine, $this->fileLine['registrations'][0]), $columns);
         return PlayerRegistration::insert($registrationId, $data);
     }
 
