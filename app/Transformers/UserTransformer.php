@@ -33,6 +33,8 @@ class UserTransformer extends TransformerAbstract
             'picture' => $user->getPicture(),
             'status' => $user->getStatus(),
             'organization' => $user->getOrganization(),
+            'address' => $user->getAddress(),
+            'address2' => $user->getAddress2(),
             'updated_at' => $user->getUpdatedAt(),
             'created_at' => $user->getCreatedAt(),
             'last_login' => $user->getLastLogin()

@@ -94,6 +94,8 @@ class UsersController extends Controller
                 'state' => $request->input('state'),
                 'postal_code' => $request->input('postal_code'),
                 'organization' => $request->input('organization'),
+                'address' => $request->input('address'),
+                'address2' => $request->input('address2'),
                 'roles' => [$request->input('role')],
                 'created_by' => $user->getId()
             ]
