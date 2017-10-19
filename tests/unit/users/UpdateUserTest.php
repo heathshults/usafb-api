@@ -43,6 +43,44 @@ class UpdateUserTest extends \TestCase
     }
 
     /**
+     * Test successfull block user
+     *
+     * @return void
+     */
+    public function testSuccefullBlockUser()
+    {
+        $data = [
+            'blocked' => true
+        ];
+        $service = new AuthService();
+        $service->setManagement(AuthMockHelper::managementMock($data));
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
+
+        $updatedUser = $service->updateUser(self::$userId, $data);
+
+        $this->assertEquals($updatedUser->getStatus(), 'Disabled');
+    }
+
+    /**
+     * Test successfull unblock user
+     *
+     * @return void
+     */
+    public function testSuccefullUnblockUser()
+    {
+        $data = [
+            'blocked' => false
+        ];
+        $service = new AuthService();
+        $service->setManagement(AuthMockHelper::managementMock($data));
+        $service->setAuthentication(AuthMockHelper::authenticationMock());
+
+        $updatedUser = $service->updateUser(self::$userId, $data);
+
+        $this->assertEquals($updatedUser->getStatus(), 'Enabled');
+    }
+
+    /**
      * Test failure user update when id is missing
      *
      * @return void
