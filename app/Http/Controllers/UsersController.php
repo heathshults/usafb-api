@@ -210,13 +210,13 @@ class UsersController extends Controller
             $validationsRules,
             $passwordCustomMessage
         );
-        $user = $request->user();
-        $data['modified_by'] = $user['id'];
+        $loggedUser = $request->user();
+        $data['updated_by'] = $loggedUser->getId();
 
         $previousUser = $this->authService->getUserById($userId);
         $updatedUser = $this->authService->updateUser($userId, $data);
 
-        $this->logsService->create(LogEvent::UPDATE, $admin, $updatedUser, $previousUser);
+        $this->logsService->create(LogEvent::UPDATE, $loggedUser, $updatedUser, $previousUser);
 
         return $this->fractalService->item($updatedUser, $this->userTransformer);
     }
