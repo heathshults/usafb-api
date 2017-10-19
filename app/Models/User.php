@@ -27,6 +27,8 @@ class User
     protected $lastLogin;
     protected $country;
     protected $organization;
+    protected $address;
+    protected $address2;
 
     /**
      * Initialize authentication client with auth credentials
@@ -107,6 +109,14 @@ class User
 
         if (isset($userMetadata['organization'])) {
             $this->organization = $userMetadata['organization'];
+        }
+
+        if (isset($userMetadata['address'])) {
+            $this->address = $userMetadata['address'];
+        }
+
+        if (isset($userMetadata['address2'])) {
+            $this->address2 = $userMetadata['address2'];
         }
 
         if (isset($userMetadata['roles'])) {
@@ -324,5 +334,25 @@ class User
     public function getOrganization()
     {
         return $this->organization;
+    }
+
+    /**
+     * Returns user address
+     *
+     * @return string address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Returns user address2
+     *
+     * @return string address2
+     */
+    public function getAddress2()
+    {
+        return $this->address2;
     }
 }

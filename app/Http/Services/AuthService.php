@@ -463,7 +463,7 @@ class AuthService
         }
 
         if (isset($criteria['q'])) {
-            $options['q'] = AuthHelper::createFilterQuery($criteria['q']);
+            $options['q'] = "(" . AuthHelper::createFilterQuery($criteria['q']) . ")";
         }
 
         $result = $this->getManagement()->users->getAll($options);
