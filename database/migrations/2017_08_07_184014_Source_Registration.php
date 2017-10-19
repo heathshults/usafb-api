@@ -16,7 +16,7 @@ class SourceRegistration extends Migration
     {
         Schema::create('source', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 255)->unique(); 
+            $table->string('name', 255)->unique();
             $table->string('api_key', 150)->unique();
             $table->timestamps();
         });
@@ -29,13 +29,13 @@ class SourceRegistration extends Migration
 
         Schema::create('registration', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('source_id')->unsigned(); 
+            $table->integer('source_id')->unsigned();
             $table->string('type');
             $table->string('league', 255);
             $table->string('org_name', 255);
             $table->string('org_state', 80);
             $table->string('season', 20);
-            $table->string('external_id')->nullable(); 
+            $table->string('external_id')->nullable();
             $table->boolean('right_to_market')->nullable();
             $table->string('team_gender', 10)->nullable();
             $table->string('team_name', 100)->nullable();

@@ -20,7 +20,7 @@ class ImportCsvServiceTest extends \TestCase
     const CSV = self::CSV_HEADER . self::CSV_NEWLINE . self::CSV_ROWS;
 
     /**
-    * Should test that service returns array 
+    * Should test that service returns array
     */
     public function testShouldReturnArray() {
         $structure = [
@@ -36,9 +36,9 @@ class ImportCsvServiceTest extends \TestCase
         $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
         $this->assertTrue(is_array($response));
     }
-    
+
     /**
-    * Should test a successfull process 
+    * Should test a successfull process
     */
     public function testShouldReturnOneProcesedCeroErrors()
     {
@@ -54,7 +54,7 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertEquals($response['processed'], 1);
         $this->assertEquals($response['errors'], 0);
     }
-    
+
     /**
     * Should test that required fields are taken into account
     */
@@ -95,7 +95,7 @@ class ImportCsvServiceTest extends \TestCase
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
     }
-    
+
     /**
     * Should test that process returns error if UsaFbId is present
     */
@@ -113,21 +113,9 @@ class ImportCsvServiceTest extends \TestCase
 
         $importService = new ImportCsvService;
         $response = $importService->importCsvFile($root->url().'/csv/input.csv', 'PLAYER');
-        
+
         $this->assertEquals($response['processed'], 0);
         $this->assertEquals($response['errors'], 1);
-    }
-    
-    /**
-    * Should test that getRules returns an array of callable rules
-    */
-    public function testShouldReturnAnArrayOfRules()
-    {
-        $importService = new ImportCsvService;
-        $rules = $importService->getRules();
-        foreach($rules as $rule){
-            $this->assertTrue(is_callable($rule['rule']));
-        }
     }
 
     /**

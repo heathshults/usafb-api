@@ -9,7 +9,7 @@ use App\Helpers\UsafbIdHelper;
 
 class RegistrantModelTest extends \TestCase {
     use DatabaseMigrations;
-  
+
     /**
     * Should test that an ussf_id is generated on create
     */

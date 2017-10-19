@@ -1,9 +1,9 @@
 swagger: '2.0'
 info:
   title: NPDB National Player Database
-  
+
   description: The npdb-usafb-api, is an API for the National Player Database which is a unified database of players and coaches.
-  
+
   version: "1.0.0"
 
 host: usafbconnect.com
@@ -35,27 +35,27 @@ responses:
     description: Returns array of users.
     schema:
       $ref: '#/definitions/UsersDefinition'
-      
+
   UploadResponse:
     description: Returns a report of the number of successful and failed records imported into the database from the CSV file.
     schema:
       $ref: '#/definitions/UploadReportDefinition'
-  
+
   DownloadResponse:
     description: Downloads registrant information to a CSV file.
-    schema: 
+    schema:
       type: file
-      
+
   RegisterResponseSuccess: #200
     description: Successfull registration
     schema:
       $ref: '#/definitions/RegistrationSuccess'
-      
+
   RegisterResponseInvalid: #400
     description: The USAFB ID provided is invalid
     schema:
       $ref: '#/definitions/MessageResponse'
-      
+
   RegisterResponseUsafbidNotFound: #404
     description: The USAFB ID provided is not found
     schema:
@@ -70,37 +70,37 @@ responses:
     description: Malformed request
     schema:
       $ref: '#/definitions/MessageResponse'
-    
+
   UnauthorizedError: # 401
     description: Authorization required - missing login information
     schema:
       $ref: '#/definitions/MessageResponse'
-    
+
   ForbiddenError: # 403
     description: Access denied - additional privileges/rights required to retrieve item
     schema:
       $ref: '#/definitions/MessageResponse'
-      
+
   DuplicateUser: # 409
     description: User already exists.
     schema:
-      $ref: '#/definitions/MessageResponse' 
-      
+      $ref: '#/definitions/MessageResponse'
+
   NotFoundError: # 404
     description: Item not found
     schema:
       $ref: '#/definitions/MessageResponse'
-      
+
 paths:
 
   /Auth/User:
     get:
       summary: Returns current user's informatoin.
       description: Returns current user's information.
-        
+
       tags:
         - Authenticate
-        
+
       responses:
         200:
           $ref: '#/responses/UserResponse'
@@ -108,68 +108,68 @@ paths:
           $ref: '#/responses/BadRequestError'
         401:
           $ref: '#/responses/UnauthorizedError'
-          
+
   /Users:
-  
+
     post:
       summary: Creates a New User.
       description: Creates a new administrative user with access to this API.
-      
+
       security:
         - Bearer: []
-        
+
       parameters:
         - name: first_name
           in: query
           description: First Name.
           required: true
           type: string
-          
+
         - name: last_name
           in: query
           description: Last Name.
           required: true
           type: string
-          
+
         - name: email
           in: query
           description: Email
           required: true
           type: string
-          
+
         - name: phone_number
           in: query
           description: Email.
           required: false
           type: string
-          
+
         - name: city
           in: query
           description: City.
           required: false
           type: string
-          
+
         - name: state
           in: query
           description: State.
           required: false
           type: string
-          
+
         - name: postal_code
           in: query
           description: Postal Code.
           required: false
           type: string
-          
+
         - name: role
           in: query
           description: Role.
           required: true
           type: string
-        
+
       tags:
         - Manage Users
-        
+
       responses:
         200:
           $ref: "#/responses/UserResponse"
@@ -181,17 +181,17 @@ paths:
           $ref: '#/responses/NotFoundError'
         409:
           $ref: '#/responses/DuplicateUser'
-  
+
     get:
       summary: Return all Users.
-      description: Returns all users. 
-      
+      description: Returns all users.
+
       security:
         - Bearer: []
-        
+
       tags:
         - Manage Users
-        
+
       responses:
         200:
           $ref: "#/responses/UsersResponse"
@@ -206,10 +206,10 @@ paths:
     get:
       summary: Returns a single user.
       description: Returns a single user.
-      
+
       security:
         - Bearer: []
-        
+
       parameters:
         - name: id
           in: path
@@ -217,10 +217,10 @@ paths:
           required: true
           type: integer
           format: int64
-          
+
       tags:
         - Manage Users
-        
+
       responses:
         200:
           $ref: "#/responses/UserResponse"
@@ -230,11 +230,11 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         404:
            $ref: '#/responses/NotFoundError'
-          
+
     put:
       summary: Updates a single user.
       description: Updates a single user.
-      
+
       security:
         - Bearer: []
 
@@ -244,7 +244,7 @@ paths:
           description: ID of user to fetch.
           required: true
           type: string
-          
+
         - name: first_name
           in: query
           description: First Name.
@@ -262,7 +262,7 @@ paths:
           description: Nick Name.
           required: false
           type: string
-          
+
         - name: picture
           in: query
           description: Image URL of the user's avatar.
@@ -280,47 +280,47 @@ paths:
           description: Indicates if email has been verified.
           required: false
           type: boolean
-          
+
         - name: password
           in: query
           description: User's Password.
           required: false
           type: string
-          
+
         - name: phone_number
           in: query
           description: Email.
           required: false
           type: string
-          
+
         - name: city
           in: query
           description: City.
           required: false
           type: string
-          
+
         - name: state
           in: query
           description: State.
           required: false
           type: string
-          
+
         - name: postal_code
           in: query
           description: Postal Code.
           required: false
           type: string
- 
+
         - name: role
           in: query
           description: Role.
           required: false
           type: string
-          
-          
+
+
       tags:
         - Manage Users
-        
+
       responses:
         200:
           $ref: "#/responses/UserResponse"
@@ -330,24 +330,24 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         404:
            $ref: '#/responses/NotFoundError'
-  
+
     delete:
       summary: Deletes a single user.
       description: TESTING ONLY - Deletes a single user. Note This is for testing/automation only.
-      
+
       security:
         - Bearer: []
-        
+
       parameters:
         - name: id
           in: path
           description: ID of user to fetch.
           required: true
           type: string
-          
+
       tags:
         - Manage Users
-        
+
       responses:
         200:
           description: User secussfully deleted.
@@ -364,24 +364,24 @@ paths:
     post:
       summary: Uploads player information.
       description: Uploads player information from a CSV file.
-      
+
       security:
         - Bearer: []
-      
+
       consumes:
         - multipart/form-data
-        
+
       parameters:
         - name: csv_file
           in: formData
           description: File to be processed.
           required: true
           type: file
-      
+
       tags:
         - Upload
         - Players
-        
+
       responses:
         200:
           $ref: '#/responses/UploadResponse'
@@ -394,17 +394,17 @@ paths:
     get:
       summary: Download player information to an CSV file
       description: Download player information to an CSV file
-    
+
       security:
         - Bearer: []
-      
+
       consumes:
         - application/force-download
 
       tags:
         - Download
         - Players
-      
+
       responses:
         200:
           $ref: '#/responses/DownloadResponse'
@@ -412,17 +412,17 @@ paths:
           $ref: '#/responses/BadRequestError'
         401:
           $ref: '#/responses/UnauthorizedError'
- 
+
  # ---------------------------------------------------
  # ---------------------------------------------------
  # ---------------------------------------------------
 
   /register/player:
-  
+
     put:
       summary: Register a player for the first time for the current season
       description: Register a player that does not have a USAFB ID. If the player is determined to be a unique, then a USAFB ID is assigned.
-    
+
       tags:
         - Players
         - Register
@@ -431,13 +431,13 @@ paths:
         - Bearer: []
 
       parameters:
-          
+
         - name: registration
           in: body
           required: true
           schema:
             $ref: '#/definitions/PlayerRegistration'
-      
+
       responses:
         200:
           $ref: '#/responses/RegisterResponseSuccess'
@@ -449,13 +449,13 @@ paths:
           $ref: '#/responses/RegisterResponseDuplicate'
         500:
           description: Unexpected error
-          
+
   /register/player/{usafbid}:
-  
+
     put:
       summary: Register a player for current season
-      description: Registers a player that already has a USAFB ID. A registration is required for each league the player is participating in. 
-    
+      description: Registers a player that already has a USAFB ID. A registration is required for each league the player is participating in.
+
       tags:
         - Players
         - Register
@@ -464,19 +464,19 @@ paths:
         - Bearer: []
 
       parameters:
-          
+
         - name: usafbid
           in: path
           description: ID of user to register
           required: true
           type: string
-          
+
         - name: registration
           in: body
           required: true
           schema:
             $ref: '#/definitions/PlayerRegistration'
-      
+
       responses:
         200:
           $ref: '#/responses/RegisterResponseSuccess'
@@ -490,13 +490,13 @@ paths:
           $ref: '#/responses/RegisterResponseDuplicate'
         500:
           description: Unexpected error
-          
+
   /register/coach:
-  
+
     put:
       summary: Register a coach for the first time for the current season
       description: Register a coach that does not have a USAFB ID. If the coach is determined to be a unique, then a USAFB ID is assigned.
-    
+
       tags:
         - Coach
         - Register
@@ -505,13 +505,13 @@ paths:
         - Bearer: []
 
       parameters:
-          
+
         - name: registration
           in: body
           required: true
           schema:
             $ref: '#/definitions/CoachRegistration'
-      
+
       responses:
         200:
           $ref: '#/responses/RegisterResponseSuccess'
@@ -523,13 +523,13 @@ paths:
           $ref: '#/responses/RegisterResponseDuplicate'
         500:
           description: Unexpected error
-          
+
   /register/coach/{usafbid}:
-  
+
     put:
       summary: Register a coach for current season
-      description: Registers a coach that already has a USAFB ID. A registration is required for each league the coach is participating in. 
-    
+      description: Registers a coach that already has a USAFB ID. A registration is required for each league the coach is participating in.
+
       tags:
         - Coach
         - Register
@@ -538,19 +538,19 @@ paths:
         - Bearer: []
 
       parameters:
-          
+
         - name: usafbid
           in: path
           description: ID of user to register
           required: true
           type: string
-          
+
         - name: registration
           in: body
           required: true
           schema:
             $ref: '#/definitions/CoachRegistration'
-      
+
       responses:
         200:
           $ref: '#/responses/RegisterResponseSuccess'
@@ -572,52 +572,52 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/UserDefinition'
-    
+
   UserDefinition:
     description: User's Information
     type: object
     properties:
-    
+
       id:
         type: string
         description: The user ID.
-        
+
       first_name:
         type: string
         description: The user's first Name.
-        
+
       last_name:
         type: string
         description: The user's last name.
-        
+
       nick_name:
         type: string
         description: The user's nick name.
-        
+
       picture:
         type: string
         description: The URL for the user's avatar.
-        
+
       email:
         type: string
         description: The user's email address.
-        
+
       password:
         type: string
         description: The user's account password.
-        
+
       postal_code:
         type: string
         description: The user's postal code.
-        
+
       role:
         type: string
         description: The user's access role into the system.
-        
+
     example:
-      application/json: 
-        { 
-          id: 123,  
+      application/json:
+        {
+          id: 123,
           first_name: 'Ansel',
           last_name: 'Adams',
           nick_name: 'Zonner',
@@ -627,22 +627,22 @@ definitions:
           postal_code: '09016',
           role: 'Admin',
         }
-  
+
   UploadReportDefinition:
     type: object
-    
+
     properties:
-    
+
       processed:
         type: integer
-        description: The number of records processed and inserted. 
-        
+        description: The number of records processed and inserted.
+
       errors:
         type: integer
         description: The number of records failed.
-        
+
     example:
-      application/json: 
+      application/json:
         {
           processed: 150,
           errors: 12
@@ -654,41 +654,41 @@ definitions:
 
   PlayerRegistration:
     type: object
-    
+
     required:
       - player
       - registrations
-    
+
     properties:
-    
+
       player:
         $ref: '#/definitions/RegistrantPlayer'
-        
+
       registrations:
         type: array
         items:
           $ref: '#/definitions/RegistrationPlayer'
-          
+
   CoachRegistration:
     type: object
-    
+
     required:
       - coach
       - registrations
-    
+
     properties:
-    
+
       coach:
         $ref: '#/definitions/RegistrantCoach'
-        
+
       registrations:
         type: array
         items:
           $ref: '#/definitions/RegistrationCoach'
-          
+
   RegistrantPlayer:
     type: object
-    
+
     required:
       - first_name
       - last_name
@@ -700,24 +700,24 @@ definitions:
       - level
       - state
       - address_first_line
-      - country
+      - county
       - grade
       - graduation_year
       - height
       - sports
-      - years_in_sport
+      - years_at_sport
       - guardians
-      
+
     properties:
-      
+
       first_name:
         description: The player's first name
         type: string
-        
+
       middle_name:
         description: The player's middle name
         type: string
-        
+
       last_name:
         description: The player's last name
         type: string
@@ -725,20 +725,20 @@ definitions:
       birth_date:
         description: The data of birth of the player y-m-d (2008-08-24); month and year is okay (2008-08-00)
         type: string
-      
+
       gender:
         description: The sex of the player = ['male', 'female']
         type: string
         enum: ['male', 'female']
-        
+
       height:
         description: The player's height (in inches)
         type: number
-        
+
       weight:
         description: The player's weight (in pounds)
         type: number
-        
+
 #     photo:
 #       description: Url to player's photo
 #       type: url
@@ -746,35 +746,35 @@ definitions:
       address_first_line:
         description: The first line of the address for the player's primary residence
         type: string
-      
+
       address_second_line:
         description: The second line of the address for the player's primary residence
         type: string
-      
+
       city:
         description: The city the player was born in
         type: string
-        
+
       state:
         description: The current state for the player primary residence
         type: string
-      
+
       zip_code:
-        description: The postal code 
+        description: The postal code
         type: string
-        
-      country:
-        description: The country for the player's primary residence 
+
+      county:
+        description: The county for the player's primary residence
         type: string
-        
+
       email:
         description: The player primary email
         type: string
-      
+
       phone_number:
         description: The primary telephone number
         type: string
-      
+
 #     mobile_number:
 #       description: The cell phone telephone number
 #       type: string
@@ -785,30 +785,30 @@ definitions:
         items:
            $ref: '#/definitions/GameType'
         # Pushed over once season is 'live' - not entered during registration
-      
+
       level:
         description: Level of play = ['Youth', 'Middle School', 'Freshman', 'JV', 'Varsity', 'Amateur/Adult']
         type: string
         items:
           $ref: '#/definitions/LevelOfPlay'
         # Pushed over once season is 'live' - not entered during registration
-        # should this be part of registration? 
-        
+        # should this be part of registration?
+
       grade:
-        description: The current K-12 educational grade the player is in  
+        description: The current K-12 educational grade the player is in
         type: string
 
       graduation_year:
         description: The player's anticipated high school graduation year
         type: integer
-      
+
       sports:
         description: Other sports the player is participating in (comma separated list) = ['Basketball', 'Baseball', 'Soccer', 'LaCross', 'Swimming', 'Volleyball', 'Softball',  'Hockey', 'Tennis', 'Golf', 'Rugby', 'Other']
         type: string
         items:
           $ref: '#/definitions/Sports'
 
-      years_in_sport:
+      years_at_sport:
         description: The number of years playing football = 0 .. 50
         type: integer
         minimum: 1
@@ -817,11 +817,11 @@ definitions:
       instgram:
         description: The player's instragram handle
         type: string
-      
+
       twitter:
         description: The player's twitter handle
         type: string
-        
+
       guardians:
         type: array
         items:
@@ -830,15 +830,15 @@ definitions:
       external_id:
         description: The 3rd party id used you use to identify the player
         type: string
-          
+
 #     player_salesforce_id:
 #       description: Foreign key
 #       type: string
-#       
-  
+#
+
   RegistrantCoach:
     type: object
-    
+
     required:
       - first_name
       - last_name
@@ -850,21 +850,21 @@ definitions:
       - level
       - state
       - address_first_line
-      - country
+      - county
       - years_of_experience
       - roles
       - certifications
-      
+
     properties:
-      
+
       first_name:
         description: The coach's first name
         type: string
-        
+
       middle_name:
         description: The coach's middle name
         type: string
-        
+
       last_name:
         description: The coach's last name
         type: string
@@ -877,11 +877,11 @@ definitions:
         description: The sex of the coach = ['male', 'female']
         type: string
         enum: ['male', 'female']
-      
+
       address_first_line:
         description: The first line of the address for the coach's primary residence
         type: string
-      
+
       address_second_line:
         description: The second line of the address for the coach's primary residence
         type: string
@@ -893,15 +893,15 @@ definitions:
       state:
         description: The current state for the coach's primary residence
         type: string
-        
+
       zip_code:
-        description: The postal code 
+        description: The postal code
         type: string
-      
-      country:
-        description: The country for the coach's primary residence 
+
+      county:
+        description: The county for the coach's primary residence
         type: string
-      
+
       phone_number:
         description: The primary telephone number
         type: string
@@ -909,7 +909,7 @@ definitions:
 #      mobile_number:
 #        description: The cell phone telephone number
 #        type: string
-        
+
       email:
         description: The coach's primary email
         type: string
@@ -925,73 +925,73 @@ definitions:
         type: string
         enum: ['Youth Flag', '7on7', 'Modified Tackle', '11-player tackle', 'Adult Flag', 'Other']
         # Pushed over once season is 'live' - not entered during registration
-      
+
       level:
         description: Level of play = ['Youth', 'Middle School', 'Freshman', 'JV', 'Varsity', 'Amateur/Adult']
         type: string
         enum: ['Youth', 'Middle School', 'Freshman', 'JV', 'Varsity', 'Amateur/Adult']
         # Pushed over once season is 'live' - not entered during registration
-        
+
       roles:
         description: Games coached (comma separated list) = ['Head Coach', 'Quarterback Coach', 'Wide Reciever Coach', 'Linebacker Coach', 'Offensive Coordinator', 'Special Teams', 'Assistant Coach', 'Tight End Coach', 'Running Back Coach', 'Defensive Back Coach', 'Defensive Coordinator']
         type: string
         items:
           $ref: '#/definitions/GamesCoached'
         # Pushed over once season is 'live' - not entered during registration
-      
+
       certifications:
         description: Certificates held (comma separated list)
         type: string
         # Pushed over when HUF is connected via API
-        
+
       external_id:
         description: The 3rd party id used you use to identify the coach
         type: string
-        
+
 #     coach_salesforce_id:
 #       description: Foreign key?
 #       type: string
-# 
-      
+#
+
   Guardian:
     type: object
-    
+
     required:
     - first_name
     - last_name
     - home_phone
     - mobile_phone
     - email
-      
+
     properties:
-    
+
       first_name:
         description: The guardian's first name
         type: string
-      
+
       last_name:
         description: The guardian's last name
         type: string
-      
+
       home_phone:
         description: The guardian's home hone
         type: string
-      
+
       work_phone:
         description: The guardian's work phone
         type: string
-      
+
       mobile_phone:
         description: The guardian's mobile phone
         type: string
-      
+
       email:
         description: The guardian's primary email address; Parent Email (only if player is under <18 and if it does NOT match player's email)
         type: string
-  
+
   RegistrationPlayer:
     type: object
-    
+
     required:
       - league
       - org_name
@@ -1005,9 +1005,9 @@ definitions:
       - school_district
       - school_state
       - position
-      
+
     properties:
-    
+
       league:
         description: The name of the league; Only if user selects youth as level of play
         type: string
@@ -1022,7 +1022,7 @@ definitions:
         type: string
         enum: ['male', 'female', 'co-ed']
         # Pushed over once season is 'live' - not entered during registration
-        
+
 #      team_age_group:
 #         description: bla bla bla
 #         type: integer
@@ -1031,49 +1031,49 @@ definitions:
         description: Organization's lookup account string ??????????; Only if user is playing in Youth Level of Play
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       org_state:
         description: Organization's state, Only if user selects youth as level of play; Only if user is playing in Youth Level of Play
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       season:
         description: The season registering for (Fall2017)
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       right_to_market:
         description: Does USAFB have right to market to user = [true, false]
         type: boolean
         # Need to define what is in terms already, in USAFB legal que now
-        
+
       school_name:
         description: The name of the school the team is associated with
         type: string
-        
+
       school_district:
         description: The name of the school district the team is associated with
         type: string
-        
+
       school_state:
         description: The name of the school state the team is associated with; Only if user selects middle, freshman, JV or Varsity as level of play
         type: string
-    
+
       position:
         description: The position the user is in (comma separated list) = ['Quarterback', 'Center', 'Running Back', 'Fullback', 'Wide Receiver', 'Tight End', 'Left Guard', 'Right Guard', 'Left Tackle', 'Right Tackle', 'Defensive Tackle', 'Defensive End', 'Linebacker', 'Safety', 'Cornerback', 'Punter']
         type: string
         items:
           $ref: '#/definitions/Positions'
-        
+
       external_id:
         description: The 3rd party id used you use to identify the player registration
         type: string
-  
+
   #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
-  
+
   RegistrationCoach:
     type: object
-    
+
     required:
       - league
       - org_name
@@ -1085,9 +1085,9 @@ definitions:
       - team_name
       - school_district
       - school_state
-      
+
     properties:
-    
+
       league:
         description: The name of the league
         type: string
@@ -1102,7 +1102,7 @@ definitions:
         description: The gender of the team registering for = ['male', 'female', 'co-ed']
         type: string
         enum: ['male', 'female', 'co-ed']
-          
+
         #  $ref: '#definitions/TeamGender'
 
         # Pushed over once season is 'live' - not entered during registration
@@ -1111,78 +1111,78 @@ definitions:
         description: Organization's lookup account string; Only if user selects youth as level of play
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       org_state:
         description: Organization's state, Only if user selects youth as level of play
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       season:
         description: The season registering for (Fall2017)
         type: string
         # Pushed over once season is 'live' - not entered during registration
-        
+
       right_to_market:
         description: Does USAFB have right to market to user = [true, false]
         type: boolean
         # Need to define what is in terms already, in USAFB legal que now
-        
+
       school_name:
         description: The name of the school the team is associated with; Only if user selects youth as level of play
         type: string
-        
+
       school_district:
         description: The name of the school district the team is associated with; Only if user selects Youth as level of play
         type: string
-        
+
       school_state:
         description: The name of the school state the team is associated with. Only if user selects Youth as level of play
         type: string
-        
+
       external_id:
         description: The 3rd party id used you use to identify the coach registration
         type: string
 
    #   profile last updated, is this lastupdated in the league management system, or is this "this record"?
-    
+
   GameType:
     type: string
     enum: ['Youth Flag', '7on7', 'Modified Tackle', '11-player tackle', 'Adult Flag', 'Other']
-    
+
   LevelOfPlay:
     type: string
     enum: ['Youth', 'Middle School', 'Freshman', 'JV', 'Varsity', 'Amateur/Adult']
-    
+
   Sports:
     type: string
     enum: ['Basketball', 'Baseball', 'Soccer', 'LaCross', 'Swimming', 'Volleyball', 'Softball',  'Hockey', 'Tennis', 'Golf', 'Rugby', 'Other']
-    
+
   GamesCoached:
     type: string
     enum: ['Head Coach', 'Quarterback Coach', 'Wide Reciever Coach', 'Linebacker Coach', 'Offensive Coordinator', 'Special Teams', 'Assistant Coach', 'Tight End Coach', 'Running Back Coach', 'Defensive Back Coach', 'Defensive Coordinator']
-    
+
   Positions:
     type: string
     enum: ['Quarterback', 'Center', 'Running Back', 'Fullback', 'Wide Receiver', 'Tight End', 'Left Guard', 'Right Guard', 'Left Tackle', 'Right Tackle', 'Defensive Tackle', 'Defensive End', 'Linebacker', 'Safety', 'Cornerback', 'Punter']
- 
+
   RegistrationSuccess:
     type: object
-    
+
     properties:
-    
-      usafbid: 
+
+      usafbid:
         type: string
-  
+
   RegistrationDuplicate:
     type: object
-    
+
     properties:
-    
+
       usafbid:
         type: array
         items:
           type: string
-  
+
   MessageResponse:
     type: object
     properties:

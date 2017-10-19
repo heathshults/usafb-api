@@ -96,6 +96,21 @@ $app->group(
                 );
             }
         );
+        $app->group(
+            ['middleware' =>
+                [
+                    'authorize:'.Role::SUPER_USER.','.Role::ADMIN_USER.','.Role::PARTNER_USER
+                ]
+            ],
+            function () use ($app) {
+                $app->post(
+                    '/register/player',
+                    [
+                        'uses' => 'RegisterController@player'
+                    ]
+                );
+            }
+        );
         $app->get(
             '/me',
             [

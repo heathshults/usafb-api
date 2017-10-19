@@ -17,7 +17,7 @@ class RegistrationModelTest extends \TestCase {
     * Should test that a registration is created ok
     */
     public function testShouldGenerateARegistrationSuccessfully() {
-        
+
         $entity = new Registration;
         $entity->source_id = $this->getSource()->id;
         $entity->registrant_id = $this->getRegistrant()->id;
@@ -56,7 +56,7 @@ class RegistrationModelTest extends \TestCase {
     */
     public function testShouldFailIFARegistrationIsCreatedWithoutSource() {
         $this->expectException(\PDOException::class);
-        
+
         $entity = new Registration;
         $entity->registrant_id = $this->getRegistrant()->id;
         $entity->type = 'PLAYER' ;

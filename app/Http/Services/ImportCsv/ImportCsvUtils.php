@@ -12,6 +12,87 @@ class ImportCsvUtils
     const EXPECTED_LINE_AMOUNT = 52;
     const RULE_IDX = 'rule';
     const FIELD_NAME_IDX = 'field_name';
+    const CSV_TABLE_MAPPING = [
+      'address' => 'address_first_line',
+      'address_line_2' => 'address_second_line',
+      'cell_phone' => 'phone_number',
+      'date_of_birth' => 'birth_date',
+      'zip' => 'zip_code',
+      'current_grade' => 'grade',
+      'high_school_grad_year' => 'graduation_year',
+      'instagram_handle' => 'instagram',
+      'other_sports_played' => 'sports',
+      'twitter_handle' => 'twitter',
+      '#_years_in_sport' => 'years_at_sport',
+      '#_of_years_coaching' => 'years_of_experience',
+      'coach_role' => 'roles',
+      'city' => 'city',
+      'county' => 'county',
+      'email' => 'email',
+      'first_name' => 'first_name',
+      'game_type' => 'game_type',
+      'gender' => 'gender',
+      'last_name' => 'last_name',
+      'level' => 'level',
+      'middle_name' => 'middle_name',
+      'usafb_id' => 'usafb_id',
+      'state' => 'state',
+      'height' => 'height',
+      'weight' => 'weight',
+      'team_age_group' => 'team_age_group',
+      'certifications' => 'certifications'
+    ];
+
+    const CSV_TABLE_MAPPING_GUARDIAN = [
+      'parent_/_guardian_1_cell_phone' => 'mobile_phone',
+      'parent_/_guardian_1_email' => 'email',
+      'parent_/_guardian_1_first_name' => 'first_name',
+      'parent_/_guardian_1_last_name' => 'last_name',
+      'parent_/_guardian_1_home_phone' => 'home_phone',
+      'parent_/_guardian_1_work_phone' => 'work_phone',
+      'parent_/_guardian_2_cell_phone' => 'mobile_phone',
+      'parent_/_guardian_2_email' => 'email',
+      'parent_/_guardian_2_first_name' => 'first_name',
+      'parent_/_guardian_2_last_name' => 'last_name',
+      'parent_/_guardian_2_home_phone' => 'home_phone',
+      'parent_/_guardian_2_work_phone' => 'work_phone'
+    ];
+
+    const CSV_TABLE_MAPPING_REGISTRATION = [
+      'league' => 'league',
+      'team' => 'team_name',
+      'team_gender' => 'team_gender',
+      'organization' => 'org_name',
+      'salesforce_id' => 'external_id',
+      'usafb_right_to_market' => 'right_to_market',
+      'position' => 'positions',
+      'school_attending' => 'school_name',
+      'org_state' => 'org_state',
+      'season' => 'season',
+      'school_district' => 'school_district',
+      'school_state' => 'school_state'
+    ];
+
+    public static function mapCsvColumnsToTableFields($row)
+    {
+        $row['guardians'] = [];
+        $row['registrations'] = [];
+        foreach ($row as $key => $value) {
+            if (isset(self::CSV_TABLE_MAPPING[$key])) {
+                unset($row[$key]);
+                $row[self::CSV_TABLE_MAPPING[$key]] = $value;
+            } elseif (isset(self::CSV_TABLE_MAPPING_GUARDIAN[$key])) {
+                preg_match('/\d+/', $key, $matches);
+                unset($row[$key]);
+                $row['guardians'][$matches[0]-1][self::CSV_TABLE_MAPPING_GUARDIAN[$key]] = $value;
+            } elseif (isset(self::CSV_TABLE_MAPPING_REGISTRATION[$key])) {
+                unset($row[$key]);
+                $row['registrations'][0][self::CSV_TABLE_MAPPING_REGISTRATION[$key]] = $value;
+            }
+        }
+
+        return $row;
+    }
 
     /**
      * Validate the max rows of the csv
@@ -26,139 +107,13 @@ class ImportCsvUtils
     }
 
     /**
-     *   Will return the array of rules for the given model filtering the others out
-     *   @param array $table Rules for the InserterBuilder
-     *   @param string $modelName Full Model name
-     *   @return array of Rules filtered
-     */
-    public static function filterModel(array $table, $modelName)
-    {
-        return array_filter($table, function ($v, $k) use ($modelName) {
-               return (is_array($v) && array_key_exists('tables', $v) && in_array($modelName, $v['tables']));
-        }, ARRAY_FILTER_USE_BOTH);
-    }
-
-    /**
-     *   Will return the value if a value is present.
-     *   If value is not present it will through an exception
-     *   @param $value value to test if null or empty
-     *   @return passed value
-    */
-    public static function testRequired($value)
-    {
-        if ((trim($value) == '' || is_null($value))) {
-            throw new BadRequestHttpException('Required Value not present for item ');
-        } else {
-            return $value;
-        }
-    }
-    /**
-     *   Will through an Exception if $value is present
-     *   @param $value a value
-     *   @return null
-    */
-    public static function testNotRequired($value)
-    {
-        if ((trim($value) == '' || is_null($value))) {
-            return null;
-        } else {
-            throw new BadRequestHttpException('Value is present, and expected empty');
-        }
-    }
-
-    /**
-     *   Will return pased value to date
-     *   @param $value? as read from csv file
-     *   @return Date parsed date
-     */
-    public static function parseToDate($value)
-    {
-        $parsedDate = strtotime($value);
-        if ($parsedDate) {
-            return date(self::DATE_FORMAT, strtotime($value));
-        } else {
-            throw new BadRequestHttpException('Cant parse that date '.$value);
-        }
-    }
-
-    /**
-     *   Will return pased value to boolean
-     *   @param $value? as read from csv file
-     *   @return Boolean parsed string
-     */
-    public static function parseToBoolean($value)
-    {
-        if (strtoupper($value) === 'YES' || $value === '1') {
-            return true;
-        } elseif (strtoupper($value) === 'NO' || $value === '0' || $value === '') {
-            return false;
-        } else {
-            throw new BadRequestHttpException('Cant parse that string to boolean '.$value);
-        }
-    }
-
-    /**
-     * Will return an instance populated with model values
-     * @param array $rules An array of rules with values
-     * @param Model $modelInstance holding model to fill with props
-     * @return Model with attributes in it
-    */
-    public static function reduceKeyValueToModel(array $fields, Model $modelInstance)
-    {
-        $fieldKeys = array_keys($fields);
-        return array_reduce($fieldKeys, function ($modelInstance, $item) use ($fields) {
-            $value = $fields[$item];
-            $modelInstance->setAttribute($item, $value);
-            return $modelInstance;
-        }, $modelInstance);
-    }
-
-    /**
-    * Will convert a rules array to a key value array
-    * @param array $rules An array of rules
-    * @param array $indexMappings an array of index mappings
-    * @param array $valueMappings an array of calue mappings
-    * @param boolean $returnArrayValuesPerKey return an array of values per key instead one value per key
-    * @return array of key value
-    */
-    public static function mapRulesToArrayOfKeyValue(
-        array $rules,
-        array $indexMappings,
-        array $valueMappings,
-        $returnArrayValuesPerKey = false
-    ) {
-        $indexMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $indexMappings);
-        $valueMapper = FunctionalHelper::curry2(self::toClojure('retrieveValueUsingMapper'), $valueMappings);
-
-        return array_reduce(
-            array_keys($rules),
-            function ($accum, $key) use ($rules, $indexMapper, $valueMapper, $returnArrayValuesPerKey) {
-                $rule = $rules[$key][self::RULE_IDX];
-                $actual_key = $rules[$key][self::FIELD_NAME_IDX];
-                $valueFunction = FunctionalHelper::compose($indexMapper, $valueMapper, $rule);
-
-                if (!$returnArrayValuesPerKey) {
-                    $accum[$actual_key] = $valueFunction($key);
-                } else {
-                    $accum[$actual_key][] = $valueFunction($key);
-                }
-
-                return $accum;
-            },
-            array()
-        );
-    }
-
-    /**
     * Will return an array where key is the column key and value is the index for that key
     * @param array $columnNames Array of column names
     * @return array of index and column names
     */
     public static function columnToIndexMapper(array $columnNames)
     {
-        return array_flip(
-            array_map(self::toClojure('lowerCaseAndSpacesToUnderscore'), $columnNames)
-        );
+        return array_map(self::toClojure('lowerCaseAndSpacesToUnderscore'), $columnNames);
     }
 
     /**
@@ -171,16 +126,6 @@ class ImportCsvUtils
     {
         return is_array($line) && (sizeof($line) == $expectedLineAmount);
     }
-    
-    /**
-    * Will return value if key exists. null otherwise
-    * @param array $mappings array to test for key
-    * @return bool
-    */
-    public static function retrieveValueUsingMapper(array $mappings, $key)
-    {
-        return array_key_exists($key, $mappings) ? $mappings[$key] : null;
-    }
 
     /**
     * Will return the anonimous function of passed method name
@@ -189,7 +134,7 @@ class ImportCsvUtils
     */
     public static function toClojure($methodName)
     {
-        
+
         return FunctionalHelper::toClojure('App\Http\Services\ImportCsv\ImportCsvUtils', $methodName);
     }
     /**

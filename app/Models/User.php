@@ -79,8 +79,8 @@ class User
             $userMetadata = $user[getenv('AUTH_METADATA')];
         }
 
-        if (isset($userMetadata['country'])) {
-            $this->country = $userMetadata['country'];
+        if (isset($userMetadata['county'])) {
+            $this->county = $userMetadata['county'];
         }
 
         if (isset($userMetadata['first_name'])) {
