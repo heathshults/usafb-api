@@ -24,6 +24,8 @@ class AuthHelper
         'state',
         'postal_code',
         'country',
+        'address',
+        'address2',
         'organization',
         'updated_by'
     ];
