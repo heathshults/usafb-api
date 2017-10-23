@@ -28,6 +28,8 @@ test:
     POSTGRES_PASSWORD: root
     POSTGRES_DB: npdb-usafb
   type: test
+  except:
+    - CD-fixes
   script:
     - cp .env.testing .env
     - php artisan migrate:refresh --seed
@@ -37,8 +39,12 @@ lint:
   type: test
   script:
     - composer lint
+  except:
+    - CD-fixes
 
 automation:
+  except:
+    - CD-fixes
   services:
     - postgres:9.6-alpine
   variables:
