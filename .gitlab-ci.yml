@@ -28,8 +28,6 @@ test:
     POSTGRES_PASSWORD: root
     POSTGRES_DB: npdb-usafb
   type: test
-  except:
-    - CD-fixes
   script:
     - cp .env.testing .env
     - php artisan migrate:refresh --seed
@@ -39,12 +37,8 @@ lint:
   type: test
   script:
     - composer lint
-  except:
-    - CD-fixes
 
 automation:
-  except:
-    - CD-fixes
   services:
     - postgres:9.6-alpine
   variables:
@@ -76,7 +70,6 @@ build:
   only:
     - develop
     - master
-    - CD-fixes
   allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
@@ -108,7 +101,6 @@ deploy:
   only:
     - develop
     - master
-    - CD-fixes
   allow_failure: false
   environment:
     name: staging
