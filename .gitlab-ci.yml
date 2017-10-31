@@ -1,4 +1,4 @@
-image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71-kubectl-envsubst:latest
+image: gitlab.bluestarsports.io:4567/devops/docker-base-images/bss-php71:latest
 stages:
   - setup
   - test
@@ -72,9 +72,9 @@ build:
     - master
   allow_failure: false
   script:
-    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
+    - docker login gitlab.bluestarsports.io:4567 -u npdbtest -p $gitlab_personal_token
+    - docker build -t gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA"
+    - docker push gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api
 
 build_nginx_static:
   stage: build_workers
@@ -91,17 +91,30 @@ build_nginx_static:
     - master
     - CDs-fixes
   script:
-    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
+    - docker login gitlab.bluestarsports.io:4567 -u npdbtest -p $gitlab_personal_token
+    - docker build -t gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
+    - docker push gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
 
 
-deploy:
+staging_deploy:
   stage: deploy
   only:
     - develop
+  allow_failure: false
+  environment:
+    name: staging
+  before_script:
+    - . deploy/scripts/setup_kube_config.sh
+  script:
+    - kubectl cluster-info
+    - . deploy/scripts/deploy_app.sh
+
+production_deploy:
+  stage: deploy
+  only:
     - master
   allow_failure: false
+  when: manual
   environment:
     name: staging
   before_script:
