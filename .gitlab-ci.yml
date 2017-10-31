@@ -73,7 +73,7 @@ build:
   allow_failure: false
   script:
     - docker login gitlab.bluestarsports.io:4567 -u npdbtest -p $gitlab_personal_token
-    - docker build -t gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA"
+    - docker build -t gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
     - docker push gitlab.bluestarsports.io:4567/bluestarsports/npdb-usafb-api
 
 build_nginx_static:
