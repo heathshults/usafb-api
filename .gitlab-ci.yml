@@ -116,7 +116,7 @@ production_deploy:
   allow_failure: false
   when: manual
   environment:
-    name: staging
+    name: production
   before_script:
     - . deploy/scripts/setup_kube_config.sh
   script:
