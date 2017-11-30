@@ -7,15 +7,15 @@ services:
       ports:
       - "6379:6379"
 
-    postgres:
-      image: postgres:9.6-alpine
-      container_name: usafb-postgres
+    mongo:
+      image: mongo:3.0.15-wheezy
+      container_name: usafb-mongo
       ports:
-        - "5432:5432"
+      - "27017:27017"
       environment:
-        - POSTGRES_DB=npdb-usafb
-        - POSTGRES_USER=root
-        - POSTGRES_PASSWORD=root
+        - MONGO_DB=npdb-usafb
+        - MONGO_USER=root
+        - MONGO_PASSWORD=root
     nginx:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
       container_name: usafb-nginx
@@ -29,7 +29,7 @@ services:
        - php-fpm
 
     php-fpm:
-      image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
+      image: registry.gitlab.com/bluestarsports/npdb-ussf-api/php-fpm:latest
       container_name: usafb-php-fpm
       working_dir: /application
       ports:
@@ -39,5 +39,5 @@ services:
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
       entrypoint: /application/start_application.sh
       links:
-        - postgres
-        - redis
+       - mongo
+       - redis
