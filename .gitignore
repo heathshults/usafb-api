@@ -2,3 +2,4 @@
 /testresults
 /.scannerwork
 .env
+**/__pycache__/*
