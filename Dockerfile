@@ -1,5 +1,9 @@
 FROM registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
 
+RUN apt-get update \
+    && apt-get -y --no-install-recommends install php7.1-bcmath php7.1-mongo \
+    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
 ARG GIT_DEPLOYED_SHA
 ENV GIT_DEPLOYED_SHA ${GIT_DEPLOYED_SHA}
 
