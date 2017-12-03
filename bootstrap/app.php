@@ -27,7 +27,6 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 
-$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +39,7 @@ $app->withEloquent();
 |
 */
 
+/*
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
@@ -49,6 +49,7 @@ $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
 );
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -71,12 +72,14 @@ $app->middleware(
     ]
 );
 
+/*
 $app->routeMiddleware(
     [
         'authenticate' => App\Http\Middleware\Authenticate::class,
         'authorize' => App\Http\Middleware\Authorize::class,
     ]
 );
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +97,10 @@ $app->register(App\Providers\AppServiceProvider::class);
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Aws\Laravel\AwsServiceProvider::class);
+$app->register(Jenssegers\Mongodb\MongodbServiceProvider::class);
+
+$app->withEloquent();
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
