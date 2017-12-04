@@ -38,10 +38,10 @@
 		}
 	},
 	"autoload-dev" : {
-		"classmap" : [
+        "classmap" : [
             "tests/",
-			"database/"
-		]
+            "database/"
+        ]
 	},
 	"scripts" : {
 		"setup" : [
@@ -56,7 +56,7 @@
 		"lint:syntax" : "find . -name '*.php' ! -path './vendor/*' -print0 | xargs -0 -n 1 -P 4 php -l | grep -v 'No syntax errors' || true",
 		"lint:cs" : "@php vendor/bin/phpcs --standard=PSR2 --ignore=vendor/ --colors ./app",
 		"test" : "@php vendor/bin/phpunit --colors",
-    "env:prereq":   "@php vendor/bin/codecept run -g prereq",
+        "env:prereq":   "@php vendor/bin/codecept run -g prereq",
 		"test:all" : "@php vendor/bin/codecept run --steps --xml TestXMLExecutionReport-$(date '+%FT%T').xml  --html  TestHTMLExecutionReport-$(date '+%FT%T').html --env Development",
 		"test:sanity" : "@php vendor/bin/codecept run -g sanity --steps --xml TestSanityXMLExecutionReport-$(date '+%FT%T').xml  --html  TestSanityHTMLExecutionReport-$(date '+%FT%T').html --env Development",
 		"test:rel" : "@php vendor/bin/codecept run -g release --steps --xml TestRelXMLExecutionReport-$(date '+%FT%T').xml  --html  TestRelHTMLExecutionReport-$(date '+%FT%T').html --env Development",
