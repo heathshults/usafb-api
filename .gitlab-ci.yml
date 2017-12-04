@@ -1,4 +1,4 @@
-image: registry.gitlab.com/bluestarsports/npdb-ussf-api/php-fpm:latest
+image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
 
 stages:
   - setup
@@ -22,12 +22,6 @@ setup:
       - vendor/
 
 test:
-  services:
-    - postgres:9.6-alpine
-  variables:
-    POSTGRES_USER: root
-    POSTGRES_PASSWORD: root
-    POSTGRES_DB: npdb-usafb
   type: test
   script:
     - cp .env.testing .env
@@ -40,12 +34,6 @@ lint:
     - composer lint
 
 automation:
-  services:
-    - postgres:9.6-alpine
-  variables:
-    POSTGRES_USER: root
-    POSTGRES_PASSWORD: root
-    POSTGRES_DB: npdb-usafb
   type: test
   script:
     - cp .env.testing .env
