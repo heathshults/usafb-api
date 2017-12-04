@@ -1,5 +1,0 @@
-{
-
-  "target": "http://nginx",
-  "locusts": ["APILocust"]
-}

@@ -5,17 +5,20 @@ services:
       image: redis:alpine
       container_name: usafb-redis
       ports:
-      - "6379:6379"
+       - "6379:6379"
 
     mongo:
       image: mongo:3.0.15-wheezy
       container_name: usafb-mongo
       ports:
-      - "27017:27017"
+       - "27017:27017"
       environment:
-        - MONGO_DB=npdb-usafb
-        - MONGO_USER=root
-        - MONGO_PASSWORD=root
+        - MONGO_DATA_DIR=/data/db
+        - MONGO_LOG_DIR=/dev/null
+      volumes:
+        - ./data/db:/data/db
+      command: mongod --noauth --smallfiles --dbpath /data/db --logpath=/dev/null # --quiet
+        
     nginx:
       image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
       container_name: usafb-nginx
@@ -27,6 +30,7 @@ services:
        - "443"
       links:
        - php-fpm
+       - mongo
 
     php-fpm:
       image: registry.gitlab.com/bluestarsports/npdb-ussf-api/php-fpm:latest
