@@ -33,7 +33,7 @@ services:
        - mongo
 
     php-fpm:
-      image: registry.gitlab.com/bluestarsports/npdb-ussf-api/php-fpm:latest
+      image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
       container_name: usafb-php-fpm
       working_dir: /application
       ports:
