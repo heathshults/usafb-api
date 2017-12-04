@@ -1,4 +1,4 @@
-image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-php71:latest
+image: registry.gitlab.com/bluestarsports/npdb-ussf-api/php-fpm:latest
 
 stages:
   - setup
@@ -57,7 +57,6 @@ automation:
     - cp .env.testing .env
     - killall php
 
-
 build:
   image: docker:latest
   variables:
@@ -95,7 +94,6 @@ build_nginx_static:
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
 
-
 deploy:
   stage: deploy
   only:
@@ -112,4 +110,3 @@ deploy:
     - kubectl config use-context bss-staging
     - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" deploy/deployment.yml
     - kubectl create -f deploy/deployment.yml --namespace=staging --validate=false || kubectl replace -f deploy/deployment.yml --namespace=staging
-
