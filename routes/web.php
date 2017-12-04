@@ -15,6 +15,7 @@ use App\Models\Enums\Role;
 $app->get('healthz', 'StatusController@health');
 $app->get('statusz', 'StatusController@status');
 
+/*
 $app->post(
     '/login',
     [
@@ -134,6 +135,7 @@ $app->group(
         );
     }
 );
+*/
 
 $app->get(
     '/',
