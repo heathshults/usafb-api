@@ -1,5 +1,6 @@
+.env
 /vendor
 /testresults
 /.scannerwork
-.env
+/tests/automationscripts/_output/**
 **/__pycache__/*
