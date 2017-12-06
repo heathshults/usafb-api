@@ -57,6 +57,11 @@ To run react-dev-server with the todo UI:
 composer lint
 ```
 
+## Register the git login credentials with Docker
+```BASH
+docker login -u <USERNAME> -p <PERSONAL ACCESS TOKEN> registry.gitlab.com
+```
+
 ## Start the development environment (Docker)
 
 This application comes with a `docker-compose.yml` that will create a development environment:
