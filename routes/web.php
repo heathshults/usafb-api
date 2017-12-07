@@ -15,6 +15,8 @@ use App\Models\Enums\Role;
 $app->get('healthz', 'StatusController@health');
 $app->get('statusz', 'StatusController@status');
 
+$app->get('/players', 'PlayerController@index');
+
 /*
 $app->post(
     '/login',
