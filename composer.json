@@ -5,7 +5,7 @@
     "framework",
     "laravel",
     "lumen",
-	"mongo"
+    "mongo"
   ],
   "license" : "MIT",
 	"type" : "project",
@@ -19,7 +19,8 @@
 		"appzcoder/lumen-routes-list": "^1.0",
 		"predis/predis": "~1.0",
 		"pitpit/php-diff": "^1.0@dev",
-		"jenssegers/mongodb": "^3.2"
+		"jenssegers/mongodb": "^3.2",
+    "elasticsearch/elasticsearch": "~6.0"
 	},
 	"require-dev" : {
 		"fzaninotto/faker" : "~1.4",
