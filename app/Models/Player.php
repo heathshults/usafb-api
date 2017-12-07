@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\ModelValidatorTrait;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
-use Validator;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class Player extends Model
