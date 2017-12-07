@@ -17,6 +17,8 @@ $app->get('statusz', 'StatusController@status');
 
 $app->get('/players', 'PlayerController@index');
 
+$app->get('/coaches', 'CoachController@index');
+
 /*
 $app->post(
     '/login',
