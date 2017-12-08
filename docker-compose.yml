@@ -16,53 +16,68 @@ services:
         - esdata1:/usr/share/elasticsearch/data
 
     redis:
-      image: redis:alpine
-      container_name: usafb-redis
-      ports:
-       - "6379:6379"
+        image: redis:alpine
+        container_name: usafb-redis
+        ports:
+        - "6379:6379"
 
+    mysql:
+        image: mysql
+        container_name: usafb-mysql-dw
+        restart: always
+        ports:
+        - "3306:3306"
+        environment:
+        - MYSQL_ROOT_PASSWORD=secret
+        volumes:
+        - mysql1:/usr/local/mysql/data
+        
     mongo:
-      image: mongo:3.0.15-wheezy
-      container_name: usafb-mongo
-      ports:
-       - "27017:27017"
-      environment:
+        image: mongo:3.0.15-wheezy
+        container_name: usafb-mongo
+        ports:
+        - "27017:27017"
+        environment:
         - MONGO_DATA_DIR=/data/db
         - MONGO_LOG_DIR=/dev/null
-      volumes:
+        volumes:
         - ./data/db:/data/db
-      command: mongod --noauth --smallfiles --dbpath /data/db --logpath=/dev/null # --quiet
-      links:
-       - elasticsearch
+        command: mongod --noauth --smallfiles --dbpath /data/db --logpath=/dev/null # --quiet
+        links:
+        - elasticsearch
           
     nginx:
-      image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
-      container_name: usafb-nginx
-      volumes:
-          - .:/application
-          - ./docker/nginx/nginx.conf:/etc/nginx/sites-available/default
-      ports:
-       - "8000:80"
-       - "443"
-      links:
-       - php-fpm
-       - mongo
+        image: registry.gitlab.com/bluestarsports/devops/docker-base-images/bss-nginx:latest
+        container_name: usafb-nginx
+        volumes:
+        - .:/application
+        - ./docker/nginx/nginx.conf:/etc/nginx/sites-available/default
+        ports:
+        - "8000:80"
+        - "443"
+        links:
+        - php-fpm
+        - mongo
+        - mysql
 
     php-fpm:
-      image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
-      container_name: usafb-php-fpm
-      working_dir: /application
-      ports:
-       - "9000:9000"
-      volumes:
+        image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
+        container_name: usafb-php-fpm
+        working_dir: /application
+        ports:
+        - "9000:9000"
+        volumes:
         - .:/application
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-      entrypoint: /application/start_application.sh
-      links:
-       - mongo
-       - redis
-       - elasticsearch
+        entrypoint: /application/start_application.sh
+        links:
+        - mongo
+        - redis
+        - elasticsearch
+        - mysql
 
 volumes:
     esdata1:
+        driver: local
+    mysql1:
         driver: local
