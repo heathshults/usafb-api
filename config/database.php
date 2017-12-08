@@ -56,18 +56,19 @@ return [
             'prefix'   => env('DB_PREFIX', ''),
         ],
 
-        'mysql' => [
+        'mysql-dw' => [
             'driver'    => 'mysql',
-            'host'      => env('DB_HOST', 'localhost'),
-            'port'      => env('DB_PORT', 3306),
-            'database'  => env('DB_DATABASE', 'forge'),
-            'username'  => env('DB_USERNAME', 'forge'),
-            'password'  => env('DB_PASSWORD', ''),
-            'charset'   => env('DB_CHARSET', 'utf8'),
-            'collation' => env('DB_COLLATION', 'utf8_unicode_ci'),
-            'prefix'    => env('DB_PREFIX', ''),
-            'timezone'  => env('DB_TIMEZONE', '+00:00'),
-            'strict'    => env('DB_STRICT_MODE', false),
+            'read'      => [ 'host' => env('DW_DB_HOST_READ', 'localhost') ],
+            'write'     => [ 'host' => env('DW_DB_HOST_WRITE', 'localhost') ],
+            'port'      => env('DW_DB_PORT', 3306),
+            'database'  => env('DW_DB_DATABASE', 'forge'),
+            'username'  => env('DW_DB_USERNAME', 'forge'),
+            'password'  => env('DW_DB_PASSWORD', ''),
+            'charset'   => env('DW_DB_CHARSET', 'utf8'),
+            'collation' => env('DW_DB_COLLATION', 'utf8_unicode_ci'),
+            'prefix'    => env('DW_DB_PREFIX', ''),
+            'timezone'  => env('DW_DB_TIMEZONE', '+00:00'),
+            'strict'    => env('DW_DB_STRICT_MODE', false),
         ],
 
         'pgsql' => [
