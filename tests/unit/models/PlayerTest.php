@@ -8,7 +8,7 @@ class PlayerTest extends TestCase
 {
     public function testInstantiatingPlayerModel()
     {
-        $player = new App\Models\Player();
+        $player = new Player();
         $this->assertNotNull($player);
     }
 
