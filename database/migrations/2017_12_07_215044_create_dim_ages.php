@@ -13,7 +13,7 @@ class CreateDimAges extends Migration
      */
     public function up()
     {
-        Schema::create('dim_ages', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_ages', function (Blueprint $table) {
             // set autoinc primary key
             $table->increments('id');
             // columns
@@ -33,6 +33,6 @@ class CreateDimAges extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_ages');
+        Schema::connection('mysql-dw')->drop('dim_ages');
     }
 }

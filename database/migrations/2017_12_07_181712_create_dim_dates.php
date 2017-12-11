@@ -12,8 +12,9 @@ class CreateDimDates extends Migration
      * @return void
      */
     public function up()
-    {                    
-        Schema::create('dim_dates', function (Blueprint $table) {
+    {              
+        
+        Schema::connection('mysql-dw')->create('dim_dates', function (Blueprint $table) {
             $table->integer('id');
             $table->date('calendar_date');
             $table->integer('calendar_day');
@@ -52,6 +53,6 @@ class CreateDimDates extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_dates');
+        Schema::connection('mysql-dw')->drop('dim_dates');
     }
 }

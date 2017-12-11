@@ -13,7 +13,7 @@ class CreateDimLevels extends Migration
      */
     public function up()
     {
-        Schema::create('dim_levels', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_levels', function (Blueprint $table) {
             // set autoinc primary key            
             $table->increments('id');
             // columns
@@ -31,6 +31,6 @@ class CreateDimLevels extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_levels');
+        Schema::connection('mysql-dw')->drop('dim_levels');
     }
 }

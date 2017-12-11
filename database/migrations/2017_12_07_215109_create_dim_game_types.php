@@ -13,7 +13,7 @@ class CreateDimGameTypes extends Migration
      */
     public function up()
     {
-        Schema::create('dim_game_types', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_game_types', function (Blueprint $table) {
             // set autoinc primary key            
             $table->increments('id');            
             // columns
@@ -31,6 +31,6 @@ class CreateDimGameTypes extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_game_types');
+        Schema::connection('mysql-dw')->drop('dim_game_types');
     }
 }

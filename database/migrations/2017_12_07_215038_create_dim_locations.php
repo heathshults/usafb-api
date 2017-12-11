@@ -13,7 +13,7 @@ class CreateDimLocations extends Migration
      */
     public function up()
     {
-        Schema::create('dim_locations', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_locations', function (Blueprint $table) {
             // set autoinc primary key
             $table->increments('id');
             // columns
@@ -36,6 +36,6 @@ class CreateDimLocations extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_locations');
+        Schema::connection('mysql-dw')->drop('dim_locations');
     }
 }

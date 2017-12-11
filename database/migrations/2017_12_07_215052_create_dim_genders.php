@@ -13,7 +13,7 @@ class CreateDimGenders extends Migration
      */
     public function up()
     {
-        Schema::create('dim_genders', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_genders', function (Blueprint $table) {
             // set autoinc primary key            
             $table->increments('id');            
             // columns
@@ -31,6 +31,6 @@ class CreateDimGenders extends Migration
      */
     public function down()
     {
-        Schema::drop('dim_genders');        
+        Schema::connection('mysql-dw')->drop('dim_genders');        
     }
 }

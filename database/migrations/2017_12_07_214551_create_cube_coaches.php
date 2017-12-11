@@ -13,7 +13,7 @@ class CreateCubeCoaches extends Migration
      */
     public function up()
     {
-        Schema::create('cube_coaches', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('cube_coaches', function (Blueprint $table) {
             // columns
             $table->integer('dim_date_id');
             $table->integer('dim_location_id');
@@ -41,6 +41,6 @@ class CreateCubeCoaches extends Migration
      */
     public function down()
     {
-        Schema::drop('cube_coaches');        
+        Schema::connection('mysql-dw')->drop('cube_coaches');        
     }
 }

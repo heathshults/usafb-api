@@ -13,7 +13,7 @@ class CreateCubePlayers extends Migration
      */
     public function up()
     {
-        Schema::create('cube_players', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('cube_players', function (Blueprint $table) {
             // columns
             $table->integer('dim_date_id');
             $table->integer('dim_location_id');
@@ -43,6 +43,6 @@ class CreateCubePlayers extends Migration
      */
     public function down()
     {
-        Schema::drop('cube_players');
+        Schema::connection('mysql-dw')->drop('cube_players');
     }
 }
