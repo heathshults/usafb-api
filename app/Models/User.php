@@ -38,14 +38,14 @@ class User extends Eloquent
         return $this->belongsTo('App\Models\Role');
     }
     
-    protected static function boot() 
+    protected static function boot()
     {
-        parent::boot();        
-        static::saving(function($model) {
+        parent::boot();
+        static::saving(function ($model) {
             if (is_null($model->role)) {
                 return;
             }
             $model->role_permissions = $model->role->permissions;
         });
-    }   
+    }
 }
