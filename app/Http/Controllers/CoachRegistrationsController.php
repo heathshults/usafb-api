@@ -25,25 +25,33 @@ class CoachRegistrationsController extends Controller
     {
         $pagination = $this->buildPaginationCriteria($request->query());
         $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];                
+        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
 
         $sort = $this->buildSortCriteria($request->query());
         // default sort column/order
         if (is_null($sort)) {
             $sort = [
-                'column' => 'created_at', 
+                'column' => 'created_at',
                 'order' => 'desc'
-            ];         
+            ];
         }
 
-        // validate coach record
+        // TODO validate coach record
+        
         $coach = Coach::find($coach_id);
         if (is_null($coach)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Coach ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Coach ('.$id.') not found.'
+                ]
+            ]);
         }
 
-        // too bad $coach->registrations()->orderBy( ... ) doesn't work (no proper query interfaces in this driver)
-        $registrations = CoachRegistration::where('coach_id', $coach->id)->orderBy($sort['column'], $sort['order'])->paginate();
+        // too bad $coach->registrations()->orderBy( ... ) doesn't work
+        $registrations = CoachRegistration::where('coach_id', $coach->id)
+            ->orderBy($sort['column'], $sort['order'])
+            ->paginate();
+
         return $this->respond('OK', $registrations);
     }
 
@@ -52,14 +60,17 @@ class CoachRegistrationsController extends Controller
      *
      * @return string (json) containing the Coach Registration resource OR corresponding error message
      */
-    public function show(Request $request, $coach_id, $id) 
+    public function show(Request $request, $coach_id, $id)
     {
         // lookup registration directly from coach registration collection
         $registration = CoachRegistration::findOne(['coach_id' => $coach_id, 'id' => $id]);
         if (is_null($registration)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Registration ('.$id.') not found for coach ('.$coach_id.').']]);          
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Registration ('.$id.') not found for coach ('.$coach_id.').'
+                ]
+            ]);
         }
-        return $this->respond('OK', $registration);        
+        return $this->respond('OK', $registration);
     }
-    
 }
