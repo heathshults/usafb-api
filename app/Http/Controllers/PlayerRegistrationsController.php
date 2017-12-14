@@ -25,15 +25,15 @@ class PlayerRegistrationsController extends Controller
     {
         $pagination = $this->buildPaginationCriteria($request->query());
         $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];                
+        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
 
         $sort = $this->buildSortCriteria($request->query());
         // default sort column/order
         if (is_null($sort)) {
             $sort = [
-                'column' => 'created_at', 
+                'column' => 'created_at',
                 'order' => 'desc'
-            ];         
+            ];
         }
 
         // validate player record
@@ -42,8 +42,10 @@ class PlayerRegistrationsController extends Controller
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
         }
 
-        // too bad $player->registrations()->orderBy( ... ) doesn't work (no proper query interfaces in this driver)
-        $registrations = PlayerRegistration::where('player_id', $player->id)->orderBy($sort['column'], $sort['order'])->paginate();
+        // too bad $player->registrations()->orderBy( ... ) doesn't work
+        $registrations = PlayerRegistration::where('player_id', $player->id)
+            ->orderBy($sort['column'], $sort['order'])
+            ->paginate();
         return $this->respond('OK', $registrations);
     }
 
@@ -52,13 +54,17 @@ class PlayerRegistrationsController extends Controller
      *
      * @return string (json) containing the Player Registration resource OR corresponding error message
      */
-    public function show(Request $request, $player_id, $id) 
+    public function show(Request $request, $player_id, $id)
     {
         // lookup registration directly from player registration collection
         $registration = PlayerRegistration::findOne(['player_id' => $player_id, 'id' => $id]);
         if (is_null($registration)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Registration ('.$id.') not found for player ('.$player_id.').']]);          
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Registration ('.$id.') not found for player ('.$player_id.').'
+                ]
+            ]);
         }
-        return $this->respond('OK', $registration);        
+        return $this->respond('OK', $registration);
     }
 }
