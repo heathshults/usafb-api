@@ -20,7 +20,7 @@ class Player extends Eloquent
     // Disable soft deletes for now...
     protected $connection = 'mongodb';
     protected $table = 'players';
-    protected $dates = ['created_at', 'updated_at', 'deleted_at', 'dob'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at' ];
     protected $fillable = [
         'id_external',
         'name_first',
