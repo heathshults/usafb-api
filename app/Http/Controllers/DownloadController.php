@@ -39,7 +39,7 @@ class DownloadController extends Controller
         );
 
         $exportService = new ExportCsvService();
-        $data = $exportService->exportData($type);
+        $data = $exportService->exportData();
         $columns = null;
 
         if (!empty($data)) {

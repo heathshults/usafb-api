@@ -7,6 +7,7 @@ use DB;
 use Queue;
 
 use Carbon\Carbon;
+use Elasticsearch\ClientBuilder;
 use Symfony\Component\Process\Process;
 
 /**
@@ -29,13 +30,13 @@ class StatusController extends Controller
                 'sha'       => $this->getCommitHash(),
                 'timestamp' => Carbon::now()->toW3cString(),
             ],
-            'application_status' => $this->getStatusDB(),
             'application_status' => $this->getStatusApp(),
-            'db_status'          => $this->getStatusDB(),
+            'db_status'          => $this->getStatusMongo(),
+            'db2_status'         => $this->getStatusWDB(),
+            'es_status'          => $this->getStatusEs(),
             'redis_status'       => $this->getStatusRedis(),
-            'cache_status'       => $this->getStatusCache(),
+            'cache_status'       => $this->getStatusCache()
         ];
-
         return response()->json(compact('data'));
     }
 
@@ -57,7 +58,11 @@ class StatusController extends Controller
 
     protected function getStatusApp()
     {
-        return ($this->getStatusCache() == 'OK' && $this->getStatusDB() == 'OK' && $this->getStatusRedis() == 'OK')
+        return ($this->getStatusCache() == 'OK' &&
+            $this->getStatusMongo() == 'OK' &&
+                $this->getStatusWDB() == 'OK' &&
+                    $this->getStatusEs() &&
+                        $this->getStatusRedis() == 'OK')
             ? 'OK'
             : 'FAIL'
         ;
@@ -73,10 +78,20 @@ class StatusController extends Controller
         }
     }
 
-    protected function getStatusDB()
+    protected function getStatusMongo()
     {
         try {
-            $pdo = DB::connection()->getPdo();
+            $mongo = DB::connection();
+            return 'OK';
+        } catch (\Exception $e) {
+            return 'FAIL';
+        }
+    }
+
+    protected function getStatusWDB()
+    {
+        try {
+            $wdb = DB::connection('mysql-dw');
             return 'OK';
         } catch (\Exception $e) {
             return 'FAIL';
@@ -87,6 +102,19 @@ class StatusController extends Controller
     {
         try {
             $redis = Queue::getRedis();
+            return 'OK';
+        } catch (\Exception $e) {
+            return 'FAIL';
+        }
+    }
+
+    protected function getStatusEs()
+    {
+        try {
+            $hosts = explode(',', env('ELASTICSEARCH_HOST', 'localhost'));
+            $clientBuilder = ClientBuilder::create();
+            $clientBuilder->setHosts($hosts);
+            $client = $clientBuilder->build();
             return 'OK';
         } catch (\Exception $e) {
             return 'FAIL';
