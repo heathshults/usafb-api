@@ -31,7 +31,7 @@ class CoachRegistration extends Eloquent
         "current",
         "level",
         "level_type",
-        "roles",
+        "positions",
         "certifications",
         "organization_name",
         "organization_state",

@@ -30,7 +30,7 @@ class PlayerRegistration extends Eloquent
         'id_salesforce',
         "current",
         "level",
-        "game_type",
+        "level_type",
         "organization_name",
         "organization_state",
         "league_name",
@@ -45,7 +45,7 @@ class PlayerRegistration extends Eloquent
         'created_at_yyyymmdd',
         'updated_at'
     ];
-    
+        
     public function player()
     {
         return $this->belongsTo('App\Models\Player');
