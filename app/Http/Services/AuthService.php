@@ -229,12 +229,14 @@ class AuthService
     public function authenticatedUser($requestHeaders)
     {
         $token = AuthHelper::getHeaderToken($requestHeaders);
+        /*
         try {
             return new User(json_decode(json_encode($this->verifier->verifyAndDecode($token)), true));
         } catch (\Auth0\SDK\Exception\CoreException $e) {
             Log::error($e->getMessage());
             throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
         }
+        */
     }
 
     /**
