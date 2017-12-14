@@ -25,19 +25,19 @@ class CoachesController extends Controller
     {
         $pagination = $this->buildPaginationCriteria($request->query());
         $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];                
+        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
 
         $sort = $this->buildSortCriteria($request->query());
         
         // default sort column/order
         if (is_null($sort)) {
             $sort = [
-                'column' => 'created_at', 
+                'column' => 'created_at',
                 'order' => 'desc'
-            ];         
+            ];
         }
 
-        $coaches = Coach::orderBy($sort['column'], $sort['order'])->paginate(50);        
+        $coaches = Coach::orderBy($sort['column'], $sort['order'])->paginate(50);
         return response()->json($coaches);
     }
 
@@ -65,13 +65,13 @@ class CoachesController extends Controller
      * Updates the player record with the specified ID
      *
      * @return string (json) containing the updated Player resource OR corresponding error message
-     */    
+     */
     public function update(Request $request, $id)
     {
         $coach = Coach::find($id);
         if (!isset($coach)) {
             // return error
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);            
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
         }
         $data = $request->all();
         if (isset($data) && sizeof($data) > 0) {
@@ -87,15 +87,15 @@ class CoachesController extends Controller
      * Removes the coach record and all of it's associations with the specified ID
      *
      * @return null
-     */    
+     */
     public function destroy($id)
     {
         $coach = Coach::find($id);
         if (!isset($coach)) {
             // return error
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);            
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
         }
         $coach->delete();
-        return $this->respond('OK', $coach);        
-    }        
+        return $this->respond('OK', $coach);
+    }
 }
