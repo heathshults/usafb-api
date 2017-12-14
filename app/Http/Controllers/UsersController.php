@@ -40,12 +40,12 @@ class UsersController extends Controller
         // default sort column/order
         if (is_null($sort)) {
             $sort = [
-                'column' => 'created_at', 
+                'column' => 'created_at',
                 'order' => 'desc'
-            ];         
+            ];
         }
 
-        $users = User::orderBy($sort['column'], $sort['order'])->paginate(50);        
+        $users = User::orderBy($sort['column'], $sort['order'])->paginate(50);
         return response()->json($users);
     }
 
@@ -64,7 +64,7 @@ class UsersController extends Controller
         if (is_null($user)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'User ('.$id.') not found.']]);
         }
-        return $this->respond('OK', $user);        
+        return $this->respond('OK', $user);
     }
 
     /**
@@ -104,7 +104,7 @@ class UsersController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $user = User::find($id);        
+        $user = User::find($id);
         if (is_null($user)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'User ('.$id.') not found.']]);
         }
@@ -134,6 +134,6 @@ class UsersController extends Controller
                 return $this->respond('ACCEPTED', $user);
             }
         }
-        return $this->respond('NOT_MODIFIED', $user);                
+        return $this->respond('NOT_MODIFIED', $user);
     }
 }
