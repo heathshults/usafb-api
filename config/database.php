@@ -95,8 +95,8 @@ return [
         
         'mongodb' => [
             'driver'   => 'mongodb',
-            'dsn'      => env('DB_DSN'),
-            'database' => env('DB_DATABASE')             
+            'dsn'      => env('DB_DSN', 'mongodb://localhost:27017'),
+            'database' => env('DB_DATABASE', 'usafb')
         ],
     ],
 
