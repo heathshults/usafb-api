@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Player;
 
-use League\fractalService\Pagination\IlluminatePaginatorAdapter;
-use League\fractalService\Manager;
-use League\fractalService\Resource\Collection;
-use League\fractalService\Resource\Item;
+use App\Http\Services\Elasticsearch\ElasticsearchService;
+use App\Http\Services\Elasticsearch\ElasticsearchPlayerQuery;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,28 +14,31 @@ class PlayersController extends Controller
 {
 
     /**
-     * Returns the player records
+     * Search for players
      *
      * @return string[] (json) containing the Player resources limited to 50 results per-page/request
      */
-    public function index(Request $request)
+    public function search(Request $request)
     {
-        $pagination = $this->buildPaginationCriteria($request->query());
-        $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
-
-        $sort = $this->buildSortCriteria($request->query());
-        
-        // default sort column/order
-        if (is_null($sort)) {
-            $sort = [
-                'column' => 'created_at',
-                'order' => 'desc'
-            ];
+        $esQuery = new ElasticsearchPlayerQuery($request->query());
+        if (!$esQuery->isValid()) {
+            return $this->respond('INVALID', ['error' => ['message' => 'Invalid search.']]);
         }
-
-        $players = Player::orderBy($sort['column'], $sort['order'])->paginate(50);
-        return response()->json($players);
+        
+        $es = new ElasticsearchService();
+        $es->setQuery($esQuery);
+        
+        $sortCriteria = $this->buildSortCriteria($request->query());
+        if (!is_null($sortCriteria)) {
+            $es->setSearchSort($sortCriteria['column'], $sortCriteria['order']);
+        }
+        
+        $paginationCriteria = $this->buildPaginationCriteria($request->query());
+        $es->setPaginationCriteria($paginationCriteria);
+        
+        $results = $es->searchPlayers();
+        
+        return $this->respond('OK', $results->toArray());
     }
 
     /**
@@ -53,13 +54,7 @@ class PlayersController extends Controller
         }
         return $this->respond('OK', $player);
     }
-    
-    public function search()
-    {
-        // TODO implement Elasticsearch
-        return response()->json(array('OK' => 'ok'));
-    }
-        
+            
     /**
      * Updates the player record with the specified ID
      *
