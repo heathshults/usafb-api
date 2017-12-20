@@ -25,7 +25,6 @@ $app->post('/users', 'UsersController@create');
 $app->delete('/users/{id}', 'UsersController@destroy');
 
 // players
-$app->get('/players', 'PlayersController@index');
 $app->get('/players/search', 'PlayersController@search');
 $app->get('/players/{id}', 'PlayersController@show');
 $app->put('/players/{id}', 'PlayersController@update');
@@ -34,17 +33,16 @@ $app->delete('/players/{id}', 'PlayersController@destroy');
 // player registrations
 $app->get('/players/{player_id}/registrations', 'PlayerRegistrationsController@index');
 $app->get('/players/{player_id}/registrations/{id}', 'PlayerRegistrationsController@show');
-    
+
 // coaches
-$app->get('/coaches', 'CoachesController@index');
 $app->get('/coaches/search', 'CoachesController@search');
 $app->get('/coaches/{id}', 'CoachesController@show');
 $app->put('/coaches/{id}', 'CoachesController@update');
 $app->delete('/coaches/{id}', 'CoachesController@destroy');
-
+    
 // coach registrations
-$app->get('/coaches/{player_id}/registrations', 'CoachRegistrationsController@index');
-$app->get('/coaches/{player_id}/registrations/{id}', 'CoachRegistrationsController@show');
+$app->get('/coaches/{coach_id}/registrations/{id}', 'CoachRegistrationsController@show');
+$app->get('/coaches/{coach_id}/registrations', 'CoachRegistrationsController@index');
 
 /*
 $app->group(

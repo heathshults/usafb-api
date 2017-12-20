@@ -19,33 +19,19 @@ class PlayerRegistrationsController extends Controller
     /**
      * Returns the player registration records
      *
-     * @return string[] (json) containing the Player Registration resources limited to 50 results per-page/request
+     * @return string (json) containing the Player Registration resources limited to 50 results per-page/request
      */
-    public function index(Request $request, $player_id)
+    public function index(Request $request, $playerId)
     {
-        $pagination = $this->buildPaginationCriteria($request->query());
-        $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
-
-        $sort = $this->buildSortCriteria($request->query());
-        // default sort column/order
-        if (is_null($sort)) {
-            $sort = [
-                'column' => 'created_at',
-                'order' => 'desc'
-            ];
-        }
-
+        $player = Player::find($playerId);
         // validate player record
-        $player = Player::find($player_id);
         if (is_null($player)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$playerId.') not found.']]);
         }
-
-        // too bad $player->registrations()->orderBy( ... ) doesn't work
-        $registrations = PlayerRegistration::where('player_id', $player->id)
-            ->orderBy($sort['column'], $sort['order'])
-            ->paginate();
+        
+        $sort = $this->buildSortCriteria($request->query(), [ 'column' => 'created_at', 'order' => 'desc' ]);
+        $registrations = $player->registrations()->sortBy($sort['column']);
+        
         return $this->respond('OK', $registrations);
     }
 
@@ -54,17 +40,24 @@ class PlayerRegistrationsController extends Controller
      *
      * @return string (json) containing the Player Registration resource OR corresponding error message
      */
-    public function show(Request $request, $player_id, $id)
+    public function show(Request $request, $id, $playerId)
     {
+        // validate player record
+        $player = Player::find($playerId);
+        if (is_null($player)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$playerId.') not found.']]);
+        }
+
         // lookup registration directly from player registration collection
-        $registration = PlayerRegistration::findOne(['player_id' => $player_id, 'id' => $id]);
+        $registration = $player->registrations()->find($id);
         if (is_null($registration)) {
             return $this->respond('NOT_FOUND', [
                 'error' => [
-                    'message' => 'Registration ('.$id.') not found for player ('.$player_id.').'
+                    'message' => 'Registration ('.$id.') not found for player ('.$playerId.').'
                 ]
             ]);
         }
+        
         return $this->respond('OK', $registration);
     }
 }

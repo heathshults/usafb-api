@@ -13,32 +13,39 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Coach;
 use App\Models\CoachRegistration;
 
+use App\Http\Services\Elasticsearch\ElasticsearchService;
+use App\Http\Services\Elasticsearch\ElasticsearchCoachQuery;
+
 class CoachesController extends Controller
 {
 
     /**
-     * Returns the coach records
+     * Search for coaches
      *
      * @return string[] (json) containing the Coach resources limited to 50 results per-page/request
      */
-    public function index(Request $request)
+    public function search(Request $request)
     {
-        $pagination = $this->buildPaginationCriteria($request->query());
-        $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
-
-        $sort = $this->buildSortCriteria($request->query());
+        $esQuery = new ElasticsearchCoachQuery($request->query());
+        if (!$esQuery->isValid()) {
+            return $this->respond('INVALID', ['error' => ['message' => 'Invalid search.']]);
+        }
         
-        // default sort column/order
-        if (is_null($sort)) {
-            $sort = [
-                'column' => 'created_at',
-                'order' => 'desc'
-            ];
+        $es = new ElasticsearchService();
+        $es->setQuery($esQuery);
+
+        $sortCriteria = $this->buildSortCriteria($request->query());
+        if (!is_null($sortCriteria)) {
+            $es->setSearchSort($sortCriteria['column'], $sortCriteria['order']);
         }
 
-        $coaches = Coach::orderBy($sort['column'], $sort['order'])->paginate(50);
-        return response()->json($coaches);
+        $paginationCriteria = $this->buildPaginationCriteria($request->query());
+        if (!is_null($paginationCriteria)) {
+            $es->setSearchPageSize($paginationCriteria);
+        }
+        
+        $results = $es->searchCoaches($esQuery);
+        return $this->respond('OK', $results->toArray());
     }
 
     /**
@@ -54,13 +61,7 @@ class CoachesController extends Controller
         }
         return $this->respond('OK', $coach);
     }
-    
-    public function search()
-    {
-        // TODO implement Elasticsearch
-        return response()->json(array('OK' => 'ok'));
-    }
-        
+            
     /**
      * Updates the player record with the specified ID
      *
@@ -69,8 +70,7 @@ class CoachesController extends Controller
     public function update(Request $request, $id)
     {
         $coach = Coach::find($id);
-        if (!isset($coach)) {
-            // return error
+        if (is_null($coach)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
         }
         $data = $request->all();
@@ -91,7 +91,7 @@ class CoachesController extends Controller
     public function destroy($id)
     {
         $coach = Coach::find($id);
-        if (!isset($coach)) {
+        if (is_null($coach)) {
             // return error
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
         }

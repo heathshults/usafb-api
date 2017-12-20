@@ -39,19 +39,20 @@ class CoachSeeder extends Seeder
             $coach->email = 'john.doe'.$uid.'@gmail.com';
             $coach->years_experience = rand(0,20);
             $coach->organization_name = 'Organization Name '.$i;
-            $coach->organization_state = 'TX';                        
-            $coach->address = new Address();
-            $coach->address->street_1 = '1234 Main St';
-            $coach->address->street_2 = 'Apt #12345';
-            $coach->address->city = 'Frisco';
-            $coach->address->state = 'TX';
-            $coach->address->county = 'Denton';
-            $coach->address->postal_code = '75034';
-            $coach->address->country = 'US';
+            $coach->organization_state = 'TX';
             $coach->level = 'youth';
             $coach->level_type = 'youth_flag';
             $coach->positions = [ 'head_coach', 'quaterback_coach' ];
-            $coach->save();
+
+            $address = new Address();
+            $address->street_1 = '1234 Main St';
+            $address->street_2 = 'Apt #12345';
+            $address->city = 'Frisco';
+            $address->state = 'TX';
+            $address->county = 'Denton';
+            $address->postal_code = '75034';
+            $address->country = 'US';
+            $coach->address()->associate($address);
             
             $coach_registration = new CoachRegistration();            
             $coach_registration->coach_id = $coach->id;
@@ -73,7 +74,9 @@ class CoachSeeder extends Seeder
             $coach_registration->school_state = 'TX';
             $coach_registration->team_name = 'Texas Rangers';
             $coach_registration->team_gender = 'M';
-            $coach_registration->save();
+            
+            $coach->registrations()->associate($coach_registration);
+            $coach->save();
         }
     }
 }
