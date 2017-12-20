@@ -19,39 +19,15 @@ class UserTransformer extends TransformerAbstract
     public function transform(User $user)
     {
         $response = [
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'first_name' => $user->getFirstName(),
-            'last_name' => $user->getLastName(),
-            'phone_number' => $user->getPhoneNumber(),
-            'city' => $user->getCity(),
-            'country' => $user->getCountry(),
-            'state' => $user->getState(),
-            'postal_code' => $user->getPostalCode(),
-            'roles' => $user->getRoles(),
-            'email_verified' => (boolean) $user->getEmailVerified(),
-            'picture' => $user->getPicture(),
-            'status' => $user->getStatus(),
-            'organization' => $user->getOrganization(),
-            'address' => $user->getAddress(),
-            'address2' => $user->getAddress2(),
-            'updated_at' => $user->getUpdatedAt(),
-            'created_at' => $user->getCreatedAt(),
-            'last_login' => $user->getLastLogin()
+            'id' => $user->id,
+            'id_external' => $user->id_external,
+            'role_id' => $user->role_id,
+            'role_permissions' => $user->role_permissions,            
+            'name_first' => $user->name_first,
+            'name_last' => $user->name_last,
+            'phone' => $user->phone,
+            'email' => $user->email
         ];
-
-        if (!is_null($user->getNickname())) {
-            $response['nickname'] = $user->getNickname();
-        }
-
-        if (!is_null($user->getUpdatedBy())) {
-            $response['updated_by'] = $user->getUpdatedBy();
-        }
-
-        if (!is_null($user->getCreatedBy())) {
-            $response['created_by'] = $user->getCreatedBy();
-        }
-
         return $response;
     }
 }
