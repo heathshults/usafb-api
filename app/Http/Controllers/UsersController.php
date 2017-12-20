@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
-
-use League\fractalService\Pagination\IlluminatePaginatorAdapter;
-use League\fractalService\Manager;
-use League\fractalService\Resource\Collection;
-use League\fractalService\Resource\Item;
+use App\Transformers\UserTransformer;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -33,20 +29,10 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        $queryFilter = $request->only('filter');
-        $filters = !is_null($queryFilter['filter']) ? $queryFilter['filter'] : [];
-        $sort = $this->buildSortCriteria($request->query());
-        
-        // default sort column/order
-        if (is_null($sort)) {
-            $sort = [
-                'column' => 'created_at',
-                'order' => 'desc'
-            ];
-        }
-
-        $users = User::orderBy($sort['column'], $sort['order'])->paginate(50);
-        return response()->json($users);
+        $sort = $this->buildSortCriteria($request->query(), [ 'column' => 'created_at', 'order' => 'desc' ]);
+        $paginationCriteria = $this->buildPaginationCriteria($request->query());
+        $users = User::orderBy($sort['column'], $sort['order'])->paginate($paginationCriteria['per_page']);
+        return $this->respond('OK', $users);
     }
 
     /**
