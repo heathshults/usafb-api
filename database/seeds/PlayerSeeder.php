@@ -48,15 +48,16 @@ class PlayerSeeder extends Seeder
             $player->sports = [ 'basketball', 'football' ];
             $player->years_experience = rand(0,10);
 
-            $player->address = new Address();
-            $player->address->street_1 = '1234 Main St';
-            $player->address->street_2 = 'Apt #12345';
-            $player->address->city = 'Frisco';
-            $player->address->state = 'TX';
-            $player->address->county = 'Denton';
-            $player->address->postal_code = '75034';
-            $player->address->country = 'US';
-
+            $address = new Address();
+            $address->street_1 = '1234 Main St';
+            $address->street_2 = 'Apt #12345';
+            $address->city = 'Frisco';
+            $address->state = 'TX';
+            $address->county = 'Denton';
+            $address->postal_code = '75034';
+            $address->country = 'US';            
+            $player->address()->associate($address);
+            
             // guardian 1 w/ address
             $guardian1 = new Guardian();
             $guardian1->name_first = 'JJ '.$uid;
@@ -77,31 +78,45 @@ class PlayerSeeder extends Seeder
             $guardian1_address->postal_code = '75034';
             $guardian1_address->country = 'US';
             $guardian1->address()->associate($guardian1_address);
-            
+                        
             $player->guardians()->associate($guardian1);
 
-            $player->save();
+            $player_registration1 = new PlayerRegistration();            
+            $player_registration1->current = false;
+            $player_registration1->id_external = 'external_id_reg';
+            $player_registration1->level = 'youth';
+            $player_registration1->level_type = 'youth_flag';
+            $player_registration1->organization_name = 'Organization Name '.$i.'_not_current';
+            $player_registration1->organization_state = 'TX';
+            $player_registration1->league_name = 'Frisco Little League';
+            $player_registration1->season_year = 2016;
+            $player_registration1->season = 'spring';
+            $player_registration1->school_name = 'Frisco';
+            $player_registration1->school_district = 'Frisco ISD';
+            $player_registration1->school_state = 'TX';
+            $player_registration1->team_name = 'Texas Rangers';
+            $player_registration1->team_gender = 'M';        
+
+            $player_registration2 = new PlayerRegistration();            
+            $player_registration2->current = true;
+            $player_registration2->id_external = 'external_id_reg_current';
+            $player_registration2->level = 'youth';
+            $player_registration2->level_type = 'youth_flag';
+            $player_registration2->organization_name = 'Organization Name '.$i.'_current';
+            $player_registration2->organization_state = 'TX';
+            $player_registration2->league_name = 'Frisco Little League';
+            $player_registration2->season_year = 2017;
+            $player_registration2->season = 'spring';
+            $player_registration2->school_name = 'Frisco';
+            $player_registration2->school_district = 'Frisco ISD';
+            $player_registration2->school_state = 'TX';
+            $player_registration2->team_name = 'Texas Rangers';
+            $player_registration2->team_gender = 'M';        
+                
+            $player->registrations()->associate($player_registration1);
+            $player->registrations()->associate($player_registration2);
             
-            $player_registration = new PlayerRegistration();            
-            $player_registration->player_id = $player->id;            
-            $player_registration->id_external = 'external_id_reg_'.$i;
-            $player_registration->id_usafb = 'usafb_id_'.$i;
-            $player_registration->id_salesforce = $player->id_salesforce;            
-            $player_registration->current = true;
-            $player_registration->level = 'youth';
-            $player_registration->level_type = 'youth_flag';
-            $player_registration->organization_name = 'Organization Name '.$i;
-            $player_registration->organization_state = 'TX';
-            $player_registration->league_name = 'Frisco Little League';
-            $player_registration->season_year = 2017;
-            $player_registration->season = 'spring';
-            $player_registration->school_name = 'Frisco';
-            $player_registration->school_district = 'Frisco ISD';
-            $player_registration->school_state = 'TX';
-            $player_registration->team_name = 'Texas Rangers';
-            $player_registration->team_gender = 'M';
-                                    
-            $player_registration->save();
+            $player->save();            
         }
     }
 }
