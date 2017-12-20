@@ -34,7 +34,6 @@ class PlayerRegistration extends Eloquent
         'school_state',
         'team_name',
         'team_gender',
-        'blah',
         'created_at',
         'created_at_yyyymmdd',
         'updated_at'
