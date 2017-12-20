@@ -24,7 +24,6 @@ class CoachRegistration extends Eloquent
     
     protected $fillable = [
         'id',
-        "coach_id",
         'id_external',
         'id_usafb',
         'id_salesforce',
