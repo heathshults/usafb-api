@@ -22,8 +22,8 @@ class User extends Eloquent
     protected $connection = 'mongodb';
     protected $table = 'users';
     protected $dates = ['created_at', 'updated_at', 'deleted_at' ];
-    protected $defaults = [ 'active' => true ];
-    
+    protected $attributes = [ 'active' => true ];
+        
     protected $fillable = [
         'id_external',
         'cognito_id',
