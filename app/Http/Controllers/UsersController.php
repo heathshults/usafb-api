@@ -142,7 +142,7 @@ class UsersController extends Controller
         if (is_null($user)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'User ('.$id.') not found.']]);
         }
-        if ($user->activate()) {
+        if ($user->deactivate()) {
             return $this->respond('ACCEPTED', $user);
         } else {
             return $this->respond('NOT_MODIFIED', $user);
