@@ -21,7 +21,7 @@
         "pitpit/php-diff": "^1.0@dev",
         "jenssegers/mongodb": "^3.2",
         "elasticsearch/elasticsearch": "~6.0",
-        "intouch/newrelic": ">=1.0.2"
+        "intouch/laravel-newrelic": "~2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
