@@ -78,8 +78,8 @@ build:
   allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api-newrelic --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api-newrelic
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-newrelic --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-newrelic
 
 build_nginx_static:
   stage: build_workers
