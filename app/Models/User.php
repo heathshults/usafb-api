@@ -22,20 +22,43 @@ class User extends Eloquent
     protected $connection = 'mongodb';
     protected $table = 'users';
     protected $dates = ['created_at', 'updated_at', 'deleted_at' ];
+    protected $attributes = [ 'active' => true ];
+        
     protected $fillable = [
         'id_external',
         'cognito_id',
         'role_id',
         'role_permissions',
+        'active',
         'name_first',
         'name_last',
         'phone',
-        'email'
+        'email',
+        'address'
     ];
+
+    public function address()
+    {
+        return $this->embedsOne('App\Models\Address');
+    }
 
     public function role()
     {
         return $this->belongsTo('App\Models\Role');
+    }
+    
+    public function deactivate()
+    {
+        $this->active = false;
+        $this->save();
+        return true;
+    }
+
+    public function activate()
+    {
+        $this->active = true;
+        $this->save();
+        return true;
     }
     
     protected static function boot()
