@@ -44,11 +44,11 @@ automation:
     - cp .env.testing .env
     - killall php
 
-staging_new_relic_config:
+new_relic_config:
   stage: app_build
   only:
     - develop
-    - feature/newrelic-apm-integration
+    - master
   environment:
     name: staging
   before_script:
@@ -60,7 +60,6 @@ staging_new_relic_config:
     expire_in: 1 week
     paths:
       - docker/newrelic/newrelic.ini
-
 
 build:
   image: docker:latest
@@ -75,12 +74,11 @@ build:
   only:
     - develop
     - master
-    - feature/newrelic-apm-integration
   allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-newrelic --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-newrelic
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
 
 build_nginx_static:
   stage: build_workers
