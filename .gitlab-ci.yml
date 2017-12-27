@@ -47,6 +47,7 @@ automation:
 staging_new_relic_config:
   stage: app_build
   only:
+    - develop
     - feature/newrelic-apm-integration
   environment:
     name: staging
