@@ -26,6 +26,7 @@ class Address extends Eloquent
     protected static $unguarded = true;
     protected $connection = 'mongodb';
     protected $dates = ['created_at', 'updated_at'];
+    protected $attributes = [ 'country_code' => 'US' ];
     protected $fillable = [
         'street_1',
         'street_2',
