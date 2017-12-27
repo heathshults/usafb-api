@@ -1,0 +1,769 @@
+swagger: "2.0"
+
+
+# paste this entire file into http://editor.swagger.io to see the swagger UI
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+
+info:
+  version: "1.0"
+  title: USA Football API
+  
+host: localhost
+# https only
+schemes:
+  - http
+# version will be prefixed to all paths
+basePath: /
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: api_key
+    description: This API key is required on every API call. Contact *api support* to aquire an API Key.
+    in: header
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+
+paths:
+
+#|--------------------------------------------------------------------------
+#| Player Routes
+#|--------------------------------------------------------------------------
+#|
+#| Player routes allow the user to see and search player information.
+#|
+#|--------------------------------------------------------------------------
+
+  # Search players
+  /players/search:
+    get:
+      tags:
+        - Player
+        - Search
+      summary: Search for a Player
+      description: |
+        Search for a Player by First Name (name_first), Last Name (name_last), USA Football ID (id_usafb), City (city), State (state), and Date of Birth (dob)
+      produces:
+        - application/json
+      parameters:
+        - name: id_usafb
+          in: query
+          description: USA Football ID
+          required: false
+          type: string
+        - name: name_first
+          in: query
+          description: First Name of player
+          required: false
+          type: string
+        - name: name_last
+          in: query
+          description: Last Name of player
+          required: false
+          type: string
+        - name: city
+          in: query
+          description: City of player
+          required: false
+          type: string
+        - name: state
+          in: query
+          description: State of player
+          required: false
+          type: string
+        - name: postal_code
+          in: query
+          description: Zip/Postal Code of player
+          required: false
+          type: string
+        - name: sort
+          in: query
+          description: Field to sort the results by (-/+) prefix for asc or desc
+          required: false
+          type: string
+      responses:
+        "404":
+          description: Player not found
+        "200":
+          description: Paginated response of players
+          schema:
+            $ref: "#/definitions/PlayerBasicResults"
+      security:
+        - api_key: []
+    
+  # Get a single Player by id
+  /players/{id}:
+    get:
+      tags:
+        - Player
+      summary: Get Player by ID
+      description: |
+        Get Player and their associated registrations by ID.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Player ID
+          required: true
+          type: string
+      responses:
+        "404":
+          description: Player not found
+        "200":
+          description: Get Player Success
+          schema:
+            $ref: "#/definitions/PlayerResult"
+      security:
+        - api_key: []
+
+#|--------------------------------------------------------------------------
+#| Coach Routes
+#|--------------------------------------------------------------------------
+#|
+#| Player routes allow the user to see and search player information.
+#|
+#|--------------------------------------------------------------------------
+
+  # Search coaches
+  /coaches/search:
+    get:
+      tags:
+        - Coach
+        - Search
+      summary: Search for a Coach
+      description: |
+        Search for a Coach by First Name (name_first), Last Name (name_last), USA Football ID (id_usafb), City (city), State (state), and Date of Birth (dob)
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Paginated response of coaches
+          schema:
+            $ref: "#/definitions/CoachBasicResults"
+      security:
+        - api_key: []
+        
+  # Get a single Coach by id
+  /coaches/{id}:
+    get:
+      tags:
+        - Coach
+      summary: Get Coach by ID
+      description: |
+        Get Coach and their associated registrations by ID.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Coach id
+          required: true
+          type: string
+      responses:
+        "404":
+          description: Coach not found
+        "200":
+          description: Get Coach Success
+          schema:
+            $ref: '#/definitions/CoachResult'
+      security:
+        - api_key: []
+        
+
+#|--------------------------------------------------------------------------
+#| User Routes
+#|--------------------------------------------------------------------------
+#|
+#| User routes for User CRUD operations
+#|
+#|--------------------------------------------------------------------------
+
+  # Search coaches
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      description: |
+        Gets all users in the system
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Paginated response of Users
+          schema:
+            $ref: "#/definitions/UserResults"
+      security:
+        - api_key: []
+    
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: Create new user
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: New user resource
+          schema:
+            $ref: '#/definitions/User'
+      security: 
+        - api_key: []
+      
+  /users/{id}:  
+    get:
+      tags:
+        - User
+      summary: Get User by ID
+      description: |
+        Get User by ID.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Requested User record
+          schema:
+            $ref: "#/definitions/User"
+      security:
+        - api_key: []
+        
+    put:
+      tags:
+        - User
+      summary: Update existing user
+      description: |
+        Get a single Coach and their associated registrations by `id`.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Updated user record
+          schema:
+            $ref: "#/definitions/User"
+      security:
+        - api_key: []
+        
+  /users/{id}/activate:  
+    put:
+      tags:
+        - User
+      summary: Activate the specified User account
+      description: |
+        Activate the User account with the specified `id`.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Updated user record
+          schema:
+            $ref: "#/definitions/User"
+      security:
+        - api_key: []
+        
+  /users/{id}/deactivate:  
+    put:
+      tags:
+        - User
+      summary: Deactivate the specified User account
+      description: |
+        Deactivate the User account with the specified `id`.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Updated user record
+          schema:
+            $ref: "#/definitions/User"
+      security:
+        - api_key: []
+        
+  
+################################################################################
+#                                  Definitions                                 #
+################################################################################
+definitions:
+
+  Meta:
+    type: object
+    properties:
+      meta:
+        properties:
+          pagination:
+            properties:
+              total:
+                type: integer
+                description: "Total number of results"
+              per_page:
+                type: integer
+                description: "Number of results per-page"
+              current_page:
+                type: integer
+                description: "Current page"
+              start:
+                type: integer
+                description: "Start of result-set"
+
+  Address:
+    type: object
+    properties:
+      street_1:
+        type: string
+        description: "Street 1"
+      street_2:
+        type: string
+        description: "Street 2"
+      city:
+        type: string
+        description: "City"
+      county:
+        type: string
+        description: "County"
+      state:
+        type: string
+        description: "State (Abbreviation)"
+      postal_code:
+        type: string
+        description: "Postal/Zip Code"
+      country_code:
+        type: string
+        description: "Country Code"
+
+  PlayerBasic:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique System Player ID
+      id_usafb:
+        type: string
+        description: Unique USA Football ID
+      name_first:
+        type: string
+        description: Player First Name
+      name_middle:
+        type: string
+        description: Player Middle Name
+      name_last:
+        type: string
+        description: Player Last Name
+      city:
+        type: string
+        description: Player Address City
+      state:
+        type: string
+        description: Player Address State
+      postal_code:
+        type: string
+        description: Player Address Postal/Zip Code
+      dob:
+        type: string
+        format: date
+        description: Player Date of Birth
+
+  Player:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique System Player ID
+      id_usafb:
+        type: string
+        description: Unique USA Football ID
+      name_first:
+        type: string
+        description: Player First Name
+      name_middle:
+        type: string
+        description: Player Middle Name
+      name_last:
+        type: string
+        description: Player Last Name
+      dob:
+        type: string
+        format: date
+        description: Player Date of Birth
+      address:
+        $ref: '#/definitions/Address'
+      registrations:
+        type: array
+        items:
+          $ref: '#/definitions/PlayerRegistration'
+
+  PlayerRegistration:
+    type: object
+    properties:
+      current:
+        type: boolean
+        description: Flag depicting current registration
+      season:
+        type: string
+        description: Season (fall/spring/summer)
+      season_year:
+        type: integer
+        description: Season Year
+      level:
+        type: string
+        description: Level of Experience
+      level_type:
+        type: string
+        description: Level of Experience Type
+      organization_name:
+        type: string
+        description: Organization Name
+      organization_state:
+        type: string
+        description: Organization State
+      league_name:
+        type: string
+        description: League Name
+      school_name:
+        type: string
+        description: School Name
+      school_district:
+        type: string
+        description: School District Name
+      school_state:
+        type: string
+        description: School State
+      team_name:
+        type: string
+        description: Team Name
+      team_gender:
+        type: string
+        description: Team Gender (m/f/coed)
+      created_at_yyyymmdd:      
+        type: string
+        description: Date of when Coach record created in YYYYMMDD format
+      created_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record created
+      updated_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record updated
+
+  CoachRegistration:
+    type: object
+    properties:
+      current:
+        type: boolean
+        description: Flag depicting current registration
+      season:
+        type: string
+        description: Season (fall/spring/summer)
+      season_year:
+        type: integer
+        description: Season Year
+      certifications:
+        type: array
+        items: 
+          type: string
+        description: Certifications held
+      positions:
+        type: array
+        items: 
+          type: string
+        description: Positions coached
+      level:
+        type: string
+        description: Level of Experience
+      level_type:
+        type: string
+        description: Level of Experience Type
+      organization_name:
+        type: string
+        description: Organization Name
+      organization_state:
+        type: string
+        description: Organization State
+      league_name:
+        type: string
+        description: League Name
+      school_name:
+        type: string
+        description: School Name
+      school_district:
+        type: string
+        description: School District Name
+      school_state:
+        type: string
+        description: School State
+      team_name:
+        type: string
+        description: Team Name
+      team_gender:
+        type: string
+        description: Team Gender (m/f/coed)
+      created_at_yyyymmdd:      
+        type: string
+        description: Date of when Coach record created in YYYYMMDD format
+      created_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record created
+      updated_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record updated
+
+  CoachBasic:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique System Coach ID
+      id_usafb:
+        type: string
+        description: Unique USA Football ID
+      name_first:
+        type: string
+        description: Coach First Name
+      name_middle:
+        type: string
+        description: Coach Middle Name
+      name_last:
+        type: string
+        description: Coach Last Name
+      city:
+        type: string
+        description: Coach Address City
+      state:
+        type: string
+        description: Coach Address State
+      postal_code:
+        type: string
+        description: Coach Address Postal/Zip Code
+      dob:
+        type: string
+        format: date
+        description: Coach Date of Birth
+
+  Coach:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: Unique System Coach ID
+      id_external:
+        type: string
+        description: Unique External Reference ID
+      id_usafb:
+        type: string
+        description: Unique USA Football ID
+      name_first:
+        type: string
+        description: Coach First Name
+      name_middle:
+        type: string
+        description: Coach Middle Name
+      name_last:
+        type: string
+        description: Coach Last Name
+      dob:
+        type: string
+        format: date
+        description: Coach Date of Birth
+      gender:
+        type: string
+        format: date
+        description: Gender
+      email:
+        type: string
+        format: date
+        description: Email
+      phone_home:
+        type: string
+        format: date
+        description: Home Phone Number
+      phone_mobile:
+        type: string
+        format: date
+        description: Mobile Phone Number
+      phone_work:
+        type: string
+        format: date
+        description: Work Phone Number
+      address:
+        $ref: '#/definitions/Address'
+      organization_name:
+        type: string
+        description: Organization Name
+      organization_state:
+        type: string
+        description: Organization State
+      positions:
+        type: array
+        description: Positions Coached
+        items:
+          type: string
+      years_experience:
+        type: integer
+        description: Years of Experience Coaching
+      level:
+        type: string
+        description: Level of Experience
+      level_type:
+        type: string
+        description: Level of Experience Type
+      registrations:
+        type: array
+        items:
+          $ref: '#/definitions/CoachRegistration'
+      opt_in_marketing:
+        type: boolean
+        description: Coach has opt in for marketing communication
+      created_at_yyyymmdd:      
+        type: string
+        description: Date of when Coach record created in YYYYMMDD format
+      updated_at_yyyymmdd:
+        type: string
+        description: Date of when Coach record updated in YYYYMMDD format
+      created_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record created
+      updated_at:
+        type: string
+        format: date-time
+        description: Timestamp of when Coach record updated
+
+  User:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: Unique System Coach ID
+      id_external:
+        type: string
+        description: External System ID
+      cognito_id:
+        type: string
+        description: Unique Cognito User ID
+      role_id:
+        type: string
+        description: Foreign reference to Role
+      role_permissions:
+        type: array
+        description: Permissions for the user's assigned role
+        items: 
+          type: string
+      active:
+        type: boolean
+        description: Boolean representing user active/inactive state
+      name_first:
+        type: string
+        description: User first name
+      name_last:
+        type: string
+        description: User last name
+      phone:
+        type: string
+        description: User phone number
+      email:
+        type: string
+        description: User email address
+      address:
+        $ref: '#/definitions/Address'
+
+  PlayerResult:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/Player'
+        
+  PlayerBasicResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/PlayerBasic"
+          
+  PlayerResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Player"
+
+  CoachResult:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/Coach'
+
+  CoachResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Coach"
+  
+  CoachBasicResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/CoachBasic"
+  
+  UserResults:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/Meta'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/User'

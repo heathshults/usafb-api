@@ -21,6 +21,8 @@ $app->get('statusz', 'StatusController@status');
 $app->get('/users', 'UsersController@index'); 
 $app->get('/users/{id}', 'UsersController@show');
 $app->put('/users/{id}', 'UsersController@update');
+$app->put('/users/{id}/activate', 'UsersController@activate');
+$app->put('/users/{id}/deactivate', 'UsersController@deactivate');
 $app->post('/users', 'UsersController@create');
 $app->delete('/users/{id}', 'UsersController@destroy');
 
