@@ -20,8 +20,7 @@
         "predis/predis": "~1.0",
         "pitpit/php-diff": "^1.0@dev",
         "jenssegers/mongodb": "^3.2",
-        "elasticsearch/elasticsearch": "~6.0",
-        "intouch/laravel-newrelic": "~2.0"
+        "elasticsearch/elasticsearch": "~6.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
