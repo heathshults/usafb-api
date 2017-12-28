@@ -54,6 +54,68 @@ class ElasticsearchService
         return true;
     }
     
+    public function deleteCoachIndices()
+    {
+        return $this->deleteIndices(self::INDEX_COACHES);
+    }
+
+    public function deletePlayerIndices()
+    {
+        return $this->deleteIndices(self::INDEX_PLAYERS);
+    }
+    
+    public function deleteIndices($index)
+    {
+        try {
+            $params = [ 'index' => $index ];
+            $exists = $this->client->indices()->exists($params);
+            if ($exists) {
+                $response = $this->client->indices()->delete($params);
+            }
+        } catch (Exception $ex) {
+            Log::error($ex->getMessage());
+        }
+    }
+    
+    public function createPlayerIndices()
+    {
+        return $this->createIndices(self::INDEX_PLAYERS);
+    }
+
+    public function createCoachIndices()
+    {
+        return $this->createIndices(self::INDEX_COACHES);
+    }
+    
+    public function createIndices($index)
+    {
+        $params = [
+            'index' => $index,
+            'body' => [
+                'mappings' => [
+                    $index => [
+                        'properties' => [
+                            'id_usafb' => [ 'type' => 'text', 'fielddata' => true ],
+                            'name_first' => [ 'type' => 'text', 'fielddata' => true ],
+                            'name_last' => [ 'type' => 'text', 'fielddata' => true ],
+                            'gender' => [ 'type' => 'text', 'fielddata' => true ],
+                            'dob' => [ 'type' => 'text', 'fielddata' => true ],
+                            'city' => [ 'type' => 'text', 'fielddata' => true  ],
+                            'state' => [ 'type' => 'text', 'fielddata' => true ],
+                            'county' => [ 'type' => 'text', 'fielddata' => true ],
+                            'postal_code' => [ 'type' => 'text', 'fielddata' => true ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        try {
+            $response = $this->client->indices()->create($params);
+        } catch (Exception $ex) {
+            Log::error($ex->getMessage());
+        }
+    }
+    
     public function indexDocument($index, $type, $id, $body = [])
     {
         Log::debug('ElasticsearchService > indexDocument('.$id.')');
