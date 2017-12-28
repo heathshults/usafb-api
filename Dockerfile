@@ -9,6 +9,10 @@ ENV GIT_DEPLOYED_SHA ${GIT_DEPLOYED_SHA}
 
 COPY . /application
 
+COPY /docker/newrelic/newrelic.ini /etc/php/7.1/fpm/conf.d/newrelic.ini
+
+COPY /docker/newrelic/newrelic.ini /etc/php/7.1/cli/conf.d/newrelic.ini
+
 COPY /docker/php-fpm/php-ini-overrides.ini /etc/php/7.1/fpm/conf.d/99-overrides.ini
 
 EXPOSE 9000

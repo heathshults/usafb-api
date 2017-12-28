@@ -3,6 +3,7 @@ image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
 stages:
   - setup
   - test
+  - app_build
   - build
   - build_workers
   - deploy
@@ -42,6 +43,23 @@ automation:
     - composer test:reg
     - cp .env.testing .env
     - killall php
+
+new_relic_config:
+  stage: app_build
+  only:
+    - develop
+    - master
+  environment:
+    name: staging
+  before_script:
+    - apt-get update
+    - apt-get install -y gettext
+  script:
+    - . deploy/scripts/newrelic_deploy.sh
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - docker/newrelic/newrelic.ini
 
 build:
   image: docker:latest
