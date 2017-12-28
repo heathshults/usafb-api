@@ -26,25 +26,37 @@ $app->put('/users/{id}/deactivate', 'UsersController@deactivate');
 $app->post('/users', 'UsersController@create');
 $app->delete('/users/{id}', 'UsersController@destroy');
 
+// roles
+$app->get('/roles', 'RolesController@index');
+$app->post('/roles', 'RolesController@create');
+$app->get('/roles/permissions', 'RolesController@permissions');
+$app->get('/roles/{id}', 'RolesController@show');
+$app->put('/roles/{id}', 'RolesController@update');
+$app->delete('/roles/{id}', 'RolesController@destroy');
+
 // players
 $app->get('/players/search', 'PlayersController@search');
 $app->get('/players/{id}', 'PlayersController@show');
 $app->put('/players/{id}', 'PlayersController@update');
 $app->delete('/players/{id}', 'PlayersController@destroy');
+$app->post('/players', 'PlayersController@create');
 
 // player registrations
 $app->get('/players/{player_id}/registrations', 'PlayerRegistrationsController@index');
+$app->post('/players/{player_id}/registrations', 'PlayerRegistrationsController@create');
 $app->get('/players/{player_id}/registrations/{id}', 'PlayerRegistrationsController@show');
-
+    
 // coaches
 $app->get('/coaches/search', 'CoachesController@search');
 $app->get('/coaches/{id}', 'CoachesController@show');
 $app->put('/coaches/{id}', 'CoachesController@update');
 $app->delete('/coaches/{id}', 'CoachesController@destroy');
-    
+$app->post('/coaches', 'CoachesController@create');
+
 // coach registrations
 $app->get('/coaches/{coach_id}/registrations/{id}', 'CoachRegistrationsController@show');
 $app->get('/coaches/{coach_id}/registrations', 'CoachRegistrationsController@index');
+$app->post('/coaches/{coach_id}/registrations', 'CoachRegistrationsController@create');
 
 /*
 $app->group(

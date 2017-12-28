@@ -7,6 +7,8 @@ use App\Models\CoachRegistration;
 use App\Models\Guardian;
 use App\Models\Address;
 
+use App\Http\Services\Elasticsearch\ElasticsearchService;
+
 class CoachSeeder extends Seeder
 {
     /**
@@ -15,11 +17,15 @@ class CoachSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
+    {        
         // remove all coach records
+        $es = new ElasticsearchService();
+        $es->deleteCoachIndices();
+        $es->createCoachIndices();       
+        
         Coach::truncate();
         CoachRegistration::truncate();
-        
+                
         for($i = 1; $i <= 500; $i++) {
             $uid = uniqid();       
             $coach = new Coach();

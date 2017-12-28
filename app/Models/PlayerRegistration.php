@@ -6,7 +6,9 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
+
 use Log;
+use Validator;
 
 /**
 * Player Registration collection model embedded within Player
@@ -15,7 +17,7 @@ use Log;
 *
 */
 
-class PlayerRegistration extends Eloquent
+class PlayerRegistration extends BaseModel
 {
     protected $dates = ['created_at', 'updated_at' ];
     
@@ -41,6 +43,19 @@ class PlayerRegistration extends Eloquent
     
     protected $attributes = [
         'current' => true
+    ];
+    
+    protected $rules = [
+        'current' => 'required|boolean',
+        'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,other',
+        'organization_name' => 'required',
+        'organization_state' => 'required|size:2',
+        'league_name' => 'required',
+        'season' => 'required|in:fall,spring,summer,winter',
+        'season_year' => 'required|numeric',
+        'team_gender' => 'sometimes|in:M,F,NA',
+        'school_state' => 'sometimes|size:2'
     ];
     
     public function __construct($attributes = [])

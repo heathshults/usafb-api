@@ -98,4 +98,25 @@ class CoachesController extends Controller
         $coach->delete();
         return $this->respond('OK', $coach);
     }
+    
+    /**
+     * Create a new coach record
+     *
+     * @return string (json) containing the new Coach resource OR corresponding error message
+     */
+    public function create(Request $request)
+    {
+        $coach = new Coach($request->all());
+        if ($coach->valid() && $coach->save()) {
+            return $this->respond('CREATED', $coach);
+        } else {
+            $errors = $coach->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new coach record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+    }
 }

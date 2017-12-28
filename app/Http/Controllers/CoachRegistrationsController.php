@@ -64,4 +64,47 @@ class CoachRegistrationsController extends Controller
         
         return $this->respond('OK', $registration);
     }
+    
+    /**
+     * Create a new coach registration record
+     *
+     * @return string (json) containing new record resource OR corresponding error message
+     */
+    public function create(Request $request, $id)
+    {
+        $coach = Coach::find($id);
+        if (is_null($coach)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Coach ('.$id.') not found.']]);
+        }
+        
+        // instantiate new coach registraiton and validate fields
+        $coachRegistration = new CoachRegistration($request->all());
+        if (!$coachRegistration->valid()) {
+            $errors = $coachRegistration->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new coach registration record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+
+        // TODO set all registrations to current = false
+        
+        // associate new embedded registration with player record
+        $coach->registrations()->associate($coachRegistration);
+
+        // do final coach validation (with combined data) and save
+        if ($coach->valid() && $coach->save()) {
+            return $this->respond('ACCEPTED', $coachRegistration);
+        } else {
+            $errors = $coach->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new coach registration record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+    }
 }

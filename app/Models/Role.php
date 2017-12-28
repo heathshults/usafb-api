@@ -4,8 +4,12 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
+
 use EloquentFilter\Filterable;
+
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
+
 use Log;
 
 /**
@@ -15,17 +19,34 @@ use Log;
 *
 */
 
-class Role extends Eloquent
+class Role extends BaseModel
 {
-    // Disable soft deletes for now...
+    const PERMISSIONS = [
+        'export_players',
+        'import_players',
+        'import_coaches',
+        'export_coaches',
+        'manage_users',
+        'view_dashboard',
+        'view_players',
+        'view_coaches',
+    ];
+    
     protected $connection = 'mongodb';
     protected $table = 'roles';
     protected $dates = ['created_at', 'updated_at'];
-    protected $fillable = [
-        'name',
-        'permissions'
-    ];
-
+    protected $fillable = [ 'name', 'permissions' ];
+    protected $rules = [];
+    
+    public function __construct($attributes = [])
+    {
+         parent::__construct($attributes);
+         $this->rules = [
+             'name' => 'required|unique:roles',
+             'permissions.*' => 'required|in:'.implode(',', self::PERMISSIONS)
+         ];
+    }
+        
     // synchronize role permissions in user model on save/changes
     protected static function boot()
     {
@@ -35,8 +56,13 @@ class Role extends Eloquent
                 return;
             }
             User::where([ 'role_id' => $model->id ])->update(
-                [ 'role_permissions' => $model->permissions ],
-                [ 'upsert' => true ]
+                [
+                    'role_name' => $model->name,
+                    'role_permissions' => $model->permissions
+                ],
+                [
+                    'upsert' => true
+                ]
             );
         });
     }

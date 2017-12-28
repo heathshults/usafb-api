@@ -60,4 +60,47 @@ class PlayerRegistrationsController extends Controller
         
         return $this->respond('OK', $registration);
     }
+    
+    /**
+     * Create a new player registration record
+     *
+     * @return string (json) containing new record resource OR corresponding error message
+     */
+    public function create(Request $request, $id)
+    {
+        $player = Player::find($id);
+        if (is_null($player)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$playerId.') not found.']]);
+        }
+        
+        // instantiate new player registraiton and validate fields
+        $playerRegistration = new PlayerRegistration($request->all());
+        if (!$playerRegistration->valid()) {
+            $errors = $playerRegistration->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new player registration record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+
+        // TODO set all registrations to current = false
+        
+        // associate new embedded registration with player record
+        $player->registrations()->associate($playerRegistration);
+
+        // do final player validation (with combined data) and save
+        if ($player->valid() && $player->save()) {
+            return $this->respond('ACCEPTED', $playerRegistration);
+        } else {
+            $errors = $player->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new player registration record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+    }
 }

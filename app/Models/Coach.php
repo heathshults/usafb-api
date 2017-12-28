@@ -17,14 +17,20 @@ use App\Traits\ElasticsearchTrait;
 *
 */
 
-class Coach extends Eloquent
+class Coach extends BaseModel
 {
     use ElasticsearchTrait;
     
-    // Disable soft deletes for now...
     protected $connection = 'mongodb';
+    
     protected $table = 'coaches';
-    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+    
     protected $fillable = [
         'id',
         'id_external',
@@ -51,6 +57,31 @@ class Coach extends Eloquent
         'created_at_yyyymmdd',
         'updated_at_yyyymmdd',
         'updated_at'
+    ];
+    
+    protected $rules = [
+        'name_first' => 'required',
+        'name_last' => 'required',
+        'dob' => 'required|date',
+        'gender' => 'required|in:M,F,NA',
+        'email' => 'required|email',
+        'phone_home' => 'required|regex:/\d{3}-\d{3}-\d{4}/',
+        'opt_in_marketing' => 'sometimes|boolean',
+        'years_experience' => 'required|numeric|min:0|max:50',
+        'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,other',
+        'positions' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,
+        offensive_coordinator,special_teams,assistant_coach,tight_end_coach,
+        running_back_coach, defensive_back_coach,defensive_cooridnator',
+        'organization_name' => 'required',
+        'organization_state' => 'required|size:2',
+        'address' => 'required',
+        'address.street_1' => 'required',
+        'address.city' => 'required',
+        'address.state' => 'required|alpha|size:2',
+        'address.postal_code' => 'required|regex:/\d{5}/',
+        'address.county' => 'required',
+        'address.country' => 'sometimes|alpha|size:2'
     ];
 
     public function __construct($attributes = [])

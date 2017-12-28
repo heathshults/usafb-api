@@ -17,19 +17,38 @@ use App\Models\Role;
 *
 */
 
-class User extends Eloquent
+class User extends BaseModel
 {
     protected $connection = 'mongodb';
+    
     protected $table = 'users';
+    
     protected $dates = ['created_at', 'updated_at', 'deleted_at' ];
+    
     protected $attributes = [ 'active' => true ];
-        
+    
+    protected $rules = [
+        'active' => 'required|boolean',
+        'role_id' => 'required',
+        'name_first' => 'required',
+        'name_last' => 'required',
+        'email' => 'required|email',
+        'address' => 'required',
+        'address.street_1' => 'required',
+        'address.city' => 'required',
+        'address.state' => 'required|size:2',
+        'address.postal_code' => 'required',
+        'address.country' => 'sometimes|size:2'
+    ];
+    
     protected $fillable = [
         'id_external',
         'cognito_id',
-        'role_id',
-        'role_permissions',
         'active',
+        'role_id',
+        'role_name',
+        'role_permissions',
+        'organization_name',
         'name_first',
         'name_last',
         'phone',
@@ -68,6 +87,7 @@ class User extends Eloquent
             if (is_null($model->role)) {
                 return;
             }
+            $model->role_name = $model->role->name;
             $model->role_permissions = $model->role->permissions;
         });
     }
