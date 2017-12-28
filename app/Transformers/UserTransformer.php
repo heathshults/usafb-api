@@ -22,6 +22,7 @@ class UserTransformer extends TransformerAbstract
             'id' => $user->id,
             'id_external' => $user->id_external,
             'role_id' => $user->role_id,
+            'role_name' => $user->role_name,
             'role_permissions' => $user->role_permissions,
             'name_first' => $user->name_first,
             'name_last' => $user->name_last,
