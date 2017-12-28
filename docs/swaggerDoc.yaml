@@ -364,9 +364,9 @@ definitions:
       postal_code:
         type: string
         description: "Postal/Zip Code"
-      country_code:
+      country:
         type: string
-        description: "Country Code"
+        description: "Country (Abbreviation)"
 
   PlayerBasic:
     type: object
