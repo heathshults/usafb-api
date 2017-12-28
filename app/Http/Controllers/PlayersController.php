@@ -76,6 +76,27 @@ class PlayersController extends Controller
         }
         return $this->respond('NOT_MODIFIED', $player);
     }
+
+    /**
+     * Create a new player record
+     *
+     * @return string (json) containing the new Player resource OR corresponding error message
+     */
+    public function create(Request $request)
+    {
+        $player = new Player($request->all());
+        if ($player->valid() && $player->save()) {
+            return $this->respond('CREATED', $player);
+        } else {
+            $errors = $player->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating new record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
+    }
     
     /**
      * Removes the player record and all of it's associations with the specified ID
