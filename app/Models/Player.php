@@ -17,14 +17,19 @@ use App\Traits\ElasticsearchTrait;
 *
 */
 
-class Player extends Eloquent
+class Player extends BaseModel
 {
     use ElasticsearchTrait;
 
     // Disable soft deletes for now...
     protected $connection = 'mongodb';
+    
     protected $table = 'players';
+    
     protected $dates = [ 'created_at', 'updated_at', 'deleted_at' ];
+    
+    protected $attributes = [ 'opt_in_marketing' => true ];
+    
     protected $fillable = [
         'id_external',
         'id_usafb',
@@ -52,13 +57,39 @@ class Player extends Eloquent
         'created_at_yyyymmdd',
         'updated_at_yyyymmdd'
     ];
-    
+        
+    protected $rules = [
+        'name_first' => 'required',
+        'name_last' => 'required',
+        'dob' => 'required|date',
+        'gender' => 'required|in:M,F,NA',
+        'email' => 'required|email',
+        'phone_home' => 'required|regex:/\d{3}-\d{3}-\d{4}/',
+        'opt_in_marketing' => 'sometimes|boolean',
+        'address' => 'required',
+        'address.street_1' => 'required',
+        'address.city' => 'required',
+        'address.state' => 'required|alpha|size:2',
+        'address.postal_code' => 'required|regex:/\d{5}/',
+        'address.county' => 'required',
+        'address.country' => 'sometimes|alpha|size:2',
+        'guardians.*' => 'sometimes',
+        'guardians.*.name_first' => 'required',
+        'guardians.*.name_last' => 'required',
+        'guardians.*.address.street_1' => 'required',
+        'guardians.*.address.city' => 'required',
+        'guardians.*.address.state' => 'required|alpha|size:2',
+        'guardians.*.address.country' => 'sometimes|alpha|size:2',
+        'guardians.*.address.postal_code' => 'required|regex:/\d{5}/',
+    ];
+            
     public function __construct($attributes = [])
     {
+        parent::__construct($attributes);
+        
         if (!$this->exists) {
             $this->attributes['created_at_yyyymmdd'] = Date('Y-m-d');
         }
-        parent::__construct($attributes);
     }
 
     public function registrations()

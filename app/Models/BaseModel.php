@@ -33,9 +33,8 @@ class BaseModel extends Eloquent
     
     public function valid()
     {
-        $validator = Validator::make($this->attributes, $this->rules);        
-        if ($validator->fails())
-        {
+        $validator = Validator::make($this->attributes, $this->rules);
+        if ($validator->fails()) {
             $this->errors = $validator->errors();
             return false;
         }
