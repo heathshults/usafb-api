@@ -7,6 +7,8 @@ use App\Models\PlayerRegistration;
 use App\Models\Guardian;
 use App\Models\Address;
 
+use App\Http\Services\Elasticsearch\ElasticsearchService;
+
 class PlayerSeeder extends Seeder
 {
     /**
@@ -16,6 +18,10 @@ class PlayerSeeder extends Seeder
      */
     public function run()
     {
+        $es = new ElasticsearchService();
+        $es->deletePlayerIndices();
+        $es->createPlayerIndices();            
+        
         // remove all player records
         Player::truncate();
         PlayerRegistration::truncate();
