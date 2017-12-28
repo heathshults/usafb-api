@@ -64,19 +64,27 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $user = new User();
+        
+        $data = $request->json()->all();
         $user->id_external = $request->input('id_external');
         $user->name_first = $request->input('name_first');
         $user->name_last = $request->input('name_last');
         $user->phone = $request->input('phone');
         $user->email = $request->input('email');
         $user->role_id = $request->input('role_id');
-                
-        // TODO validate user
-        if ($user->save()) {
-            return $this->respond('CREATED', $user);
-        }
+        $user->address = $request->input('address');
         
-        return $this->respond('INVALID', ['error' => ['message' => 'Error creating new user record.']]);
+        if ($user->valid() && $user->save()) {
+            return $this->respond('CREATED', $user);
+        } else {
+            $errors = $user->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating user record.',
+                    'errors' => $errors
+                ]
+            ]);
+        }
     }
 
     /**
@@ -113,14 +121,40 @@ class UsersController extends Controller
         if (is_null($user)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'User ('.$id.') not found.']]);
         }
-        $data = $request->all();
-        if (isset($data) && sizeof($data) > 0) {
-            // TODO validate
-            if ($user->update($data)) {
-                return $this->respond('ACCEPTED', $user);
-            }
+        
+        if ($request->has('id_external')) {
+            $user->id_external = $request->input('id_external');
         }
-        return $this->respond('NOT_MODIFIED', $user);
+        if ($request->has('name_first')) {
+            $user->name_first = $request->input('name_first');
+        }
+        if ($request->has('name_last')) {
+            $user->name_last = $request->input('name_last');
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->input('phone');
+        }
+        if ($request->has('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->has('role_id')) {
+            $user->role_id = $request->input('role_id');
+        }
+        if ($request->has('address')) {
+            $user->address = $request->input('address');
+        }
+                
+        if ($user->valid() && $user->save()) {
+            return $this->respond('ACCEPTED', $user);
+        } else {
+            $errors = $user->errors();
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error updating user record.',
+                    'errors' => $user->errors()
+                ]
+            ]);
+        }
     }
     
     public function activate(Request $request, $id)
