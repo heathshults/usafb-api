@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+
+use App\Http\Services\AuthService;
+
 use App\Transformers\UserTransformer;
 
 use Illuminate\Http\Request;
@@ -18,6 +21,17 @@ use Illuminate\Support\Facades\Log;
  */
 class UsersController extends Controller
 {
+    protected $authService;
+
+    /**
+     * Initialize auth service
+     *
+     * @constructor
+     */
+    public function __construct()
+    {
+        $this->authService = app('Auth');
+    }
 
     /**
      * Get users
@@ -64,8 +78,6 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $user = new User();
-        
-        $data = $request->json()->all();
         $user->id_external = $request->input('id_external');
         $user->name_first = $request->input('name_first');
         $user->name_last = $request->input('name_last');
@@ -74,14 +86,30 @@ class UsersController extends Controller
         $user->role_id = $request->input('role_id');
         $user->address = $request->input('address');
         
-        if ($user->valid() && $user->save()) {
-            return $this->respond('CREATED', $user);
-        } else {
+        // fail before setting up Cognito record if user invalid
+        if (!$user->valid()) {
             $errors = $user->errors();
             return $this->respond('INVALID', [
                 'error' => [
                     'message' => 'Error creating user record.',
                     'errors' => $errors
+                ]
+            ]);
+        }
+        
+        // create record in Cognito, return Cognito ID if successful
+        $idCognito = $this->authService->createUser($user->email);
+        
+        if (!is_null($idCognito)) {
+            // set Cognito ID and save new user record
+            $user->id_cognito = $idCognito;
+            $user->save();
+            return $this->respond('CREATED', $user);
+        } else {
+            // fail-safe in case an exception is not raised during failure
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Error creating user record.'
                 ]
             ]);
         }
@@ -134,9 +162,12 @@ class UsersController extends Controller
         if ($request->has('phone')) {
             $user->phone = $request->input('phone');
         }
+        // Don't allow changing email since it's tied to user account in Cognito
+        /*
         if ($request->has('email')) {
             $user->email = $request->input('email');
         }
+        */
         if ($request->has('role_id')) {
             $user->role_id = $request->input('role_id');
         }
@@ -157,6 +188,15 @@ class UsersController extends Controller
         }
     }
     
+    /**
+     * Activate user by id
+     * Url: PUT /users/{id}/activate
+     *
+     * @param Request $request
+     * @param Request $id
+     *
+     * @return json
+     */
     public function activate(Request $request, $id)
     {
         $user = User::find($id);
@@ -170,6 +210,15 @@ class UsersController extends Controller
         }
     }
     
+    /**
+     * Deactivate user by id
+     * Url: PUT /users/{id}/deactivate
+     *
+     * @param Request $request
+     * @param Request $id
+     *
+     * @return json
+     */
     public function deactivate(Request $request, $id)
     {
         $user = User::find($id);
