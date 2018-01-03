@@ -5,6 +5,6 @@ return [
         'key'    => getenv('AWS_KEY'),
         'secret' => getenv('AWS_SECRET'),
     ],
-    'region' => 'us-east-1',
+    'region' => getenv('AWS_REGION'),
     'version' => 'latest',
 ];
