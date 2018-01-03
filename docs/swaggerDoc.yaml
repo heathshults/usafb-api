@@ -14,7 +14,7 @@ info:
 host: localhost
 # https only
 schemes:
-  - http
+  - https
 # version will be prefixed to all paths
 basePath: /
 # format of bodies a client can send (Content-Type)
@@ -28,17 +28,158 @@ produces:
 #                                  Security                                    #
 ################################################################################
 securityDefinitions:
-  api_key:
+  Bearer:
     type: apiKey
-    name: api_key
-    description: This API key is required on every API call. Contact *api support* to aquire an API Key.
-    in: header
-
+    name: Authorization
+    description: This API token is required on every user API call. 
+    in: header    
+    
 ################################################################################
 #                              API Information                                 #
 ################################################################################
 
 paths:
+
+#|--------------------------------------------------------------------------
+#| Authentication / Public Routes
+#|--------------------------------------------------------------------------
+#|
+#| Public authentication routes
+#|
+#|--------------------------------------------------------------------------
+
+  # Login
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Login with User Email and Password
+      produces: 
+        - application/json
+      parameters:
+        - name: email
+          in: query
+          description: User Email
+          required: true 
+          type: string
+        - name: password
+          in: query
+          description: User Password
+          required: true
+          type: string
+      responses:
+        "403":
+          description: Not authorized
+        "200":
+          description: Authorization successful
+          schema:
+            $ref: "#/definitions/LoginResult"
+
+  /auth/activate-user:
+    post:
+      tags:
+        - Authentication
+      summary: Activate User
+      description: Activate new user account
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          description: User Email
+          type: string
+          in: query
+          required: true
+        - name: password
+          description: New Password
+          type: string
+          in: query
+          required: true
+        - name: session
+          description: Session Token (Temporary Token)
+          type: string
+          in: query
+          required: true
+      responses:
+        "400":
+          description: Error activating request
+        "200":
+          description: Activation successful
+          schema:
+            $ref: "#/definitions/ActivateUserResult"
+
+  /auth/refresh-token:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Authentication Token
+      description: Refresh JWT authentication token
+      produces:
+        - application/json
+      parameters:
+        - name: refresh_token
+          description: Refresh Token
+          type: string
+          in: query
+          required: true
+      responses:
+        "401":
+          description: Unable to refresh token
+        "200":
+          description: Successful token refresh
+          schema:
+            $ref: "#/definitions/LoginResult"
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: Forgot Password
+      description: Forgot Password
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          description: User Email
+          type: string
+          in: query
+          required: true
+      responses:
+        "400":
+          description: Unable to reset password
+        "200":
+          description: Successful
+
+  /auth/forgot-password-confirm:
+    post:
+      tags:
+        - Authentication
+      summary: Forgot Password Confirmation
+      description: Confirm forgot password with code
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          description: User Email
+          type: string
+          in: query
+          required: true
+        - name: password
+          description: New Password
+          type: string
+          in: query
+          required: true
+        - name: code
+          description: Confirmation code
+          type: string
+          in: query
+          required: true
+      responses:
+        "400":
+          description: Unable to reset password
+        "200":
+          description: Successful
+  
 
 #|--------------------------------------------------------------------------
 #| Player Routes
@@ -103,8 +244,8 @@ paths:
           schema:
             $ref: "#/definitions/PlayerBasicResults"
       security:
-        - api_key: []
-    
+        - Bearer: []
+        
   # Get a single Player by id
   /players/{id}:
     get:
@@ -129,15 +270,153 @@ paths:
           schema:
             $ref: "#/definitions/PlayerResult"
       security:
-        - api_key: []
+        - Bearer: []
+    put:
+      tags:
+        - Player
+      summary: Update Player
+      description: Update Player record
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Player ID
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error updating Player
+        "200":
+          description: Player record updated
+          schema:
+            $ref: "#/definitions/PlayerResult"
+  
+  /players/{id}/registrations:
+    get:
+      tags:
+        - Player
+        - Registration
+      summary: Get Player Registrations
+      description: Get all registrations for Player
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Player ID
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error retrieving registrations for Player
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/PlayerRegistrationResults"
+  
+  /players/{player_id}/registrations/{id}:
+    put:
+      tags:
+        - Player
+        - Registration
+      summary: Update Coach Registrations
+      description: Get all registrations for Coach
+      produces:
+        - application/json
+      parameters:
+        - name: player_id
+          in: path
+          description: Player ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: Registration ID
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error updating registration for Player
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/PlayerRegistrationResult"
+  
+  /players:
+    post:
+      tags:
+        - Player
+      summary: Create Player
+      description: Create New Player record
+      produces:
+        - application/json
+      responses:
+        "400":
+          description: Error creating Player
+        "200":
+          description: Player created
+          schema:
+            $ref: "#/definitions/PlayerResult"
 
 #|--------------------------------------------------------------------------
 #| Coach Routes
 #|--------------------------------------------------------------------------
 #|
-#| Player routes allow the user to see and search player information.
+#| Coach routes allow the user to see and search player information.
 #|
 #|--------------------------------------------------------------------------
+
+  /coaches/{id}/registrations:
+    get:
+      tags:
+        - Coach
+        - Registration
+      summary: Get Coach Registrations
+      description: Get all registrations for Coach
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Coach ID
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error retrieving registrations for Coach
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/CoachRegistrationResults"
+    
+  /coaches/{coach_id}/registrations/{id}:
+    put:
+      tags:
+        - Coach
+        - Registration
+      summary: Update Coach Registrations
+      description: Get all registrations for Coach
+      produces:
+        - application/json
+      parameters:
+        - name: coach_id
+          in: path
+          description: Coach ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: Registration ID
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error updating registration for Coach
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/CoachRegistrationResult"
 
   # Search coaches
   /coaches/search:
@@ -156,7 +435,7 @@ paths:
           schema:
             $ref: "#/definitions/CoachBasicResults"
       security:
-        - api_key: []
+        - Bearer: []
         
   # Get a single Coach by id
   /coaches/{id}:
@@ -182,8 +461,43 @@ paths:
           schema:
             $ref: '#/definitions/CoachResult'
       security:
-        - api_key: []
-        
+        - Bearer: []
+    put:
+      tags:
+        - Coach
+      summary: Update Coach
+      description: Update Coach record
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Coach id
+          required: true
+          type: string
+      responses:
+        "400":
+          description: Error updating Coach
+        "200":
+          description: Coach record updated
+          schema:
+            $ref: "#/definitions/CoachResult"
+    
+  /coaches:
+    post:
+      tags:
+        - Coach
+      summary: Create Coach
+      description: Create New Coach record
+      produces:
+        - application/json
+      responses:
+        "400":
+          description: Error creating Coach
+        "200":
+          description: Coach record created
+          schema:
+            $ref: "#/definitions/CoachResult"
 
 #|--------------------------------------------------------------------------
 #| User Routes
@@ -209,7 +523,7 @@ paths:
           schema:
             $ref: "#/definitions/UserResults"
       security:
-        - api_key: []
+        - Bearer: []
     
     post:
       tags:
@@ -223,8 +537,8 @@ paths:
           description: New user resource
           schema:
             $ref: '#/definitions/User'
-      security: 
-        - api_key: []
+      security:
+        - Bearer: []
       
   /users/{id}:  
     get:
@@ -247,7 +561,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
       security:
-        - api_key: []
+        - Bearer: []
         
     put:
       tags:
@@ -269,7 +583,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
       security:
-        - api_key: []
+        - Bearer: []
         
   /users/{id}/activate:  
     put:
@@ -292,7 +606,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
       security:
-        - api_key: []
+        - Bearer: []
         
   /users/{id}/deactivate:  
     put:
@@ -315,9 +629,8 @@ paths:
           schema:
             $ref: "#/definitions/User"
       security:
-        - api_key: []
+        - Bearer: []
         
-  
 ################################################################################
 #                                  Definitions                                 #
 ################################################################################
@@ -706,6 +1019,31 @@ definitions:
       address:
         $ref: '#/definitions/Address'
 
+  LoginResult:
+    type: object
+    properties:
+      id_token:
+        type: string
+        description: Cognito ID Token
+      access_token:
+        type: string
+        description: Cognito Bearer Access Token to use with requests
+      expires_in:
+        type: integer
+        description: Token expiration time
+      token_type:
+        type: string
+        description: Token type (always Bearer)
+      refresh_token:
+        type: string
+        description: Refresh Token to use once Access Token expires
+
+  ActivateUserResult:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/LoginResult'
+  
   PlayerResult:
     type: object
     properties:
@@ -732,6 +1070,22 @@ definitions:
         items:
           $ref: "#/definitions/Player"
 
+  PlayerRegistrationResult:
+    type: object
+    properties:
+      data:
+        $ref: "#/definitions/PlayerRegistration"
+
+  PlayerRegistrationResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/PlayerRegistration"
+
   CoachResult:
     type: object
     properties:
@@ -747,6 +1101,22 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Coach"
+
+  CoachRegistrationResult:
+    type: object
+    properties:
+      data:
+        $ref: "#/definitions/CoachRegistration"
+        
+  CoachRegistrationResults:
+    type: object
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/CoachRegistration"
   
   CoachBasicResults:
     type: object
