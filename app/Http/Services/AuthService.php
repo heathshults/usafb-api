@@ -3,9 +3,7 @@
 namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Mail;
-use Auth0\SDK\JWTVerifier;
-use Auth0\SDK\API\Management;
-use Auth0\SDK\API\Authentication;
+use Aws\Credentials\Credentials;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -13,10 +11,15 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Exceptions\InternalException;
 use GuzzleHttp\Exception\ClientException;
-use App\Models\Enums\Role;
 use App\Helpers\AuthHelper;
 use App\Models\User;
-use Log;
+use Illuminate\Support\Facades\Log;
+use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
+use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 /**
  * AuthService
@@ -28,17 +31,16 @@ use Log;
  */
 class AuthService
 {
-    protected $management;
-    protected $authentication;
-    protected $verifier;
+    protected $client;
 
-    const EXISTENT_USER_MSG = "The email address submitted already exists in the system.";
-    const PERMISSION_DENIED_MSG = "Permission denied.";
-    const USER_METADATA = "user_metadata";
-
-    const RETRY_INTERVALS = [1, 4, 8, 16, 32];
-
-    const RATE_LIMIT_CODE = 429;
+    const EXISTENT_USER_MSG = 'The email address submitted already exists in the system.';
+    const PERMISSION_DENIED_MSG = 'Permission denied.';
+    const ADMIN_AUTH_FLOW = 'ADMIN_NO_SRP_AUTH';
+    const REFRESH_TOKEN_AUTH = 'REFRESH_TOKEN_AUTH';
+    const NEW_PSWD_REQUIRED = 'NEW_PASSWORD_REQUIRED';
+    const PSWD_REQ_CODE = 202;
+    const ACCOUNT_DEACTIVATED = 'This account is no longer active. ' .
+        'If you feel you have received this in error, please contact U.S.A. Football.';
 
     /**
      * Initialize authentication client with auth credentials
@@ -47,74 +49,7 @@ class AuthService
      */
     public function __construct()
     {
-        $this->authentication = new Authentication(
-            getenv('AUTH_DOMAIN'),
-            getenv('AUTH_CLIENT_ID'),
-            getenv('AUTH_CLIENT_SECRET'),
-            getenv('AUTH_AUDIENCE')
-        );
-
-        $this->verifier = new JWTVerifier([
-            'supported_algs' => [getenv('AUTH_ALG')],
-            'valid_audiences' => [getenv('AUTH_CLIENT_ID')],
-            'authorized_iss' => [getenv('AUTH_ISS')]
-        ]);
-    }
-
-    public function getAccessTokenClient()
-    {
-        $authorization = $this->authentication->client_credentials(
-            [
-                'client_id' => getenv('AUTH_CLIENT_ID'),
-                'client_secret' => getenv('AUTH_CLIENT_SECRET'),
-                'audience' => getenv('AUTH_AUDIENCE')
-            ]
-        );
-        return isset($authorization['access_token']) ? $authorization['access_token'] : null;
-    }
-
-    public function getManagement()
-    {
-        if ($this->management === null) {
-            $accessToken = $this->getAccessTokenClient();
-            $this->management = new Management($accessToken, getenv('AUTH_DOMAIN'));
-        }
-        return $this->management;
-    }
-
-    /**
-     * Get token from Authorization header
-     *
-     * @param array $requestHeaders
-     *
-     * @throws UnauthorizedHttpException if authorization header is not provided
-     * @throws UnauthorizedHttpException if token type is invalid
-     * @throws UnauthorizedHttpException if token is not provided
-     * @return string
-     */
-    public function getHeaderToken($requestHeaders)
-    {
-        $requestHeaders = array_change_key_case($requestHeaders, CASE_LOWER);
-
-        $authorizationHeader = isset($requestHeaders['authorization']) ?
-            $requestHeaders['authorization'] :
-            null;
-        if ($authorizationHeader == null) {
-            throw new UnauthorizedHttpException('Authorization', 'No authorization header provided.');
-        }
-        $tokenWithType = $authorizationHeader[0];
-
-        $tokenType = 'Bearer';
-        if (!(0 === stripos($tokenWithType, $tokenType))) {
-            throw new UnauthorizedHttpException($tokenType, 'Invalid token type.');
-        }
-
-        $token = trim(substr($tokenWithType, strlen($tokenType)));
-
-        if (empty($token)) {
-            throw new UnauthorizedHttpException($tokenType, 'No token provided.');
-        }
-        return $token;
+        $this->client = new CognitoIdentityProviderClient(config('aws'));
     }
 
     /**
@@ -123,97 +58,96 @@ class AuthService
      * @param string $username
      * @param string $password
      *
+     * @throws UnauthorizedHttpException if email or password is invalid
      * @return json
      */
     public function login($username, $password)
     {
+        $method = __METHOD__;
         try {
-            return $this->authentication->login(
-                array(
-                    'username' => $username,
-                    'password' => $password,
-                    'realm' => getenv('AUTH_CONNECTION')
-                )
-            );
-        } catch (ClientException $e) {
+            $user = User::where('email', $username)->firstOrFail();
+            
+            if (!$user->active) {
+                throw new UnauthorizedHttpException('Deactivation', self::ACCOUNT_DEACTIVATED);
+            }
+            
+            $result = $this->client->adminInitiateAuth([
+                'AuthFlow' => self::ADMIN_AUTH_FLOW,
+                'ClientId' => env('AWS_COGNITO_CLIENT_ID'),
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                'AuthParameters' => [
+                    'USERNAME' => $username,
+                    'PASSWORD' => $password,
+                ],
+            ]);
+            
+            if ($result->get('ChallengeName') == self::NEW_PSWD_REQUIRED) {
+                return response()->json(
+                    [
+                        'session' => $result->get('Session'),
+                        'challenge' => $result->get('ChallengeName'),
+                    ],
+                    self::PSWD_REQ_CODE
+                );
+            }
+            
+            $response = $result->get('AuthenticationResult');
+
+            $user->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
+
+            return [
+                'id_token' => $response['IdToken'],
+                'access_token' => $response['AccessToken'],
+                'expires_in' => $response['ExpiresIn'],
+                'token_type' => $response['TokenType'],
+                'refresh_token' => $response['RefreshToken']
+            ];
+        } catch (CognitoIdentityProviderException $e) {
             throw new UnauthorizedHttpException('Authentication', 'Invalid email or password.');
         }
     }
 
     /**
-     * Normalize user
-     * Remove user metadata namespace and replace sub index by id
+     * Login user by email and password
      *
-     * @param array $user
+     * @param string $username
+     * @param string $password
      *
-     * @return $user
-     */
-    public function normalizeUser($user)
-    {
-        $user[self::USER_METADATA] = $user[getenv('AUTH_METADATA')];
-        unset($user[getenv('AUTH_METADATA')]);
-
-        $user['id'] = $user['sub'];
-        unset($user['sub']);
-
-        return $user;
-    }
-
-    /**
-     * Send email to reset password
-     *
-     * @param string $email
-     *
+     * @throws UnauthorizedHttpException if email or password is invalid
      * @return json
      */
-    public function forgotPassword($email)
+    public function refreshToken($token)
     {
-        $user = $this->getUserByEmail($email);
-        if ($user !== null) {
-            return $this->authentication->dbconnections_change_password(
-                $email,
-                getenv('AUTH_CONNECTION')
-            );
+        $method = __METHOD__;
+        try {
+            $result = $this->client->adminInitiateAuth([
+                'AuthFlow' => self::REFRESH_TOKEN_AUTH,
+                'ClientId' => env('AWS_COGNITO_CLIENT_ID'),
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                'AuthParameters' => [
+                    'REFRESH_TOKEN' => $token,
+                ],
+            ]);
+            if ($result->get('ChallengeName') == self::NEW_PSWD_REQUIRED) {
+                return response()->json(
+                    [
+                        'session' => $result->get('Session'),
+                        'challenge' => $result->get('ChallengeName')
+                    ],
+                    self::PSWD_REQ_CODE
+                );
+            }
+            $response = $result->get('AuthenticationResult');
+
+            return [
+                'id_token' => $response['IdToken'],
+                'access_token' => $response['AccessToken'],
+                'expires_in' => $response['ExpiresIn'],
+                'token_type' => $response['TokenType'],
+            ];
+        } catch (CognitoIdentityProviderException $e) {
+            throw new UnauthorizedHttpException('Authentication', 'Unable to refresh token.');
         }
-        throw new NotFoundHttpException("User not found");
-    }
-
-    /**
-     * Send email to reset password
-     *
-     * @param string $email
-     *
-     * @throws NotFoundHttpException when user with email provided does not exists
-     * @return json
-     */
-    public function resetPassword($email)
-    {
-        $user = $this->getUserByEmail($email);
-        if ($user !== null) {
-            $emailSentMessage = $this->authentication->dbconnections_change_password(
-                $email,
-                getenv('AUTH_CONNECTION')
-            );
-            return response()->json(["message" => $emailSentMessage]);
-        }
-        throw new NotFoundHttpException("User not found");
-    }
-
-    /**
-     * Get user by criteria
-     *
-     * @param string $email
-     *
-     * @return json
-     */
-    public function getUserByEmail($email)
-    {
-        $options = [
-            'search_engine' => 'v2',
-            'q' => "email.raw:".$email
-        ];
-        $users = $this->getManagement()->users->getAll($options);
-        return empty($users) ? null : $users[0];
     }
 
     /**
@@ -222,350 +156,266 @@ class AuthService
      *
      * @param array $requestHeaders
      *
-     * @return User|null user if response is not null or null otherwise
+     * @return User|null                 user if response is not null or null otherwise
      * @throws UnauthorizedHttpException if user could not be authenticated
-     * @throws InternalException if all retries were attempted
+     * @throws InternalException         if all retries were attempted
      */
     public function authenticatedUser($requestHeaders)
     {
+        $method = __METHOD__;
         $token = AuthHelper::getHeaderToken($requestHeaders);
-        /*
         try {
-            return new User(json_decode(json_encode($this->verifier->verifyAndDecode($token)), true));
-        } catch (\Auth0\SDK\Exception\CoreException $e) {
-            Log::error($e->getMessage());
+            $userId = Cache::get('user::' . $token);
+            if (!isset($userId)) {
+                $cognitoUser = $this->client->getUser([
+                    'AccessToken' => $token,
+                ]);
+                $userAttributes = $cognitoUser->get('UserAttributes');
+                foreach ($userAttributes as $field) {
+                    if ($field['Name'] == 'sub') {
+                        $userId = $field['Value'];
+                        break;
+                    }
+                }
+                Cache::put('user::' . $token, $userId, 60);
+            }
+            $userProfile = User::where('id_cognito', $userId)->first();
+            if (is_null($userProfile)) {
+                throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
+            }
+            return $userProfile;
+        } catch (CognitoIdentityProviderException $e) {
             throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
         }
-        */
     }
 
     /**
-     * Determines if a user is U.S. Soccer Staff
-     * This user will have full access to all api endpoints except deletion
+     * Activates user after new password is set
      *
-     * @param array $user
+     * @param array $requestHeaders
      *
-     * @return boolean
+     * @return User|null                 user if response is not null or null otherwise
+     * @throws UnauthorizedHttpException if user could not be authenticated
+     * @throws InternalException         if all retries were attempted
      */
-    public function isSuperUser($user)
+    public function activateUser($email, $password, $session)
     {
-        return $this->hasRoles($user, [Role::SUPER_USER]);
-    }
-
-    /**
-     * Determines if a user is Automation Test user
-     * This user will have full access to all api endpoints
-     *
-     * @param array $user
-     *
-     * @return boolean
-     */
-    public function isTestUser($user)
-    {
-        return $this->hasRoles($user, [Role::TEST]);
-    }
-
-    /**
-     * Determines if a user has role
-     *
-     * @param array $user
-     * @param array $roles
-     *
-     * @return boolean
-     */
-    public function hasRoles($user, $roles)
-    {
-        $metadata = $user[self::USER_METADATA];
-        if (isset($metadata["roles"])) {
-            foreach ($metadata["roles"] as $roleName) {
-                if (is_array($roles) && in_array($roleName, $roles)) {
-                    return true;
-                }
+        $method = __METHOD__;
+        try {
+            $user = User::where('email', $email)->firstOrFail();
+            $result = $this->client->adminRespondToAuthChallenge(
+                [
+                'ChallengeName' => self::NEW_PSWD_REQUIRED,
+                'ChallengeResponses' => [
+                    'NEW_PASSWORD' => $password,
+                    'USERNAME' => $email,
+                ],
+                'ClientId' => env('AWS_COGNITO_CLIENT_ID'),
+                'Session' => $session,
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                ]
+            );
+            $response = [];
+            if (!is_null($result->get('AuthenticationResult'))) {
+                $this->client->adminUpdateUserAttributes([
+                    'UserAttributes' => [
+                        [
+                            'Name' => 'email_verified',
+                            'Value' => 'true',
+                        ],
+                    ],
+                    'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                    'Username' => $email,
+                ]);
+                $result = $result->get('AuthenticationResult');
+                $response = [
+                    'id_token' => $result['IdToken'],
+                    'access_token' => $result['AccessToken'],
+                    'expires_in' => $result['ExpiresIn'],
+                    'token_type' => $result['TokenType'],
+                ];
             }
+            return $response;
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException('Invalid session or email.');
         }
-        return false;
     }
 
     /**
-     * Determines if a client exception refers to Too many request exception
+     * Activates user after new password is set
      *
-     * @param GuzzleHttp\Exception\ClientException $exception
+     * @param userId
+     * @param email
      *
-     * @return boolean
+     * @return boolean                   if successful
+     * @throws UnauthorizedHttpException if user could not be authenticated
+     * @throws InternalException         if all retries were attempted
      */
-    public static function isTooManyRequestsException(ClientException $exception)
+    public function updateUser($userId, $email)
     {
-        return $exception->getResponse()->getStatusCode() === self::RATE_LIMIT_CODE;
+        $method = __METHOD__;
+        try {
+            $user = User::findOrFail($userId);
+            $this->client->adminUpdateUserAttributes([
+                'UserAttributes' => [
+                    [
+                        'Name' => 'email_verified',
+                        'Value' => 'true',
+                    ],
+                    [
+                        'Name' => 'email',
+                        'Value' => $email,
+                    ],
+                ],
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                'Username' => $user->email,
+            ]);
+            $user->email = $email;
+            $user->save();
+            return $user;
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException('Unable to update user email.');
+        }
     }
 
     /**
      * Create user
      *
-     * @param array $newUser
+     * @param $email
      *
+     * @throws ConflictHttpException if user already exists
      * @return json
      */
-    public function createUser($newUser)
+    public function createUser($email)
     {
         try {
-            $userCreated = $this->getManagement()->users->create($newUser);
-            $this->authentication->dbconnections_change_password(
-                $userCreated["email"],
-                getenv('AUTH_CONNECTION')
+            $user = User::where('email', $email)->first();
+            if (!is_null($user)) {
+                throw new ConflictHttpException(self::EXISTENT_USER_MSG);
+            }
+            $result = $this->client->adminCreateUser([
+                'DesiredDeliveryMediums' => ['EMAIL'],
+                'TemporaryPassword' => bin2hex(random_bytes(8)) . 'Aa1*',
+                'UserAttributes' => [
+                    [
+                        'Name' => 'email',
+                        'Value' => $email,
+                    ],
+                ],
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                'Username' => $email,
+            ]);
+
+            $cognitoUser = $result->get('User');
+            $userId = $cognitoUser['Username'];
+            return $userId;
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException($e->getAwsErrorMessage());
+        }
+    }
+
+    /**
+     * Delete user by id
+     *
+     * @param string $email
+     *
+     * @throws BadRequestHttpException if problem occurs deleting user
+     * @return json
+     */
+    public function deleteUser($email)
+    {
+        try {
+            $result = $this->client->adminDeleteUser([
+                'UserPoolId' => env('AWS_COGNITO_USER_POOL_ID'),
+                'Username' => $email,
+            ]);
+            return true;
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException($e->getAwsErrorMessage());
+        }
+    }
+
+    /**
+     * Change password of a user
+     *
+     * @param array  $requestHeaders
+     * @param string $previousPswd
+     * @param string $newPswd
+     *
+     * @throws BadRequestHttpException if any exception is thrown
+     * @return json
+     */
+    public function resetPassword($requestHeaders, $previousPswd, $newPswd)
+    {
+        $method = __METHOD__;
+        $token = AuthHelper::getHeaderToken($requestHeaders);
+        try {
+            return $this->client->changePassword(
+                [
+                    'AccessToken' => $token,
+                    'PreviousPassword' => $previousPswd,
+                    'ProposedPassword' => $newPswd,
+                ]
             );
-            return new User($userCreated);
-        } catch (ClientException $e) {
-            $message = $e->getMessage();
-            if (strpos($message, 'The user already exists') !== false) {
-                $message = self::EXISTENT_USER_MSG;
-            }
-            throw new ConflictHttpException($message);
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
     }
 
     /**
-     * Get user by id
+     * Change password of a user
      *
-     * @param string $userId
+     * @param array  $requestHeaders
+     * @param string $previousPswd
+     * @param string $newPswd
      *
+     * @throws BadRequestHttpException if any exception is thrown
      * @return json
      */
-    public function getUserById($userId)
+    public function forgotPassword($email)
     {
-        $user = $this->getManagement()->users->get($userId);
-        return new User($user);
-    }
-
-    /**
-     * Delete user by id
-     *
-     * @param integer $id
-     *
-     * @return json
-     */
-    public function deleteUser($id)
-    {
-        if (empty($id)) {
-            throw new BadRequestHttpException("Invalid id");
-        }
-        // This is a fix to throw an error if the user doesn't exist
-        // Because the user delete returns an empty response
-        $this->getUserById($id);
-        return $this->getManagement()->users->delete($id);
-    }
-
-    /**
-     * Delete user by id
-     *
-     * @param Auth0\SDK\API\Authentication $authentication
-     *
-     * @return void
-     */
-    public function setAuthentication($authentication)
-    {
-        $this->authentication =  $authentication;
-    }
-
-    /**
-     * Set Management client
-     *
-     * @param Auth0\SDK\API\Management $management
-     *
-     * @return void
-     */
-    public function setManagement($management)
-    {
-        $this->management =  $management;
-    }
-
-    /**
-     * Get fields that belongs to user metadata
-     *
-     * @return array
-     */
-    protected function metadataFields()
-    {
-        return [
-            'first_name',
-            'last_name',
-            'city',
-            'phone_number',
-            'state',
-            'postal_code',
-            'modified_by'
-        ];
-    }
-
-    /**
-     * Update user by id
-     *
-     * @param string $id User id
-     * @param array $data User data to be updated
-     *
-     * @return json
-     */
-    public function updateUser($userId, $data)
-    {
-        if (isset($data['role'])) {
-            throw new BadRequestHttpException("Role can not be changed.");
-        }
-        if (isset($data['password']) || isset($data['email'])) {
-            $data['connection'] = getenv('AUTH_CONNECTION');
-        }
-        if (isset($data['email'])) {
-            $data['client_id'] = getenv('AUTH_CLIENT_ID');
-        }
-        $metadata = [];
-        foreach (AuthHelper::METADATA_FIELDS as $field) {
-            if (isset($data[$field])) {
-                $metadata[$field] = $data[$field];
-                unset($data[$field]);
-            }
-        }
-        if (!empty($metadata)) {
-            $data['user_metadata'] = $metadata;
-        }
-
+        $method = __METHOD__;
         try {
-            $updatedUserResponse = $this->getManagement()->users->update($userId, $data);
-            return new User($updatedUserResponse);
-        } catch (ClientException $e) {
-            $message = $e->getMessage();
-            if (strpos($message, 'The specified new email already exists') !== false) {
-                $message = self::EXISTENT_USER_MSG;
-                throw new ConflictHttpException($message);
-            }
-            throw $e;
+            $user = User::where('email', $email)->firstOrFail();
+            $result = $this->client->forgotPassword(
+                [
+                    'ClientId' => env('AWS_COGNITO_CLIENT_ID'),
+                    'Username' => $email,
+                ]
+            );
+            return $result;
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException($e->getAwsErrorMessage());
         }
     }
 
     /**
-     * Get all Users
+     * Confirm Forgot password
      *
-     * @param string $criteria
+     * @param string $email
+     * @param string $confirmationCode
+     * @param string $password
      *
-     * @return json
+     * @throws BadRequestHttpException if CognitoIdentityProviderException is thrown
      */
-    public function getAllUsers($criteria)
+    public function confirmForgotPassword($email, $confirmationCode, $password)
     {
-        $options = [
-            "search_engine" => "v2",
-            "include_totals" => true,
-            'per_page' => 10,
-            'page' => 0
-        ];
-        if (isset($criteria['page'])) {
-            $options['page'] = $criteria['page'] - 1;
+        $method = __METHOD__;
+        try {
+            $user = User::where('email', $email)->firstOrFail();
+            $this->client->confirmForgotPassword([
+                'ClientId' => env('AWS_COGNITO_CLIENT_ID'),
+                'ConfirmationCode' => $confirmationCode,
+                'Password' => $password,
+                'Username' => $email,
+            ]);
+        } catch (CognitoIdentityProviderException $e) {
+            throw new BadRequestHttpException('Invalid Data.');
         }
-        if (isset($criteria['per_page'])) {
-            $options['per_page'] = $criteria['per_page'];
-        }
-        if (isset($criteria['sort'])) {
-            $options['sort'] = AuthHelper::extractSortField($criteria['sort']);
-        }
-
-        if (isset($criteria['q'])) {
-            $options['q'] = "(" . AuthHelper::createFilterQuery($criteria['q']) . ")";
-        }
-
-        $result = $this->getManagement()->users->getAll($options);
-        $users = [
-            "page" => $options['page'] + 1,
-            "per_page" => $options['per_page'],
-            "total" => 0,
-            "data" => []
-        ];
-        if (!empty($result['users'])) {
-            $users["total"] = $result['total'];
-            $users["data"] = AuthHelper::getUserList($result['users']);
-        }
-        return $users;
     }
 
-    /**
-     * Convert an string to a valid sort expression for auth0 search query
-     *
-     * @param string $sortExpression
-     *
-     * @return string sort query
-     */
-    public function extractSortField($sortExpression)
+    public function setClient($client)
     {
-        $field = trim($sortExpression);
-        $order = 1;
-        $firstCharacter = $field[0];
-        if ($firstCharacter == '-' || $firstCharacter == '+') {
-            $field = substr($field, 1);
-            $order = intval($firstCharacter.'1');
-        }
-        $metadata_fields = $this->metadataFields();
-        if (in_array($field, $metadata_fields)) {
-            $field = 'user_metadata.'.$field;
-        }
-        $sort = $field.':'.$order;
-        return $sort;
-    }
-
-    /**
-     * Create a valid filter expression for auth0 search query
-     *
-     * @param string $criteria
-     *
-     * @return string filter query
-     */
-    public function createFilterQuery($criteria)
-    {
-        $escapedCriteria = urlencode($criteria);
-        $filterQuery = "user_metadata.first_name:*".$escapedCriteria."*";
-        $filterQuery .= " OR user_metadata.last_name:*".$escapedCriteria."*";
-        $filterQuery .= ' OR email:"*'.$criteria.'*"';
-        $filterQuery .=" OR user_metadata.roles:*".$escapedCriteria."*";
-
-        return $filterQuery;
-    }
-
-    /**
-     * Links array for pagination that will be included in search response
-     *
-     * @param string $currentPage
-     * @param string $pageSize
-     * @param string $totalPages
-     *
-     * @return array links
-     */
-    public function createLinksPagination($currentPage, $pageSize, $totalPages)
-    {
-        $usersUrl = getenv('HOSTNAME').'/users';
-        $pageNumberParam = "?page[number]=";
-        $pageSizeParam = "&page[size]=";
-
-        $prev = null;
-        if ($currentPage !== 0) {
-            $prev = $usersUrl.$pageNumberParam.($currentPage - 1).$pageSizeParam.$pageSize;
-        }
-        $next = null;
-        $lastPage = $totalPages - 1;
-        if ($currentPage !== $lastPage) {
-            $next = $usersUrl.$pageNumberParam.($currentPage + 1).$pageSizeParam.$pageSize;
-        }
-        return [
-            "self" => $usersUrl.$pageNumberParam.$currentPage.$pageSizeParam.$pageSize,
-            "first" => $usersUrl.$pageNumberParam."0".$pageSizeParam.$pageSize,
-            "prev" => $prev,
-            "next" =>  $next,
-            "last" => $usersUrl.$pageNumberParam.$lastPage.$pageSizeParam.$pageSize
-        ];
-    }
-
-    /**
-     * Set TokenVerifier
-     *
-     * @param Auth0\SDK\JWTVerifier $verifier
-     *
-     * @return void
-     */
-    public function setVerifier($verifier)
-    {
-        $this->verifier =  $verifier;
+        $this->client = $client;
     }
 }

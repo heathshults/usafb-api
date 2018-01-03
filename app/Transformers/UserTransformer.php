@@ -12,7 +12,7 @@ class UserTransformer extends TransformerAbstract
     /**
      * Returns the user response based on an user array
      *
-     * @param $user User response from auth0
+     * @param $user User
      *
      * @return array
      */

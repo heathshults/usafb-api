@@ -31,22 +31,21 @@ class Role extends BaseModel
         'view_players',
         'view_coaches',
     ];
-    
-    protected $connection = 'mongodb';
-    protected $table = 'roles';
-    protected $dates = ['created_at', 'updated_at'];
-    protected $fillable = [ 'name', 'permissions' ];
-    protected $rules = [];
-    
-    public function __construct($attributes = [])
-    {
-         parent::__construct($attributes);
-         $this->rules = [
-             'name' => 'required|unique:roles',
-             'permissions.*' => 'required|in:'.implode(',', self::PERMISSIONS)
-         ];
-    }
         
+    protected $connection = 'mongodb';
+
+    protected $table = 'roles';
+
+    protected $dates = ['created_at', 'updated_at'];
+
+    protected $fillable = [ 'name', 'permissions' ];
+
+    protected $rules = [
+        'name' => 'required|unique:roles',
+        'permissions.*' => 'required|in:export_players,import_players,import_coaches,export_coaches,
+        manage_users,view_dashboard,view_players,view_coaches'
+    ];
+            
     // synchronize role permissions in user model on save/changes
     protected static function boot()
     {

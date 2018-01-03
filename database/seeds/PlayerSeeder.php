@@ -89,6 +89,7 @@ class PlayerSeeder extends Seeder
 
             $player_registration1 = new PlayerRegistration();            
             $player_registration1->current = false;
+            $player_registration1->positions = [ 'quarterback', 'running_back', 'fullback' ];
             $player_registration1->id_external = 'external_id_reg';
             $player_registration1->level = 'youth';
             $player_registration1->level_type = 'youth_flag';
@@ -101,10 +102,11 @@ class PlayerSeeder extends Seeder
             $player_registration1->school_district = 'Frisco ISD';
             $player_registration1->school_state = 'TX';
             $player_registration1->team_name = 'Texas Rangers';
-            $player_registration1->team_gender = 'M';        
+            $player_registration1->team_gender = 'M';     
 
             $player_registration2 = new PlayerRegistration();            
             $player_registration2->current = true;
+            $player_registration2->positions = [ 'quarterback', 'running_back', 'fullback' ];
             $player_registration2->id_external = 'external_id_reg_current';
             $player_registration2->level = 'youth';
             $player_registration2->level_type = 'youth_flag';

@@ -20,10 +20,9 @@ class Authorize
      */
     public function handle($request, Closure $next, ...$roles)
     {
-        if (!AuthHelper::hasRoles($request->user(), $roles)) {
-            throw new AccessDeniedHttpException("Permission denied.");
-        }
-
+        //if (!AuthHelper::hasRoles($request->user(), $roles)) {
+        //    throw new AccessDeniedHttpException("Permission denied.");
+        //}
         return $next($request);
     }
 }

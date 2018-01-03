@@ -20,15 +20,20 @@ class CoachesController extends Controller
 {
 
     /**
-     * Search for coaches
+     * Search for Coaches
      *
      * @return string[] (json) containing the Coach resources limited to 50 results per-page/request
      */
     public function search(Request $request)
     {
         $esQuery = new ElasticsearchCoachQuery($request->query());
+        
         if (!$esQuery->isValid()) {
-            return $this->respond('INVALID', ['error' => ['message' => 'Invalid search.']]);
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Invalid search.'
+                ]
+            ]);
         }
         
         $es = new ElasticsearchService();
@@ -49,71 +54,103 @@ class CoachesController extends Controller
     }
 
     /**
-     * Returns the coach record with the specified ID
+     * Returns the Coach record with the specified ID
      *
      * @return string (json) containing the Coach resource OR corresponding error message
      */
     public function show($id)
     {
         $coach = Coach::find($id);
+        
         if (is_null($coach)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Coach ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Coach ('.$id.') not found.'
+                ]
+            ]);
         }
+        
         return $this->respond('OK', $coach);
     }
             
     /**
-     * Updates the player record with the specified ID
+     * Updates the Coach record with the specified ID
      *
-     * @return string (json) containing the updated Player resource OR corresponding error message
+     * @return string (json) containing the updated Coach resource OR corresponding error message
      */
     public function update(Request $request, $id)
     {
         $coach = Coach::find($id);
+        
         if (is_null($coach)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Coach ('.$id.') not found.'
+                ]
+            ]);
         }
+        
         $data = $request->all();
+        
         if (isset($data) && sizeof($data) > 0) {
-            // TODO validate
-            if ($coach->update($data)) {
+            // loop through PUT fields and assign to model
+            foreach ($data as $key => $value) {
+                $coach->setAttribute($key, $value);
+            }
+            if ($coach->valid() && $coach->save()) {
                 return $this->respond('ACCEPTED', $coach);
+            } else {
+                $errors = $coach->errors();
+                return $this->respond('INVALID', [
+                    'error' => [
+                        'message' => 'Error updating Coach record.',
+                        'errors' => $errors
+                    ]
+                ]);
             }
         }
+        
         return $this->respond('NOT_MODIFIED', $coach);
     }
     
     /**
-     * Removes the coach record and all of it's associations with the specified ID
+     * Removes the Coach record and all of it's associations with the specified ID
      *
      * @return null
      */
     public function destroy($id)
     {
         $coach = Coach::find($id);
+        
         if (is_null($coach)) {
-            // return error
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Coach ('.$id.') not found.'
+                ]
+            ]);
         }
+        
         $coach->delete();
+        
         return $this->respond('OK', $coach);
     }
     
     /**
-     * Create a new coach record
+     * Create a new Coach record
      *
      * @return string (json) containing the new Coach resource OR corresponding error message
      */
     public function create(Request $request)
     {
         $coach = new Coach($request->all());
+        
         if ($coach->valid() && $coach->save()) {
             return $this->respond('CREATED', $coach);
         } else {
             $errors = $coach->errors();
             return $this->respond('INVALID', [
                 'error' => [
-                    'message' => 'Error creating new coach record.',
+                    'message' => 'Error creating Coach record.',
                     'errors' => $errors
                 ]
             ]);

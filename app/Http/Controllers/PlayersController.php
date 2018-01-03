@@ -14,7 +14,7 @@ class PlayersController extends Controller
 {
 
     /**
-     * Search for players
+     * Search for Players
      *
      * @return string[] (json) containing the Player resources limited to 50 results per-page/request
      */
@@ -22,7 +22,11 @@ class PlayersController extends Controller
     {
         $esQuery = new ElasticsearchPlayerQuery($request->query());
         if (!$esQuery->isValid()) {
-            return $this->respond('INVALID', ['error' => ['message' => 'Invalid search.']]);
+            return $this->respond('INVALID', [
+                'error' => [
+                    'message' => 'Invalid search.'
+                ]
+            ]);
         }
         
         $es = new ElasticsearchService();
@@ -42,7 +46,7 @@ class PlayersController extends Controller
     }
 
     /**
-     * Returns the player record with the specified ID
+     * Returns the Player record with the specified ID
      *
      * @return string (json) containing the Player resource OR corresponding error message
      */
@@ -50,13 +54,17 @@ class PlayersController extends Controller
     {
         $player = Player::find($id);
         if (is_null($player)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Player ('.$id.') not found.'
+                ]
+            ]);
         }
         return $this->respond('OK', $player);
     }
             
     /**
-     * Updates the player record with the specified ID
+     * Updates the Player record with the specified ID
      *
      * @return string (json) containing the updated Player resource OR corresponding error message
      */
@@ -65,20 +73,35 @@ class PlayersController extends Controller
         $player = Player::find($id);
         if (!isset($player)) {
             // return error
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Player ('.$id.') not found.'
+                ]
+            ]);
         }
         $data = $request->all();
         if (isset($data) && sizeof($data) > 0) {
-            // TODO validate
-            if ($player->update($data)) {
+            // loop through PUT fields and assign to model
+            foreach ($data as $key => $value) {
+                $player->setAttribute($key, $value);
+            }
+            if ($player->valid() && $player->save()) {
                 return $this->respond('ACCEPTED', $player);
+            } else {
+                $errors = $player->errors();
+                return $this->respond('INVALID', [
+                    'error' => [
+                        'message' => 'Error updated Player record.',
+                        'errors' => $errors
+                    ]
+                ]);
             }
         }
         return $this->respond('NOT_MODIFIED', $player);
     }
 
     /**
-     * Create a new player record
+     * Create a new Player record
      *
      * @return string (json) containing the new Player resource OR corresponding error message
      */
@@ -99,7 +122,7 @@ class PlayersController extends Controller
     }
     
     /**
-     * Removes the player record and all of it's associations with the specified ID
+     * Removes the Player record and all of it's associations with the specified ID
      *
      * @return null
      */
@@ -108,7 +131,11 @@ class PlayersController extends Controller
         $player = Player::find($id);
         if (!isset($player)) {
             // return error
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Player ('.$id.') not found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'Player ('.$id.') not found.'
+                ]
+            ]);
         }
         $player->delete();
         return $this->respond('OK', $player);

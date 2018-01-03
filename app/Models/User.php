@@ -23,7 +23,9 @@ class User extends BaseModel
     
     protected $table = 'users';
     
-    protected $dates = ['created_at', 'updated_at', 'deleted_at' ];
+    protected $guarded = [ 'email', 'role_id' ];
+    
+    protected $dates = [ 'created_at', 'updated_at', 'last_login_at' ];
     
     protected $attributes = [ 'active' => true ];
     
@@ -43,7 +45,7 @@ class User extends BaseModel
     
     protected $fillable = [
         'id_external',
-        'cognito_id',
+        'id_cognito',
         'active',
         'role_id',
         'role_name',
@@ -53,7 +55,8 @@ class User extends BaseModel
         'name_last',
         'phone',
         'email',
-        'address'
+        'address',
+        'last_login_at'
     ];
 
     public function address()
