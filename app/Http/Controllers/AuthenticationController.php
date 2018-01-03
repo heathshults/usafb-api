@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
+use DateInterval;
+use App\Helpers\AuthHelper;
+
 use Illuminate\Http\Request;
-use Illuminate\Validation\Validator;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use App\Transformers\UserTransformer;
-use App\Transformers\MessageTransformer;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 /**
  * AuthenticationController
@@ -20,31 +20,21 @@ use App\Transformers\MessageTransformer;
  */
 class AuthenticationController extends Controller
 {
-
-    const INPUT_EMAIL = 'email';
-    const INPUT_PWD = 'password';
-
     protected $authService;
-    protected $fractal;
-    protected $userTransformer;
-    protected $messageTransformer;
 
     /**
      * Initialize auth service
      *
      * @constructor
      */
-    public function __construct(Manager $fractal)
+    public function __construct()
     {
         $this->authService = app('Auth');
-        $this->fractal = $fractal;
-        $this->userTransformer = new UserTransformer();
-        $this->messageTransformer = new MessageTransformer();
     }
 
     /**
      * Login user by email and password
-     * Url: /auth/login
+     * Url: /login
      *
      * @param Request $request
      *
@@ -55,16 +45,35 @@ class AuthenticationController extends Controller
         $this->validate(
             $request,
             [
-                self::INPUT_EMAIL => 'required|email',
-                self::INPUT_PWD => 'required'
+                'email' => 'required|email',
+                'password' => 'required'
             ]
         );
-        return $this->authService->login($request->input(self::INPUT_EMAIL), $request->input(self::INPUT_PWD));
+        return $this->authService->login($request->input('email'), $request->input('password'));
+    }
+
+    /**
+     * Refresh token
+     * Url: POST /token
+     *
+     * @param Request $request
+     *
+     * @return json
+     */
+    public function refreshToken(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'refresh_token' => 'required',
+            ]
+        );
+        return $this->authService->refreshToken($request->input('refresh_token'));
     }
 
     /**
      * Get user information by token provided in header
-     * Url: /auth/user
+     * Url: /me
      *
      * @param Request $request
      *
@@ -72,12 +81,12 @@ class AuthenticationController extends Controller
      */
     public function getAuthenticatedUser(Request $request)
     {
-        $user = new Item($request->user(), $this->userTransformer);
-        return $this->fractal->createData($user)->toArray();
+        //return $this->fractal->item($request->user(), $this->userTransformer);
+        return $request->user();
     }
 
     /**
-     * Send a reset password link via email
+     * Send a confirmation code to reset password
      * Url: /forgot-password
      *
      * @param Request $request
@@ -89,31 +98,70 @@ class AuthenticationController extends Controller
         $this->validate(
             $request,
             [
-                self::INPUT_EMAIL => 'required|email'
+                'email' => 'required|email'
             ]
         );
-        $response = $this->authService->forgotPassword($request->input(self::INPUT_EMAIL));
-
-        $user = new Item($response, $this->messageTransformer);
-        return $this->fractal->createData($user)->toArray();
+        $this->authService->forgotPassword($request->input('email'));
+        return $this->respond('OK');
     }
 
     /**
-     * Send a reset password link via email
-     * Url: /reset-password
+     *
+     * Url: /activate-user
      *
      * @param Request $request
      *
      * @return json
      */
-    public function resetPassword(Request $request)
+    public function activateUser(Request $request)
     {
         $this->validate(
             $request,
             [
-                self::INPUT_EMAIL => 'required|email'
+                'email' => 'required|email',
+                'password' => [
+                    'required',
+                    'min:8',
+                    'regex:/^((?=.*\\d)(?=.*[a-zA-Z])(?=.*[@#$%*!]))/'
+                ],
+                'session' =>'required'
             ]
         );
-        return $this->authService->resetPassword($request->input(self::INPUT_EMAIL));
+        $result = $this->authService->activateUser(
+            $request->input('email'),
+            $request->input('password'),
+            $request->input('session')
+        );
+        return $this->respond('OK', $result);
+    }
+
+    /**
+     * Change the password using a confirmation code
+     * Url: /confirm-forgot-password
+     *
+     * @param Request $request
+     *
+     * @return json
+     */
+    public function confirmForgotPassword(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'email' => 'required|email',
+                'code' => 'required',
+                'password' => [
+                    'required',
+                    'min:8',
+                    'regex:/^((?=.*\\d)(?=.*[a-zA-Z])(?=.*[@#$%*!]))/'
+                ]
+            ]
+        );
+        $this->authService->confirmForgotPassword(
+            $request->input('email'),
+            $request->input('code'),
+            $request->input('password')
+        );
+        return $this->respond('OK');
     }
 }
