@@ -51,7 +51,7 @@ class PlayerRegistration extends BaseModel
         'current' => 'required|boolean',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
         'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,other',
-        'positions' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,
+        'positions.*' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,
         left_guard,right_guard,left_tackle,right_tackle,defensive_tackle,defensive_end,linebacker,
         safety,cornerback,punter',
         'organization_name' => 'required',
