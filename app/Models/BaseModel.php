@@ -30,7 +30,7 @@ class BaseModel extends Eloquent
     {
         return $this->errors;
     }
-    
+        
     public function valid()
     {
         $validator = Validator::make($this->attributes, $this->rules);
