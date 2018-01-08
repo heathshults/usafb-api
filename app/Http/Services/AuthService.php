@@ -2,24 +2,30 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Support\Facades\Mail;
+use App\Exceptions\InternalException;
+use App\Exceptions\ExpiredTokenException;
+use App\Helpers\AuthHelper;
+use App\Models\User;
+
 use Aws\Credentials\Credentials;
+use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
+use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
+
+use Carbon\Carbon;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use App\Exceptions\InternalException;
-use GuzzleHttp\Exception\ClientException;
-use App\Helpers\AuthHelper;
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
-use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
-use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 /**
  * AuthService
@@ -176,16 +182,21 @@ class AuthService
                         $userId = $field['Value'];
                         break;
                     }
-                }
+                }                
                 Cache::put('user::' . $token, $userId, 60);
-            }
+            }            
             $userProfile = User::where('id_cognito', $userId)->first();
             if (is_null($userProfile)) {
                 throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
             }
             return $userProfile;
         } catch (CognitoIdentityProviderException $e) {
-            throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
+            $errorMessage = $e->getAwsErrorMessage();
+            if (!is_null($errorMessage) && $errorMessage == 'Access Token has expired') {
+                throw new ExpiredTokenException('Authentication', $errorMessage);                
+            } else {
+                throw new UnauthorizedHttpException('Authentication', $errorMessage);                    
+            }
         }
     }
 
