@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\User;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Auth\AuthServiceProvider as ServiceProvider;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Exceptions\ExpiredTokenException;
 use App\Policies\ClearancePolicy;
 use App\Policies\CompetitionPolicy;
 use App\Policies\FilePolicy;
@@ -16,6 +13,14 @@ use App\Models\Competition;
 use App\Models\File;
 use App\Models\Player;
 use App\Models\Registration;
+use App\User;
+
+use Log;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Auth\AuthServiceProvider as ServiceProvider;
+
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,14 +35,16 @@ class AuthServiceProvider extends ServiceProvider
         // application. The callback which receives the incoming request instance
         // should return either a User instance or null. You're free to obtain
         // the User instance via an API token or any other method necessary.
-
         //Gate::policy(Registration::class, RegistrationPolicy::class);
-            
+                
         $this->app['auth']->viaRequest('api', function ($request) {
             $headers = $request->headers->all();
             try {
                 $user = app('Auth')->authenticatedUser($headers);
-            } catch (UnauthorizedHttpException $e) {
+            } catch (ExpiredTokenException $expiredEx) {
+                // if expired token exception, throw it
+                throw($expiredEx);
+            } catch (UnauthorizedHttpException $unauthEx) {
                 return;
             }
             return $user;
