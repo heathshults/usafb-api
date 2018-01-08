@@ -45,7 +45,7 @@ class Role extends BaseModel
         'permissions.*' => 'required|in:export_players,import_players,import_coaches,export_coaches,
         manage_users,view_dashboard,view_players,view_coaches'
     ];
-            
+                
     // synchronize role permissions in user model on save/changes
     protected static function boot()
     {
