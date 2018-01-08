@@ -83,6 +83,33 @@ class User extends BaseModel
         return true;
     }
     
+    // return boolean result for role having specified permission
+    public function hasRolePermission(string $permission) : bool
+    {
+        if (!is_null($permission) && !is_null($this->role_permissions)) {
+            return in_array($permission, $this->role_permissions);
+        }
+        return false;
+    }
+
+    // return boolean result for role having specified permission
+    public function hasRolePermissions(array $permissions) : bool
+    {
+        if (is_null($permissions)) {
+            return true;
+        }
+        if (is_null($this->role_permissions)) {
+            return false;
+        }
+        foreach($permissions as $permission) {
+            if (!in_array($permission, $this->role_permissions)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // if role model assigned, set role name and role permission attributes/fields
     protected static function boot()
     {
         parent::boot();
