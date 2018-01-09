@@ -32,7 +32,7 @@ class ProviderCreate extends Command
      */
     public function handle()
     {
-        $roleId = $this->argument('role_id');                
+        $roleId = $this->argument('role_id');
         
         if (is_null($roleId)) {
             $this->error('Invalid or missing role (role_id).');
@@ -44,7 +44,7 @@ class ProviderCreate extends Command
             return false;
         }
         
-        $provider = new Provider();     
+        $provider = new Provider();
         $provider->name = $this->ask('Provider Name?');
         $provider->contact_name_first = $this->ask('Contact First Name?');
         $provider->contact_name_last = $this->ask('Contact Last Name?');
@@ -55,8 +55,8 @@ class ProviderCreate extends Command
         if ($provider->valid() && $provider->save()) {
             $this->info('Provider ('.$provider->id.') with API Key ('.$provider->api_key.') successfully created.');
             return true;
-        } else {            
-            $this->info('The following errors occurred while creating Provider record:');            
+        } else {
+            $this->info('The following errors occurred while creating Provider record:');
             $errors = $provider->errors();
             if (!is_array($errors)) {
                 $errors = $errors->all();
