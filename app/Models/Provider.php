@@ -31,10 +31,10 @@ class Provider extends BaseModel
         'contact_name_last' => 'required|string',
         'contact_email' => 'required|email',
         'contact_phone' => 'required|string',
-        'role_id' => 'required',        
+        'role_id' => 'required',
     ];
 
-    protected $fillable = [        
+    protected $fillable = [
         'name',
         'contact_name_first',
         'contact_name_last',
@@ -82,6 +82,6 @@ class Provider extends BaseModel
             }
             $model->role_name = $model->role->name;
             $model->role_permissions = $model->role->permissions;
-        });        
-    }        
+        });
+    }
 }
