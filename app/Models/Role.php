@@ -30,6 +30,12 @@ class Role extends BaseModel
         'view_dashboard',
         'view_players',
         'view_coaches',
+        'add_player',
+        'add_coach',
+        'update_coach',
+        'update_player',
+        'delete_coach',
+        'delete_player',
     ];
         
     protected $connection = 'mongodb';
@@ -43,7 +49,8 @@ class Role extends BaseModel
     protected $rules = [
         'name' => 'required|unique:roles',
         'permissions.*' => 'required|in:export_players,import_players,import_coaches,export_coaches,
-        manage_users,view_dashboard,view_players,view_coaches'
+        manage_users,view_dashboard,view_players,view_coaches,add_player,add_coach,update_coach,
+        update_player,delete_coach,delete_player'
     ];
                 
     // synchronize role permissions in user model on save/changes
