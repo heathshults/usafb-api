@@ -25,14 +25,12 @@ class UserSeeder extends Seeder
             $user->name_last = 'Doe';
             $user->phone = '123-123-1234';
             $user->email = 'john.doe'.$uid.'@gmail.com';            
-
-            $role = Role::first();
+            
+            // set default (superuser) role
+            $role = Role::where([ 'name' => 'Superuser' ])->first();
             $user->role_id = $role->id;
+                        
             $user->save();        
-        }
-        
-        $role = Role::first();
-        $role->permissions = [ 'test' ];
-        $role->save();
+        }        
     }
 }
