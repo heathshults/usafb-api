@@ -18,7 +18,17 @@ class RoleSeeder extends Seeder
         Role::truncate();
         
         // add default roles
-                
+        
+        $tpRole = new Role();
+        $tpRole->name = 'Provider';
+        $tpRole->permissions = [
+            'add_player',
+            'add_coach',
+            'update_coach',
+            'update_player',
+        ];
+        $tpRole->save();
+        
         $suRole = new Role();
         $suRole->name = 'Superuser';
         $suRole->permissions = [
@@ -29,7 +39,9 @@ class RoleSeeder extends Seeder
             'manage_users',
             'view_dashboard',
             'view_players',
-            'view_coaches'
+            'view_coaches',
+            'delete_player',
+            'delete_coach',
         ];
         $suRole->save();
 
