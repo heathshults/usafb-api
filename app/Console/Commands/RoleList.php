@@ -19,7 +19,6 @@ class RoleList extends Command
      * @var string
      */
     protected $signature = 'role:list';
-    protected $client;
     
     /**
      * The console command description.
