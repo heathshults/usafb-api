@@ -48,8 +48,9 @@ class ApiKeyService
      * Return new unique (API) Key
      *
      * @return $apiKey
-     */    
-    public function generateKey() {
+     */
+    public function generateKey()
+    {
         return (string)Uuid::generate();
     }
 
