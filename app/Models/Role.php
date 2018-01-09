@@ -54,6 +54,19 @@ class Role extends BaseModel
             if (!$model->isDirty()) {
                 return;
             }
+            
+            // update all provider embedded role values for this role
+            Provider::where([ 'role_id' => $model->id ])->update(
+                [
+                    'role_name' => $model->name,
+                    'role_permissions' => $model->permissions
+                ],
+                [
+                    'upsert' => true
+                ]
+            );
+            
+            // update all user embedded role values for this role
             User::where([ 'role_id' => $model->id ])->update(
                 [
                     'role_name' => $model->name,
