@@ -77,20 +77,48 @@ $app->group(
                 $app->get('/players/{player_id}/registrations/{id}', 'PlayerRegistrationsController@show');                
             }
         );
-            
-        // coaches / coach registrations modification endpoints (will be protected by third-party tokens)
-        $app->post('/coaches', 'CoachesController@create');
-        $app->put('/coaches/{id}', 'CoachesController@update');
-        $app->delete('/coaches/{id}', 'CoachesController@destroy');
-        $app->post('/coaches/{coach_id}/registrations', 'CoachRegistrationsController@create');
-        $app->put('/coaches/{coach_id}/registrations/{id}', 'CoachRegistrationsController@update');                   
         
-        // players / player registration modification endpoints (will be protected by third-party tokens)
-        $app->put('/players/{id}', 'PlayersController@update');
-        $app->delete('/players/{id}', 'PlayersController@destroy');
-        $app->post('/players', 'PlayersController@create');
-        $app->post('/players/{player_id}/registrations', 'PlayerRegistrationsController@create');
-        $app->put('/players/{player_id}/registrations/{id}', 'PlayerRegistrationsController@update');        
+        // add players and player registrations
+        $app->group(
+            ['middleware' => 'authorize:add_player'],
+            function() use ($app){
+                $app->post('/players', 'PlayersController@create');
+                $app->post('/players/{player_id}/registrations', 'PlayerRegistrationsController@create');
+            }
+        );
+
+        // update players and player registrations
+        $app->group(
+            ['middleware' => 'authorize:update_player'],
+            function() use ($app){
+                $app->put('/players/{id}', 'PlayersController@update');
+                $app->put('/players/{player_id}/registrations/{id}', 'PlayerRegistrationsController@update');
+            }
+        );
+
+        // add coaches and coach registrations
+        $app->group(
+            ['middleware' => 'authorize:add_coach'],
+            function() use ($app){
+                $app->post('/coaches', 'CoachesController@create');
+                $app->post('/coaches/{coach_id}/registrations', 'CoachRegistrationsController@create');
+            }
+        );
+        
+        // update coaches and coach registrations
+        $app->group(
+            ['middleware' => 'authorize:update_coach'],
+            function() use ($app){
+                $app->put('/coaches/{id}', 'CoachesController@update');
+                $app->put('/coaches/{coach_id}/registrations/{id}', 'CoachRegistrationsController@update');                
+            }
+        );
+        
+        // delete players
+        $app->delete('/players/{id}', [ 'middleware' => 'authorize:delete_player', 'uses' => 'PlayersController@destroy' ]);
+
+        // delete coaches
+        $app->delete('/coaches/{id}', [ 'middleware' => 'authorize:delete_coach', 'uses' => 'CoachesController@destroy' ]);
     }
 );
 
