@@ -37,9 +37,10 @@ class ProviderList extends Command
         foreach ($providers as $provider) {
             $rolePermissions = 'None';
             if (!is_null($provider->role_permissions)) {
-                $rolePermissions = implode(', ',$provider->role_permissions);
+                $rolePermissions = implode(', ', $provider->role_permissions);
             }
-            $this->info('Provider ('.$provider->id.') '.$provider->name.' API Key ('.$provider->api_key.') Role ('.$provider->role_name.') Permissions ('.$rolePermissions.')');
+            $this->info('Provider ('.$provider->id.') '.$provider->name.' API Key ('.
+                $provider->api_key.') Role ('.$provider->role_name.') Permissions ('.$rolePermissions.')');
         }
     }
 }
