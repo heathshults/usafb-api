@@ -182,9 +182,9 @@ class AuthService
                         $userId = $field['Value'];
                         break;
                     }
-                }                
+                }
                 Cache::put('user::' . $token, $userId, 60);
-            }            
+            }
             $userProfile = User::where('id_cognito', $userId)->first();
             if (is_null($userProfile)) {
                 throw new UnauthorizedHttpException('Authentication', 'Invalid token.');
@@ -193,9 +193,9 @@ class AuthService
         } catch (CognitoIdentityProviderException $e) {
             $errorMessage = $e->getAwsErrorMessage();
             if (!is_null($errorMessage) && $errorMessage == 'Access Token has expired') {
-                throw new ExpiredTokenException('Authentication', $errorMessage);                
+                throw new ExpiredTokenException('Authentication', $errorMessage);
             } else {
-                throw new UnauthorizedHttpException('Authentication', $errorMessage);                    
+                throw new UnauthorizedHttpException('Authentication', $errorMessage);
             }
         }
     }

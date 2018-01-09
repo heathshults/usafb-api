@@ -51,7 +51,7 @@ class UserRole extends Command
         $role = Role::find($roleId);
         if (is_null($role)) {
             $this->error('Error finding role with ID ('.$roleId.')');
-            return false;            
+            return false;
         }
                 
         try {

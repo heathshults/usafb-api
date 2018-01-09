@@ -20,11 +20,11 @@ class Authorize
      * @return mixed
      */
     public function handle($request, Closure $next, ...$permissions)
-    {        
+    {
         $user = $request->user();
         if (!is_null($user) && $user->hasRolePermissions($permissions)) {
             return $next($request);
-        }        
-        throw new AccessDeniedHttpException("Permission denied.");    
+        }
+        throw new AccessDeniedHttpException("Permission denied.");
     }
 }

@@ -36,7 +36,7 @@ class RoleList extends Command
     public function handle()
     {
         $roles = Role::all();
-        foreach($roles as $role) {
+        foreach ($roles as $role) {
             $this->info('Role ('.$role->id.') '.$role->name.' : '.implode(', ', $role->permissions));
         }
     }

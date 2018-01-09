@@ -101,7 +101,7 @@ class User extends BaseModel
         if (is_null($this->role_permissions)) {
             return false;
         }
-        foreach($permissions as $permission) {
+        foreach ($permissions as $permission) {
             if (!in_array($permission, $this->role_permissions)) {
                 return false;
             }
