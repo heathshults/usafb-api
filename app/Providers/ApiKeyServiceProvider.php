@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Http\Services\ApiKeyService;
-
 use Illuminate\Support\ServiceProvider;
 
 class ApiKeyServiceProvider extends ServiceProvider
@@ -29,6 +28,6 @@ class ApiKeyServiceProvider extends ServiceProvider
             return new ApiKeyService();
         });
 
-        $this->app->alias(ApiKeyService::class, 'apiKey');
+        $this->app->alias(ApiKeyService::class, 'ApiKey');
     }
 }
