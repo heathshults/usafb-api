@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-use Jenssegers\Mongodb\Eloquent\Builder;
+use App\Models\Role;
+use App\Models\RolePermissionInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\Builder;
 use Log;
-
-use App\Models\Role;
 
 /**
 * User collection model
@@ -17,7 +17,7 @@ use App\Models\Role;
 *
 */
 
-class User extends BaseModel
+class User extends BaseModel implements RolePermissionInterface
 {
     protected $connection = 'mongodb';
     
