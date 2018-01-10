@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-use Jenssegers\Mongodb\Eloquent\Builder;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
-
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\Builder;
 use Log;
 use Validator;
 
@@ -50,10 +49,10 @@ class PlayerRegistration extends BaseModel
     protected $rules = [
         'current' => 'required|boolean',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
-        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,other',
-        'positions.*' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,
-        left_guard,right_guard,left_tackle,right_tackle,defensive_tackle,defensive_end,linebacker,
-        safety,cornerback,punter',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
+        'positions.*' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,'.
+            'left_guard,right_guard,left_tackle,right_tackle,defensive_tackle,defensive_end,linebacker,'.
+            'safety,cornerback,punter',
         'organization_name' => 'required',
         'organization_state' => 'required|size:2',
         'league_name' => 'required',
