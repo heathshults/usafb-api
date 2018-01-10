@@ -35,12 +35,12 @@ class ProviderCreate extends Command
         $roleId = $this->argument('role_id');
         
         if (is_null($roleId)) {
-            $this->error('Invalid or missing role (role_id).');
+            $this->error('Invalid or missing Role (role_id).');
         }
                 
         $role = Role::find($roleId);
         if (is_null($role)) {
-            $this->error('Error finding role with ID ('.$roleId.')');
+            $this->error('Error finding Role with ID ('.$roleId.')');
             return false;
         }
         
