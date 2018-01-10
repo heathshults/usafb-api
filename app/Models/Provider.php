@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Helpers\ApiKeyHelper;
-    
+use App\Models\RolePermissionInterface;
+use EloquentFilter\Filterable;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
-use EloquentFilter\Filterable;
-use Illuminate\Support\Arr;
 use Log;
 
 /**
@@ -17,7 +16,7 @@ use Log;
 *
 */
 
-class Provider extends BaseModel
+class Provider extends BaseModel implements RolePermissionInterface
 {
     protected $connection = 'mongodb';
     protected $table = 'providers';
@@ -65,13 +64,39 @@ class Provider extends BaseModel
         return $this->belongsTo('App\Models\Role');
     }
     
+    // return boolean result for role having specified permission
+    public function hasRolePermission(string $permission) : bool
+    {
+        if (!is_null($permission) && !is_null($this->role_permissions)) {
+            return in_array($permission, $this->role_permissions);
+        }
+        return false;
+    }
+
+    // return boolean result for role having specified permission
+    public function hasRolePermissions(array $permissions) : bool
+    {
+        if (is_null($permissions)) {
+            return true;
+        }
+        if (is_null($this->role_permissions)) {
+            return false;
+        }
+        foreach ($permissions as $permission) {
+            if (!in_array($permission, $this->role_permissions)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     // generate/set new token upon creation
     protected static function boot()
     {
         parent::boot();
         
         static::creating(function ($model) {
-            $model->api_key = app('apiKey')->generateKey();
+            $model->api_key = app('ApiKey')->generateKey();
             return true;
         });
 
