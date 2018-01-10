@@ -14,8 +14,11 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         'App\Console\Commands\ProviderCreate',
+        'App\Console\Commands\ProviderCreateAuthentication',
         'App\Console\Commands\ProviderList',
+        'App\Console\Commands\ProviderRole',
         'App\Console\Commands\RoleList',
+        'App\Console\Commands\RoleCreate',
         'App\Console\Commands\UserCreate',
         'App\Console\Commands\UserDelete',
         'App\Console\Commands\UserRole',
