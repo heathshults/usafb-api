@@ -27,6 +27,11 @@ $app->group(
     ['middleware' => 'authenticate'],
     function () use ($app) {
         
+        // user (me) endpoints
+        $app->get('/user', 'UserController@show');
+        $app->put('/user', 'UserController@update');
+        $app->put('/user/password', 'UserController@updatePassword');
+        
         // manage users permission
         $app->group(
             ['middleware' => 'authorize:manage_users'],
@@ -49,7 +54,7 @@ $app->group(
                 $app->delete('/roles/{id}', 'RolesController@destroy');
             }
         );
-
+        
         // view coaches and coach registrations permission
         $app->group(
             ['middleware' => 'authorize:view_coaches'],
