@@ -2,8 +2,9 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\InternalException;
 use App\Exceptions\ExpiredTokenException;
+use App\Exceptions\InternalException;
+use App\Exceptions\ResetPasswordException;
 use App\Helpers\AuthHelper;
 use App\Models\User;
 
@@ -102,6 +103,7 @@ class AuthService
             $user->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
 
             return [
+                'id' => $user->id,
                 'id_token' => $response['IdToken'],
                 'access_token' => $response['AccessToken'],
                 'expires_in' => $response['ExpiresIn'],
@@ -240,6 +242,7 @@ class AuthService
                 ]);
                 $result = $result->get('AuthenticationResult');
                 $response = [
+                    'id' => $user->id,
                     'id_token' => $result['IdToken'],
                     'access_token' => $result['AccessToken'],
                     'expires_in' => $result['ExpiresIn'],
@@ -368,8 +371,12 @@ class AuthService
                     'ProposedPassword' => $newPswd,
                 ]
             );
-        } catch (\Exception $e) {
-            throw new BadRequestHttpException($e->getMessage());
+        } catch (CognitoIdentityProviderException $cognitoEx) {
+            Log::debug($cognitoEx->getAwsErrorMessage());
+            throw new ResetPasswordException($cognitoEx->getAwsErrorMessage());
+        } catch (\Exception $ex) {
+            Log::debug($ex->getMessage());
+            throw new ResetPasswordException("An unknown error occurred. Please try again.");
         }
     }
 
