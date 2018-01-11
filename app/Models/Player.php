@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-use Jenssegers\Mongodb\Eloquent\Builder;
+use App\Traits\ElasticsearchTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\Builder;
 use Log;
-
-use App\Traits\ElasticsearchTrait;
 
 /**
 * Player collection model

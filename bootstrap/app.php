@@ -25,8 +25,9 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-$app->withFacades();
+$app->configure('thirdparty');
 
+$app->withFacades();
 
 /*
 |--------------------------------------------------------------------------
@@ -68,11 +69,10 @@ $app->middleware(
 
 $app->routeMiddleware(
     [
-        'auth' => App\Http\Middleware\Authenticate::class,
+        'authenticate' => App\Http\Middleware\Authenticate::class,
         'authorize' => App\Http\Middleware\Authorize::class,
     ]
 );
-
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +89,7 @@ $app->routeMiddleware(
 
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\ApiKeyServiceProvider::class);
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Aws\Laravel\AwsServiceProvider::class);

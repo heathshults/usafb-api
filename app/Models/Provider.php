@@ -2,72 +2,48 @@
 
 namespace App\Models;
 
-use App\Models\Role;
+use App\Helpers\ApiKeyHelper;
 use App\Models\RolePermissionInterface;
 use EloquentFilter\Filterable;
-use Illuminate\Support\Arr;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use Log;
 
 /**
-* User collection model
+* Provider collection model
 *
 * @package Models
 *
 */
 
-class User extends BaseModel implements RolePermissionInterface
+class Provider extends BaseModel implements RolePermissionInterface
 {
     protected $connection = 'mongodb';
-    
-    protected $table = 'users';
-    
-    protected $guarded = [ 'email', 'role_id' ];
-    
-    protected $dates = [ 'created_at', 'updated_at', 'last_login_at' ];
-    
+    protected $table = 'providers';
+    protected $dates = ['created_at', 'updated_at'];
+    protected $guarded = [ 'api_key' ];
     protected $attributes = [ 'active' => true ];
     
     protected $rules = [
-        'active' => 'required|boolean',
+        'name' => 'required|string',
+        'contact_name_first' => 'required|string',
+        'contact_name_last' => 'required|string',
+        'contact_email' => 'required|email',
+        'contact_phone' => 'required|string',
         'role_id' => 'required',
-        'name_first' => 'required',
-        'name_last' => 'required',
-        'email' => 'required|email',
-        'address' => 'required',
-        'address.street_1' => 'required',
-        'address.city' => 'required',
-        'address.state' => 'required|size:2',
-        'address.postal_code' => 'required',
-        'address.country' => 'sometimes|size:2'
     ];
-    
+
     protected $fillable = [
-        'id_external',
-        'id_cognito',
-        'active',
+        'name',
+        'contact_name_first',
+        'contact_name_last',
+        'contact_email',
+        'contact_phone',
         'role_id',
         'role_name',
         'role_permissions',
-        'organization_name',
-        'name_first',
-        'name_last',
-        'phone',
-        'email',
-        'address',
-        'last_login_at'
+        'api_key',
     ];
-
-    public function address()
-    {
-        return $this->embedsOne('App\Models\Address');
-    }
-
-    public function role()
-    {
-        return $this->belongsTo('App\Models\Role');
-    }
     
     public function deactivate()
     {
@@ -81,6 +57,11 @@ class User extends BaseModel implements RolePermissionInterface
         $this->active = true;
         $this->save();
         return true;
+    }
+    
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
     }
     
     // return boolean result for role having specified permission
@@ -109,10 +90,17 @@ class User extends BaseModel implements RolePermissionInterface
         return true;
     }
     
-    // if role model assigned, set role name and role permission attributes/fields
+    // generate/set new token upon creation
     protected static function boot()
     {
         parent::boot();
+        
+        static::creating(function ($model) {
+            $model->api_key = app('ApiKey')->generateKey();
+            return true;
+        });
+
+        // if role model assigned, set role name and role permission attributes/fields
         static::saving(function ($model) {
             if (is_null($model->role)) {
                 return;

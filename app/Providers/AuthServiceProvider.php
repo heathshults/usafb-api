@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\User;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Auth\AuthServiceProvider as ServiceProvider;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Exceptions\ExpiredTokenException;
 use App\Policies\ClearancePolicy;
 use App\Policies\CompetitionPolicy;
 use App\Policies\FilePolicy;
@@ -16,6 +13,14 @@ use App\Models\Competition;
 use App\Models\File;
 use App\Models\Player;
 use App\Models\Registration;
+use App\User;
+
+use Log;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Auth\AuthServiceProvider as ServiceProvider;
+
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,18 +31,25 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Here you may define how you wish users to be authenticated for your Lumen
-        // application. The callback which receives the incoming request instance
-        // should return either a User instance or null. You're free to obtain
-        // the User instance via an API token or any other method necessary.
-
-        //Gate::policy(Registration::class, RegistrationPolicy::class);
-            
         $this->app['auth']->viaRequest('api', function ($request) {
-            $headers = $request->headers->all();
+            // check if third-party authentication token provided
+            if (!empty($request->headers->get('Authorization')) &&
+                preg_match('/^(usafb)/', $request->headers->get('Authorization'))) {
+                try {
+                    //Log::debug('AuthServiceProvider viaRequest - trying to autheticate provider.');
+                    $provider = app('ApiKey')->authenticate($request);
+                } catch (UnauthorizedHttpException $e) {
+                    return;
+                }
+                return $provider;
+            }
+            // validate standard/normal user
             try {
-                $user = app('Auth')->authenticatedUser($headers);
-            } catch (UnauthorizedHttpException $e) {
+                $user = app('Auth')->authenticatedUser($request->headers->all());
+            } catch (ExpiredTokenException $expiredEx) {
+                // if expired token exception, throw it
+                throw($expiredEx);
+            } catch (UnauthorizedHttpException $unauthEx) {
                 return;
             }
             return $user;

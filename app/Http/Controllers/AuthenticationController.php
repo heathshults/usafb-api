@@ -102,7 +102,8 @@ class AuthenticationController extends Controller
             ]
         );
         $this->authService->forgotPassword($request->input('email'));
-        return $this->respond('OK');
+        $result = [];
+        return $this->respond('OK', $result);
     }
 
     /**
@@ -162,6 +163,7 @@ class AuthenticationController extends Controller
             $request->input('code'),
             $request->input('password')
         );
-        return $this->respond('OK');
+        $result = [];
+        return $this->respond('OK', $result);
     }
 }

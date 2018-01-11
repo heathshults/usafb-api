@@ -69,7 +69,7 @@ class Coach extends BaseModel
         'opt_in_marketing' => 'sometimes|boolean',
         'years_experience' => 'required|numeric|min:0|max:50',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
-        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,other',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
         'positions.*' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,
         offensive_coordinator,special_teams,assistant_coach,tight_end_coach,
         running_back_coach, defensive_back_coach,defensive_cooridnator',

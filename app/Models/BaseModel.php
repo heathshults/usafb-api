@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Role;
+use EloquentFilter\Filterable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
-use EloquentFilter\Filterable;
-use Illuminate\Support\Arr;
-
-use Validator;
-use Illuminate\Http\Request;
-
 use Log;
-
-use App\Models\Role;
+use Validator;
 
 /**
 * User collection model
