@@ -28,7 +28,7 @@ class UserTransformer extends TransformerAbstract
             'name_last' => $user->name_last,
             'phone' => $user->phone,
             'email' => $user->email,
-            'address' => $user->address()->get()
+            'address' => $user->address()
         ];
         return $response;
     }
