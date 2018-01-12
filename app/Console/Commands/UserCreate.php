@@ -50,7 +50,7 @@ class UserCreate extends Command
             $address->city = $this->ask('City');
             $address->state = $this->ask('State');
             $address->postal_code = $this->ask('Postal Code');
-            $user->address = $address;
+            $user->address()->associate($address);
             
             if (!$user->valid()) {
                 $this->info('The following errors occurred while creating user record:');
