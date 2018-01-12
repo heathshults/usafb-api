@@ -28,7 +28,7 @@ class StatsController extends Controller
      * @return json
      */
     public function overview(Request $request)
-    { 
+    {
         // get total # of players in system
         $numPlayers = Player::count();
         
@@ -46,7 +46,7 @@ class StatsController extends Controller
             ],
         ];
         
-        return $this->respond('OK', $results);        
+        return $this->respond('OK', $results);
     }
     
     /**
@@ -54,7 +54,8 @@ class StatsController extends Controller
      *
      * @return array results
      */
-    protected function getPlayerLevelTypes() : array {
+    protected function getPlayerLevelTypes() : array
+    {
         return $this->getLevelTypes(Player::class);
     }
 
@@ -62,8 +63,9 @@ class StatsController extends Controller
      * Get Coach Registration level types counts
      *
      * @return array results
-     */    
-    protected function getCoachLevelTypes() : array {
+     */
+    protected function getCoachLevelTypes() : array
+    {
         return $this->getLevelTypes(Coach::class);
     }
     
@@ -73,25 +75,25 @@ class StatsController extends Controller
      * @param class $model
      *
      * @return results[]
-     */    
-    private function getLevelTypes($model) : array 
+     */
+    private function getLevelTypes($model) : array
     {
         $results = [];
         
-        $levelTypes = $model::raw( function ($collection) {
-                    return $collection->aggregate([
-                        [ '$unwind' => '$registrations' ],
-                        [ '$match' => [ 'registrations.current' => true ] ],
-                        [
-                            '$group' => [
-                                '_id' => '$registrations.level_type',
-                                'count' => [ '$sum' => 1 ]
-                            ],
-                        ]
-                    ]);
-                });        
+        $levelTypes = $model::raw(function ($collection) {
+                return $collection->aggregate([
+                    [ '$unwind' => '$registrations' ],
+                    [ '$match' => [ 'registrations.current' => true ] ],
+                    [
+                        '$group' => [
+                            '_id' => '$registrations.level_type',
+                            'count' => [ '$sum' => 1 ]
+                        ],
+                    ]
+                ]);
+        });
 
-        foreach($levelTypes->all() as $levelType) {
+        foreach ($levelTypes->all() as $levelType) {
             $level = $levelType->getAttribute('_id');
             $count = $levelType->getAttribute('count');
             $results[] = [
@@ -102,5 +104,4 @@ class StatsController extends Controller
         
         return $results;
     }
-    
 }
