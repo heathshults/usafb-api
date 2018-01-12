@@ -271,6 +271,7 @@ paths:
             $ref: "#/definitions/PlayerResult"
       security:
         - Bearer: []
+
     put:
       tags:
         - Player
@@ -291,6 +292,8 @@ paths:
           description: Player record updated
           schema:
             $ref: "#/definitions/PlayerResult"
+      security:
+        - Bearer: []
   
   /players/{id}/registrations:
     get:
@@ -314,14 +317,38 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/PlayerRegistrationResults"
-  
+      security:
+        - Bearer: []
+
+    post:
+      tags: 
+        - Player
+        - Registration
+      summary: Create Player Registration
+      description: Create a new Player Registration record
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Player ID
+          required: true
+          type: string
+      responses:
+        "201":
+          description: "Registration successfully created"
+          schema:
+            $ref: "#/definitions/PlayerRegistration"
+      security:
+        - Bearer: []
+
   /players/{player_id}/registrations/{id}:
     put:
       tags:
         - Player
         - Registration
-      summary: Update Coach Registrations
-      description: Get all registrations for Coach
+      summary: Update Player Registration
+      description: Update an individual player registration record
       produces:
         - application/json
       parameters:
@@ -342,7 +369,9 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/PlayerRegistrationResult"
-  
+      security:
+        - Bearer: []
+      
   /players:
     post:
       tags:
@@ -351,13 +380,20 @@ paths:
       description: Create New Player record
       produces:
         - application/json
+      parameters: 
+        - in: body
+          name: "body"
+          schema:
+            $ref: "#/definitions/PlayerCreate"
       responses:
         "400":
           description: Error creating Player
         "200":
           description: Player created
           schema:
-            $ref: "#/definitions/PlayerResult"
+            $ref: "#/definitions/PlayerCreateResult"
+      security:
+        - Bearer: []
 
 #|--------------------------------------------------------------------------
 #| Coach Routes
@@ -389,6 +425,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/CoachRegistrationResults"
+      security:
+        - Bearer: []
     
   /coaches/{coach_id}/registrations/{id}:
     put:
@@ -417,6 +455,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/CoachRegistrationResult"
+      security:
+        - Bearer: []
 
   # Search coaches
   /coaches/search:
@@ -462,6 +502,7 @@ paths:
             $ref: '#/definitions/CoachResult'
       security:
         - Bearer: []
+    
     put:
       tags:
         - Coach
@@ -475,6 +516,10 @@ paths:
           description: Coach id
           required: true
           type: string
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/CoachCreate"
       responses:
         "400":
           description: Error updating Coach
@@ -482,7 +527,9 @@ paths:
           description: Coach record updated
           schema:
             $ref: "#/definitions/CoachResult"
-    
+      security:
+        - Bearer: []
+
   /coaches:
     post:
       tags:
@@ -491,6 +538,11 @@ paths:
       description: Create New Coach record
       produces:
         - application/json
+      parameters: 
+        - in: body
+          name: "body"
+          schema:
+            $ref: "#/definitions/CoachCreate"
       responses:
         "400":
           description: Error creating Coach
@@ -498,6 +550,8 @@ paths:
           description: Coach record created
           schema:
             $ref: "#/definitions/CoachResult"
+      security:
+        - Bearer: []
 
 #|--------------------------------------------------------------------------
 #| User Routes
@@ -680,6 +734,33 @@ definitions:
       country:
         type: string
         description: "Country (Abbreviation)"
+  
+  Guardian:
+    type: object
+    properties:
+      name_first:
+        type: string
+        description: "First Name"
+      name_middle:
+        type: string
+        description: "Middle Name"
+      name_last:
+        type: string
+        description: "Last Name"
+      phone_home:
+        type: string
+        description: "Phone Home"
+      phone_mobile:
+        type: string
+        description: "Phone Mobile"
+      phone_work:
+        type: string
+        description: "Phone Work"
+      opt_in_marketing:
+        type: boolean
+        description: Guardian has opt in for marketing communication
+      address:
+        $ref: '#/definitions/Address'
 
   PlayerBasic:
     type: object
@@ -713,6 +794,60 @@ definitions:
         format: date
         description: Player Date of Birth
 
+  PlayerCreate:
+    type: object
+    properties:
+      id_external:
+        type: string
+        description: External System ID
+      name_first:
+        type: string
+        description: Player First Name
+      name_middle:
+        type: string
+        description: Player Middle Name
+      name_last:
+        type: string
+        description: Player Last Name
+      dob:
+        type: string
+        format: date
+        description: Player Date of Birth
+      address:
+        $ref: '#/definitions/Address'
+      guardians:
+        type: array
+        items:
+          $ref: '#/definitions/Guardian'
+
+  PlayerCreateResult:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique System Player ID
+      id_usafb:
+        type: string
+        description: Unique USA Football ID
+      id_external:
+        type: string
+        description: External System ID
+      name_first:
+        type: string
+        description: Player First Name
+      name_middle:
+        type: string
+        description: Player Middle Name
+      name_last:
+        type: string
+        description: Player Last Name
+      dob:
+        type: string
+        format: date
+        description: Player Date of Birth
+      address:
+        $ref: '#/definitions/Address'
+        
   Player:
     type: object
     properties:
@@ -795,6 +930,49 @@ definitions:
         type: string
         format: date-time
         description: Timestamp of when Coach record updated
+
+  CreatePlayerRegistration:
+    type: object
+    properties:
+      current:
+        type: boolean
+        description: Flag depicting current registration
+      season:
+        type: string
+        description: Season (fall/spring/summer)
+      season_year:
+        type: integer
+        description: Season Year
+      level:
+        type: string
+        description: Level of Experience
+      level_type:
+        type: string
+        description: Level of Experience Type
+      organization_name:
+        type: string
+        description: Organization Name
+      organization_state:
+        type: string
+        description: Organization State
+      league_name:
+        type: string
+        description: League Name
+      school_name:
+        type: string
+        description: School Name
+      school_district:
+        type: string
+        description: School District Name
+      school_state:
+        type: string
+        description: School State
+      team_name:
+        type: string
+        description: Team Name
+      team_gender:
+        type: string
+        description: Team Gender (m/f/coed)
 
   CoachRegistration:
     type: object
@@ -980,6 +1158,71 @@ definitions:
         type: string
         format: date-time
         description: Timestamp of when Coach record updated
+
+  CoachCreate:
+    type: object
+    properties:
+      id_external:
+        type: string
+        description: Unique External Reference ID
+      name_first:
+        type: string
+        description: Coach First Name
+      name_middle:
+        type: string
+        description: Coach Middle Name
+      name_last:
+        type: string
+        description: Coach Last Name
+      dob:
+        type: string
+        format: date
+        description: Coach Date of Birth
+      gender:
+        type: string
+        format: date
+        description: Gender
+      email:
+        type: string
+        format: date
+        description: Email
+      phone_home:
+        type: string
+        format: date
+        description: Home Phone Number
+      phone_mobile:
+        type: string
+        format: date
+        description: Mobile Phone Number
+      phone_work:
+        type: string
+        format: date
+        description: Work Phone Number
+      address:
+        $ref: '#/definitions/Address'
+      organization_name:
+        type: string
+        description: Organization Name
+      organization_state:
+        type: string
+        description: Organization State
+      positions:
+        type: array
+        description: Positions Coached
+        items:
+          type: string
+      years_experience:
+        type: integer
+        description: Years of Experience Coaching
+      level:
+        type: string
+        description: Level of Experience
+      level_type:
+        type: string
+        description: Level of Experience Type
+      opt_in_marketing:
+        type: boolean
+        description: Coach has opt in for marketing communication
 
   User:
     type: object
