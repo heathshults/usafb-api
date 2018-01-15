@@ -599,6 +599,31 @@ paths:
         - Bearer: []
 
 #|--------------------------------------------------------------------------
+#| Stats Routes
+#|--------------------------------------------------------------------------
+#|
+#| System/application stats 
+#|
+#|--------------------------------------------------------------------------
+  
+  # Overview endpoint
+  /stats/overview:
+    get:
+      tags:
+        - Stats
+      summary: "Get system/application overview"
+      description: "Gets system/application statistics overview (# of players/coaches, distribution within levels..etc.)"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: "Overview statistics"
+          schema:
+            $ref: "#/definitions/StatsOverviewResults"
+      security:
+        - Bearer: []
+
+#|--------------------------------------------------------------------------
 #| User Routes
 #|--------------------------------------------------------------------------
 #|
@@ -1461,6 +1486,43 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/CoachSearchResult"
+  
+  StatsOverviewResults:
+    type: object
+    properties:
+      data: 
+        type: object
+        properties:
+          num_players:
+            type: integer
+            description: "Number of Players"
+          num_coaches:
+            type: integer
+            description: "Number of Coaches"
+          players:
+            type: object
+            properties:
+              levels:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    num:
+                      type: integer
+          coaches:
+            type: object
+            properties:
+              levels:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    num:
+                      type: integer
   
   UserResults:
     type: object
