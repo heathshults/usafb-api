@@ -32,6 +32,9 @@ $app->group(
         $app->put('/user', 'UserController@update');
         $app->put('/user/password', 'UserController@updatePassword');
         
+        // application / stats permission
+        $app->get('/stats/overview', [ 'middleware' => 'authorize:stats', 'uses' => 'StatsController@overview' ]);
+                        
         // manage users permission
         $app->group(
             ['middleware' => 'authorize:manage_users'],

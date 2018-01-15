@@ -32,6 +32,7 @@ class RoleSeeder extends Seeder
         $suRole = new Role();
         $suRole->name = 'Superuser';
         $suRole->permissions = [
+            'stats',
             'export_players',
             'import_players',
             'import_coaches',
@@ -48,6 +49,7 @@ class RoleSeeder extends Seeder
         $adminRole = new Role();
         $adminRole->name = 'Administrator';
         $adminRole->permissions = [
+            'stats',            
             'export_players',
             'import_players',
             'import_coaches',
@@ -62,6 +64,7 @@ class RoleSeeder extends Seeder
         $stakeholderRole = new Role();
         $stakeholderRole->name = 'Stakeholder';
         $stakeholderRole->permissions = [
+            'stats',            
             'export_players',
             'import_players',
             'import_coaches',
