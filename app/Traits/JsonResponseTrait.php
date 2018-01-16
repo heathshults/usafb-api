@@ -157,9 +157,21 @@ trait JsonResponseTrait
         if ($statusCode === "") {
             $statusCode = self::$notFoundCode;
         }
+        
+        $payload = [
+            'data' => [
+                'error' => [
+                    'message' => 'An error occurred'
+                ]
+            ]
+        ];
 
-        $response = is_string($response) ? [['error' => $response]] : $response;
-        $payload = ['errors' => $response];
+        if (is_string($response)) {
+            $payload['data']['error']['message'] = $response;
+        } else {
+            $payload['data']['error']['errors'] = $response;
+        }
+                
         return response()->json($payload, $statusCode);
     }
 
