@@ -55,6 +55,7 @@ new_relic_config:
   only:
     - develop
     - master
+    - new-staging-deploy
   environment:
     name: new_relic_staging
   before_script:
