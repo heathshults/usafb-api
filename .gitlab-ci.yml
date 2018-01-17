@@ -1,5 +1,11 @@
 image: registry.gitlab.com/bluestarsports/npdb-usafb-api/php-fpm:latest
 
+variables:
+  APP_NAME: npdb-usafb-api
+  app_container_name: npdb-usafb-app
+  app_second_container_name: npdb-usafb-nginx
+  app_second_name: npdb-usafb-api-nginx
+
 stages:
   - setup
   - test
@@ -50,7 +56,7 @@ new_relic_config:
     - develop
     - master
   environment:
-    name: staging
+    name: new_relic_staging
   before_script:
     - apt-get update
     - apt-get install -y gettext
@@ -74,11 +80,12 @@ build:
   only:
     - develop
     - master
+    - new-staging-deploy
   allow_failure: false
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID --build-arg GIT_DEPLOYED_SHA="$CI_COMMIT_SHA" .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
 
 build_nginx_static:
   stage: build_workers
@@ -93,24 +100,27 @@ build_nginx_static:
   only:
     - develop
     - master
+    - new-staging-deploy
   script:
     - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
-    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx -f Dockerfile.nginx .
-    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID -f Dockerfile.nginx .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
 
-deploy:
+staging_deploy:
   stage: deploy
   only:
     - develop
-    - master
+    - new-staging-deploy
   allow_failure: false
-  script:
+  environment:
+    name: staging 
+  variables:
+    image_tag: :$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
+  before_script:
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
     - chmod +x ./kubectl
     - mv ./kubectl /usr/local/bin/kubectl
-    - kubectl config set-cluster bss-staging --server=https://api.cluster01.staging.bluestarsports.io --insecure-skip-tls-verify=true
-    - kubectl config set-credentials deploy_bot --token=$gitlab_service_account_token_default
-    - kubectl config set-context bss-staging --cluster=bss-staging --user=deploy_bot
-    - kubectl config use-context bss-staging
-    - sed -ie "s/THIS_STRING_IS_REPLACED_DURING_BUILD/$(date)/g" deploy/deployment.yml
-    - kubectl create -f deploy/deployment.yml --namespace=staging --validate=false || kubectl replace -f deploy/deployment.yml --namespace=staging
+  script:
+    - . deploy/scripts/setup_kube_config.sh
+    - kubectl cluster-info
+    - . deploy/scripts/deploy_app.sh
