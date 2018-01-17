@@ -69,6 +69,11 @@ class User extends BaseModel implements RolePermissionInterface
         return $this->belongsTo('App\Models\Role');
     }
     
+    public function imports()
+    {
+        return $this->hasMany('App\Models\Import');
+    }
+    
     public function deactivate()
     {
         $this->active = false;

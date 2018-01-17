@@ -45,7 +45,7 @@ class CoachesController extends Controller
         }
 
         $paginationCriteria = $this->buildPaginationCriteria($request->query());
-        $es->setSearchPageSize($paginationCriteria);
+        $es->setPaginationCriteria($paginationCriteria);
         
         $results = $es->searchCoaches($esQuery);
         return $this->respond('OK', $results->toArray());
