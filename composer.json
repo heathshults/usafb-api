@@ -20,7 +20,8 @@
         "pitpit/php-diff": "^1.0@dev",
         "jenssegers/mongodb": "^3.2",
         "elasticsearch/elasticsearch": "~6.0",
-        "webpatser/laravel-uuid": "^3.0"
+        "webpatser/laravel-uuid": "^3.0",
+        "league/csv": "^9.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
