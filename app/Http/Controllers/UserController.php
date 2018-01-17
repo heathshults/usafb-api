@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\ResetPasswordException;
 use App\Http\Services\AuthService;
+use App\Models\Import;
 use App\Models\User;
 use App\Models\Role;
 use App\Transformers\UserTransformer;
@@ -30,6 +31,26 @@ class UserController extends Controller
     public function __construct()
     {
         $this->authService = app('Auth');
+    }
+
+    /**
+     * Get user's imports
+     * Url: GET /user/imports
+     *
+     * @param Request $request
+     *
+     * @return json
+     */
+    public function imports(Request $request)
+    {
+        $user = $request->user();
+        if (is_null($user)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'User not found.']]);
+        }
+        $sort = $this->buildSortCriteria($request->query(), [ 'column' => 'created_at', 'order' => 'desc' ]);
+        $paginationCriteria = $this->buildPaginationCriteria($request->query());
+        $imports= $user->imports()->orderBy($sort['column'], $sort['order'])->paginate($paginationCriteria['per_page']);
+        return $this->respond('OK', $imports);
     }
 
     /**
