@@ -43,6 +43,7 @@ class Import extends Eloquent
         'user_id',
         'type',
         'status',
+        'status_details',
         'file_name',
         'file_path_source',
         'file_path_remote',
