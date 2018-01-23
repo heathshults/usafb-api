@@ -129,9 +129,9 @@ $app->group(
             function() use ($app){
                 $app->get('/imports/{recordType:coaches}', 'ImportsController@index');
                 $app->get('/imports/{recordType:coaches}/{recordId}', 'ImportsController@show');
-                $app->get('/imports/{recordType:coaches}/{recordId}/{fileType:source}', 'ImportsController@download');
-                $app->get('/imports/{recordType:coaches}/{recordId}/{fileType:results}', 'ImportsController@download');
-                $app->get('/imports/{recordType:coaches}/{recordId}/{fileType:errors}', 'ImportsController@download');  
+                $app->get('/imports/{recordType:coaches}/{recordId}/source', 'ImportsController@source');
+                $app->get('/imports/{recordType:coaches}/{recordId}/results', 'ImportsController@results');
+                $app->get('/imports/{recordType:coaches}/{recordId}/errors', 'ImportsController@errors');  
                 $app->post('/imports/{recordType:coaches}', 'ImportsController@upload');
             }
         );
@@ -142,9 +142,9 @@ $app->group(
             function() use ($app){
                 $app->get('/imports/{recordType:players}', 'ImportsController@index');
                 $app->get('/imports/{recordType:players}/{recordId}', 'ImportsController@show');
-                $app->get('/imports/{recordType:players}/{recordId}/{fileType:source}', 'ImportsController@download');
-                $app->get('/imports/{recordType:players}/{recordId}/{fileType:results}', 'ImportsController@download');
-                $app->get('/imports/{recordType:players}/{recordId}/{fileType:errors}', 'ImportsController@download');
+                $app->get('/imports/{recordType:players}/{recordId}/source', 'ImportsController@source');
+                $app->get('/imports/{recordType:players}/{recordId}/results', 'ImportsController@results');
+                $app->get('/imports/{recordType:players}/{recordId}/errors', 'ImportsController@errors');
                 $app->post('/imports/{recordType:players}', 'ImportsController@upload');
             }
         );
