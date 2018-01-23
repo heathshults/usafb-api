@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        'App\Console\Commands\ImportPending',
+        'App\Console\Commands\ImportFile',
         'App\Console\Commands\ProviderCreate',
         'App\Console\Commands\ProviderCreateAuthentication',
         'App\Console\Commands\ProviderList',

@@ -6,6 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
+use League\Csv\Writer;
 use Log;
 
 /**
@@ -22,7 +23,7 @@ class Import extends Eloquent
     const TYPE_PLAYERS = 'players';
     
     // State/statuses that export can be in (only one at a time - default PENDING)
-    const STATUS_PROCESSING = 0;
+    const STATUS_PENDING = 0;
     const STATUS_COMPLETED = 1;
     const STATUS_FAILED = -1;
 
@@ -33,30 +34,32 @@ class Import extends Eloquent
         
     // Defaults
     protected $attributes = [
-        'status' => Import::STATUS_PROCESSING,
+        'status' => Import::STATUS_PENDING,
         'num_records' => 0,
         'num_imported' => 0,
         'num_errors' => 0,
+        'results' => [],
+        'errors' => []
     ];
 
     protected $fillable = [
         'user_id',
         'type',
         'status',
+        'status_details',
         'file_name',
-        'file_path_source',
         'file_path_remote',
-        'file_path_result',
-        'file_path_error',
         'num_records',
         'num_imported',
         'num_errors',
+        'results',
+        'errors',
         'created_at',
     ];
     
-    public function scopeProcessing($query)
+    public function scopePending($query)
     {
-        return $query->where([ 'status' => Import::STATUS_PROCESSING ]);
+        return $query->where([ 'status' => Import::STATUS_PENDING ]);
     }
 
     public function scopeCompleted($query)
@@ -94,5 +97,44 @@ class Import extends Eloquent
             return $this->file_path_error;
         }
         return null;
+    }
+    
+    public function resultsToCSV()
+    {
+        if (is_null($this->results)) {
+            return null;
+        }
+        $stream = fopen('php://memory', 'r+');
+        $csvWriter = Writer::createFromStream($stream);
+        foreach ($this->results as $result) {
+            $csvWriter->insertOne([
+                $result['row'],
+                $result['id'],
+                $result['id_external'],
+                $result['id_usafb'],
+                $result['name_first'],
+                $result['name_middle'],
+                $result['name_last'],
+            ]);
+        }
+        $csvContent = $csvWriter->getContent();
+        return $csvContent;
+    }
+    
+    public function errorsToCSV()
+    {
+        if (is_null($this->errors)) {
+            return null;
+        }
+        $stream = fopen('php://memory', 'r+');
+        $csvWriter = Writer::createFromStream($stream);
+        foreach ($this->errors as $error) {
+            $csvWriter->insertOne([
+                $error['row'],
+                $error['errors'],
+            ]);
+        }
+        $csvContent = $csvWriter->getContent();
+        return $csvContent;
     }
 }

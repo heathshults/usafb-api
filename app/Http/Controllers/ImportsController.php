@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Webpatser\Uuid\Uuid;
 
 /**
  * ImportsController
@@ -64,25 +65,28 @@ class ImportsController extends Controller
     }
 
     /**
-     * Get a specific player or coach import results
-     * Url: GET /imports/(players|coaches)/:id/results
+     * Get a specific Player or Coach import source
+     * Url: GET /imports/(players|coaches)/:id/source
      *
      * @param Request $request
      * @param string $recordType (players|coaches)
      * @param string $recordId
-     * @param string $fileType (source|results|errors)
      *
      * @return json
      */
-    public function download(Request $request, $recordType, $recordId, $fileType)
+    public function source(Request $request, $recordType, $recordId)
     {
         $import = call_user_func('App\Models\Import::'.$recordType)->find($recordId);
         if (is_null($import)) {
             return $this->respond('NOT_FOUND', ['error' => ['message' => 'Import ('.$id.') not found.']]);
         }
-        $filePath = $import->getFilePathByType($fileType);
+        $filePath = $import->file_path_remote;
         if (is_null($filePath)) {
-            return $this->respond('NOT_FOUND', ['error' => ['message' => 'No '.$fileType.' file found.']]);
+            return $this->respond('NOT_FOUND', [
+                'error' => [
+                    'message' => 'No source file found for Import ('.$id.').'
+                ]
+            ]);
         }
         $fileName = basename($filePath);
         try {
@@ -96,8 +100,48 @@ class ImportsController extends Controller
             return $this->respond('OK', $data);
         } catch (Exception $ex) {
             Log::error($ex->getMessage());
-            throw new BadRequestHttpException('An error occurred downloading file.');
+            throw new BadRequestHttpException('An error occurred while accessing source file.');
         }
+    }
+        
+    public function results(Request $request, $recordType, $recordId)
+    {
+        Log::debug('Record Type: '.$recordType);
+        $import = call_user_func('App\Models\Import::'.$recordType)->find($recordId);
+        if (is_null($import)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Import ('.$recordId.') not found.']]);
+        }
+        if ($import->status != Import::STATUS_COMPLETED) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'No results available. File not processed.']]);
+        }
+        $csvResults = $import->resultsToCSV();
+        $data = [
+            'file_name' => $import->id.'-results.csv',
+            'content_type' => 'text/plain',
+            'content_size' => (empty($csvResults) ? 0 : strlen($csvResults)),
+            'content' => base64_encode($csvResults),
+        ];
+        return $this->respond('OK', $data);
+    }
+
+    public function errors(Request $request, $recordType, $recordId)
+    {
+        Log::debug('Record Type: '.$recordType);
+        $import = call_user_func('App\Models\Import::'.$recordType)->find($recordId);
+        if (is_null($import)) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'Import ('.$id.') not found.']]);
+        }
+        if ($import->status != Import::STATUS_COMPLETED) {
+            return $this->respond('NOT_FOUND', ['error' => ['message' => 'No errors available. File not processed.']]);
+        }
+        $csvResults = $import->errorsToCSV();
+        $data = [
+            'file_name' => $import->id.'-errors.csv',
+            'content_type' => 'text/plain',
+            'content_size' => (empty($csvResults) ? 0 : strlen($csvResults)),
+            'content' => base64_encode($csvResults),
+        ];
+        return $this->respond('OK', $data);
     }
     
     /**
@@ -127,7 +171,7 @@ class ImportsController extends Controller
                 // get user performing the upload
                 $user = $request->user();
                 
-                // create new (processing) import record
+                // create new (pending) import record
                 $import = new Import();
                 $import->user_id = $user->id;
                 $import->type = $type;

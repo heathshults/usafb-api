@@ -27,7 +27,9 @@ class Player extends BaseModel
     
     protected $dates = [ 'created_at', 'updated_at', 'deleted_at' ];
     
-    protected $attributes = [ 'opt_in_marketing' => true ];
+    protected $attributes = [
+        'opt_in_marketing' => true
+    ];
     
     protected $fillable = [
         'id_external',
@@ -56,7 +58,7 @@ class Player extends BaseModel
         'created_at_yyyymmdd',
         'updated_at_yyyymmdd'
     ];
-        
+
     protected $rules = [
         'name_first' => 'required',
         'name_last' => 'required',
@@ -64,7 +66,17 @@ class Player extends BaseModel
         'gender' => 'required|in:M,F,NA',
         'email' => 'required|email',
         'phone_home' => 'required|regex:/\d{3}-\d{3}-\d{4}/',
+        'phone_mobile' => 'sometimes|regex:/\d{3}-\d{3}-\d{4}/',
+        'phone_work' => 'sometimes|regex:/\d{3}-\d{3}-\d{4}/',
+        'social_twitter' => 'sometimes|regex:/^@.+/',
         'opt_in_marketing' => 'sometimes|boolean',
+        'grade' => 'sometimes|numeric|min:1|max:12',
+        'graduation_year' => 'sometimes|digits:4',
+        'height_ft' => 'sometimes|numeric|min:3|max:8',
+        'height_in' => 'sometimes|numeric|min:0|max:11',
+        'years_experience' => 'sometimes|numeric|min:0|max:50',
+        'sports.*' => 'sometimes|in:basketball,baseball,soccer,lacrosse,'.
+            'swimming,volleyball,softball,hockey,tennis,golf,rugby,other',
         'address' => 'required',
         'address.street_1' => 'required',
         'address.city' => 'required',
