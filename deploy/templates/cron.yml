@@ -1,0 +1,27 @@
+apiVersion: batch/v2alpha1
+kind: CronJob
+metadata:
+  name: npdb-usafb-api-import
+spec:
+  schedule: "*/3 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: npdb-usafb-api-import
+            image:
+              registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-cron:$image_tag
+            imagePullPolicy: Always
+            envFrom:
+              - secretRef:
+                  name: npdb-usafb-secrets
+            ports:
+            - containerPort: 9000
+            command:
+             - /usr/bin/php
+             - /application/artisan
+             - import:pending
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: mikeregsecret

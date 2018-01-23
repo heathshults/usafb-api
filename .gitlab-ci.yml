@@ -107,6 +107,26 @@ build_nginx_static:
     - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID -f Dockerfile.nginx .
     - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
 
+build_cron:
+  stage: build_workers
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
+    image_tag: $CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  only:
+    - develop
+    - master
+    - cron
+  script:
+    - docker login registry.gitlab.com -u npdbtest -p $gitlab_personal_token
+    - docker build -t registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-cron:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID -f Dockerfile.cron .
+    - docker push registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-cron:$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID
+
 staging_deploy:
   stage: deploy
   only:
@@ -125,3 +145,4 @@ staging_deploy:
     - . deploy/scripts/setup_kube_config.sh
     - kubectl cluster-info
     - . deploy/scripts/deploy_app.sh
+    - . deploy/scripts/deploy_cron.sh
