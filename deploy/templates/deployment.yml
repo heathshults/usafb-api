@@ -17,25 +17,32 @@ spec:
       containers:
       - name: npdb-usafb-app
         image:
-          registry.gitlab.com/bluestarsports/npdb-usafb-api:latest
+          registry.gitlab.com/bluestarsports/npdb-usafb-api:$image_tag
         imagePullPolicy: Always
-        env:
-        - name: FOR_GODS_SAKE_PLEASE_REDEPLOY
-          value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
         envFrom:
           - secretRef:
               name: npdb-usafb-secrets
         ports:
         - containerPort: 9000
+        volumeMounts:
+        - mountPath: /tempfs
+          name: npdb-usafb-efs
       - name: npdb-usafb-nginx
         image:
-          registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:latest
+          registry.gitlab.com/bluestarsports/npdb-usafb-api/npdb-usafb-api-nginx:$image_tag
         imagePullPolicy: Always
         envFrom:
           - secretRef:
               name: npdb-usafb-secrets
         ports:
         - containerPort: 80
+        volumeMounts:
+        - mountPath: /tempfs
+          name: npdb-usafb-efs
       imagePullSecrets:
       - name: mikeregsecret
+      volumes:
+      - name: npdb-usafb-efs
+        persistentVolumeClaim:
+          claimName: npdb-usafb-efs
 
