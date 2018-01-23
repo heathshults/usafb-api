@@ -19,25 +19,36 @@ class ImportServiceResult
     protected $errors = [];
     protected $results = [];
 
-    public function addResult($rowNum, $recordId, $usafbId) {
-        $this->results[] = [ 'row' => $rowNum, 'id' => $recordId, 'usafb_id' => $usafbId ];
+    public function addResult($rowNum, $recordId, $externalId, $usafbId, $nameFirst, $nameMiddle, $nameLast)
+    {
+        $this->results[] = [
+            'row' => $rowNum,
+            'id' => $recordId,
+            'id_external' => $externalId,
+            'id_usafb' => $usafbId,
+            'name_first' => $nameFirst,
+            'name_middle' => $nameMiddle,
+            'name_last' => $nameLast
+        ];
         return;
     }
     
-    public function addErrors($rowNum, $errors) {
-        $this->errors[$rowNum] = $errors;
-        return;        
+    public function addErrors($rowNum, $errors)
+    {
+        $this->errors[] = [
+            'row' => $rowNum,
+            'errors' => $errors
+        ];
+        return;
     }
     
-    public function errors() {
+    public function results()
+    {
+        return $this->results;
+    }
+    
+    public function errors()
+    {
         return $this->errors;
     }
-    
-    public function errorsForRow($rowNum) {
-        if (array_key_exists($rowNum, $this->errors)) {
-            return $this->errors[$rowNum];
-        }
-        return [];
-    }
-
 }
