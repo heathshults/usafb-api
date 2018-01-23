@@ -21,53 +21,53 @@ class ImportCoachService extends ImportService
     const SOURCE_NUM_COLUMNS = 22;
         
     const COLUMNS = [
-        'External ID' => [ 
-            'field' => 'id_external' 
+        'External ID' => [
+            'field' => 'id_external'
         ],
-        'First Name' => [ 
-            'field' => 'name_first' 
+        'First Name' => [
+            'field' => 'name_first'
         ],
-        'Middle Name' => [ 
-            'field' => 'name_middle' 
+        'Middle Name' => [
+            'field' => 'name_middle'
         ],
-        'Last Name' => [ 
-            'field' => 'name_last' 
+        'Last Name' => [
+            'field' => 'name_last'
         ],
-        'Street 1' => [ 
-            'field' => 'address.street_1' 
+        'Street 1' => [
+            'field' => 'address.street_1'
         ],
-        'Street 2' => [ 
-            'field' => 'address.street_2' 
+        'Street 2' => [
+            'field' => 'address.street_2'
         ],
-        'City' => [ 
-            'field' => 'address.city' 
+        'City' => [
+            'field' => 'address.city'
         ],
-        'County' => [ 
-            'field' => 'address.county' 
+        'County' => [
+            'field' => 'address.county'
         ],
-        'State' => [ 
-            'field' => 'address.state' 
+        'State' => [
+            'field' => 'address.state'
         ],
-        'Postal Code' => [ 
-            'field' => 'address.postal_code' 
+        'Postal Code' => [
+            'field' => 'address.postal_code'
         ],
-        'DOB' => [ 
-            'field' => 'dob' 
+        'DOB' => [
+            'field' => 'dob'
         ],
-        'Gender' => [ 
-            'field' => 'gender' 
+        'Gender' => [
+            'field' => 'gender'
         ],
-        'Email' => [ 
-            'field' => 'email' 
+        'Email' => [
+            'field' => 'email'
         ],
-        'Home Phone' => [ 
-            'field' => 'phone_home' 
+        'Home Phone' => [
+            'field' => 'phone_home'
         ],
-        'Mobile Phone' => [ 
-            'field' => 'phone_mobile' 
+        'Mobile Phone' => [
+            'field' => 'phone_mobile'
         ],
-        'Work Phone' => [ 
-            'field' => 'phone_work' 
+        'Work Phone' => [
+            'field' => 'phone_work'
         ],
         'Organization Name' => [
             'field' => 'organization_name'
@@ -75,25 +75,25 @@ class ImportCoachService extends ImportService
         'Organization State' => [
             'field' => 'organization_state'
         ],
-        'Years Experience' => [ 
-            'type' => 'number', 
-            'field' => 'years_experience' 
+        'Years Experience' => [
+            'type' => 'number',
+            'field' => 'years_experience'
         ],
-        'Positions' => [ 
-            'type' => 'array', 
-            'field' => 'positions' 
+        'Positions' => [
+            'type' => 'array',
+            'field' => 'positions'
         ],
-        'Level' => [ 
-            'field' => 'level' 
+        'Level' => [
+            'field' => 'level'
         ],
-        'Level Type' => [ 
-            'field' => 'level_type' 
+        'Level Type' => [
+            'field' => 'level_type'
         ]
     ];
 
-    // return new record/object (what we're importing)    
-    public function newRecord() 
+    // return new record/object (what we're importing)
+    public function newRecord()
     {
         return (new Coach());
-    } 
+    }
 }
