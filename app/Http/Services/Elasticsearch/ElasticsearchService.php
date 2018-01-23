@@ -95,6 +95,7 @@ class ElasticsearchService
                 'mappings' => [
                     $index => [
                         'properties' => [
+                            'id_external' => [ 'type' => 'text', 'fielddata' => true ],
                             'id_usafb' => [ 'type' => 'text', 'fielddata' => true ],
                             'name_first' => [ 'type' => 'text', 'fielddata' => true ],
                             'name_last' => [ 'type' => 'text', 'fielddata' => true ],
