@@ -41,7 +41,7 @@ class ImportFile extends Command
             $this->error('Invalid or missing type, expecting "players" or "coaches".');
             return false;
         }
-        $file = $this->argument('file');        
+        $file = $this->argument('file');
         if (is_null($file) || (!is_null($file) && !file_exists($file))) {
             $this->error('Invalid or missing file.');
             return false;
@@ -67,7 +67,7 @@ class ImportFile extends Command
         } catch (ImportServiceException $importException) {
             $this->error($importException->getMessage());
         } catch (Exception $exception) {
-            $this->error($importException->getMessage());            
+            $this->error($importException->getMessage());
         }
     }
 }
