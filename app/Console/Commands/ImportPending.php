@@ -95,7 +95,8 @@ class ImportPending extends Command
                 
                 $import->status = Import::STATUS_COMPLETED;
                 $import->num_records = $importServiceResult->numRecords;
-                $import->num_errors = $importServiceResult->numErrors;
+                $import->num_imported = $importServiceResult->numImported();
+                $import->num_errors = $importServiceResult->numErrors();
                 $import->errors = $importServiceResult->errors();
                 $import->results = $importServiceResult->results();
                 $import->save();

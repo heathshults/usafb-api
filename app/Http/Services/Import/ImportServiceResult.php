@@ -13,8 +13,6 @@ namespace App\Http\Services\Import;
 class ImportServiceResult
 {
     public $numRecords = 0;
-    public $numImported = 0;
-    public $numErrors = 0;
     
     protected $errors = [];
     protected $results = [];
@@ -47,8 +45,18 @@ class ImportServiceResult
         return $this->results;
     }
     
+    public function numImported()
+    {
+        return count($this->results);
+    }
+    
     public function errors()
     {
         return $this->errors;
+    }
+        
+    public function numErrors()
+    {
+        return count($this->errors);
     }
 }
