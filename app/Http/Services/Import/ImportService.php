@@ -104,7 +104,6 @@ abstract class ImportService
                                 $record->name_middle,
                                 $record->name_last
                             );
-                            $result->numImported++;
                         }
                     } else {
                         $result->addResult($row, $record->id, $record->id_usafb);
