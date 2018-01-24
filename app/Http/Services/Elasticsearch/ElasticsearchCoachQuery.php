@@ -13,8 +13,9 @@ class ElasticsearchCoachQuery extends ElasticsearchQuery
         'city',
         'state',
         'dob',
+        'level_type',
         'level',
-        'level_type'
+        'position',
     ];
         
     protected $supportedFields = [
@@ -23,8 +24,9 @@ class ElasticsearchCoachQuery extends ElasticsearchQuery
         'name_last',
         'city',
         'state',
+        'level_type',
         'level',
-        'level_type'
+        'position',
     ];
     
     protected $rangeFields = [
