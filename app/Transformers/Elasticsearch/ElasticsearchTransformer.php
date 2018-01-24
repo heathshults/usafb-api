@@ -26,7 +26,6 @@ class ElasticsearchTransformer
      */
     public function transform($results)
     {
-        Log::debug('ElasticsearchPlayerTransformer > transform(.)');
         $response = [];
         foreach ($results['hits']['hits'] as $result) {
             $id = $result['_id'];
@@ -42,7 +41,10 @@ class ElasticsearchTransformer
                 'city' => $source['city'],
                 'state' => $source['state'],
                 'county' => $source['county'],
-                'postal_code' => $source['postal_code']
+                'postal_code' => $source['postal_code'],
+                'level_type' => $source['level_type'],
+                'level' => $source['level'],
+                'position' => $source['position'],
             ];
             $response[] = $record;
         }
