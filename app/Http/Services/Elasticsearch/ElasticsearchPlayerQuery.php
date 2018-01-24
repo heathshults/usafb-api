@@ -12,7 +12,10 @@ class ElasticsearchPlayerQuery extends ElasticsearchQuery
         'name_last',
         'city',
         'state',
-        'dob'
+        'dob',
+        'level_type',
+        'level',
+        'position',
     ];
         
     protected $supportedFields = [
@@ -20,7 +23,10 @@ class ElasticsearchPlayerQuery extends ElasticsearchQuery
         'name_first',
         'name_last',
         'city',
-        'state'
+        'state',
+        'level_type',
+        'level',
+        'position',
     ];
     
     protected $rangeFields = [
