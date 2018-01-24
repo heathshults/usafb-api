@@ -104,7 +104,10 @@ class ElasticsearchService
                             'city' => [ 'type' => 'text', 'fielddata' => true  ],
                             'state' => [ 'type' => 'text', 'fielddata' => true ],
                             'county' => [ 'type' => 'text', 'fielddata' => true ],
-                            'postal_code' => [ 'type' => 'text', 'fielddata' => true ]
+                            'postal_code' => [ 'type' => 'text', 'fielddata' => true ],
+                            'level_type' => [ 'type' => 'text', 'fielddata' => true ],
+                            'level' => [ 'type' => 'text', 'fielddata' => true ],
+                            'position' => [ 'type' => 'text', 'fielddata' => true ],
                         ]
                     ]
                 ]

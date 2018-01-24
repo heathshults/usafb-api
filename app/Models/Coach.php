@@ -48,9 +48,6 @@ class Coach extends BaseModel
         'opt_in_marketing',
         'address',
         'years_experience',
-        'level',
-        'level_type',
-        'positions',
         'organization_name',
         'organization_state',
         'created_at',
@@ -68,11 +65,6 @@ class Coach extends BaseModel
         'phone_home' => 'required|regex:/\d{3}-\d{3}-\d{4}/',
         'opt_in_marketing' => 'sometimes|boolean',
         'years_experience' => 'required|numeric|min:0|max:50',
-        'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
-        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
-        'positions.*' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,
-        offensive_coordinator,special_teams,assistant_coach,tight_end_coach,
-        running_back_coach, defensive_back_coach,defensive_cooridnator',
         'organization_name' => 'required',
         'organization_state' => 'required|size:2',
         'address' => 'required',
@@ -120,9 +112,19 @@ class Coach extends BaseModel
             'state' => $this->address->state,
             'county' => $this->address->county,
             'postal_code' => $this->address->postal_code,
-            'level' => $this->level,
-            'level_type' => $this->level_type
+            'level' => null,
+            'level_type' => null,
+            'position' => null
         ];
+        
+        // set registration specific fields if Player has current reg
+        $currentReg = $this->registrations()->where('current', true)->first();
+        if (!is_null($currentReg)) {
+            $body['level'] = $currentReg->level;
+            $body['level_type'] = $currentReg->level_type;
+            $body['position'] = $currentReg->position;
+        }
+        
         return $body;
     }
     

@@ -1080,17 +1080,6 @@ definitions:
         items: 
           type: string
         description: "Certifications held"
-      positions:
-        type: array
-        items: 
-          type: string
-        description: "Positions coached"
-      level:
-        type: string
-        description: "Level of Experience"
-      level_type:
-        type: string
-        description: "Level of Experience Type"
       organization_name:
         type: string
         description: "Organization Name"
@@ -1144,11 +1133,9 @@ definitions:
         items: 
           type: string
         description: "Certifications held"
-      positions:
-        type: array
-        items: 
-          type: string
-        description: "Positions coached"
+      position:
+        type: string
+        description: "Position coached"
       level:
         type: string
         description: "Level of Experience"
@@ -1265,20 +1252,9 @@ definitions:
       organization_state:
         type: string
         description: "Organization State"
-      positions:
-        type: array
-        description: "Positions Coached"
-        items:
-          type: string
       years_experience:
         type: integer
         description: "Years of Experience Coaching"
-      level:
-        type: string
-        description: "Level of Experience"
-      level_type:
-        type: string
-        description: "Level of Experience Type"
       registrations:
         type: array
         items:
@@ -1348,20 +1324,9 @@ definitions:
       organization_state:
         type: string
         description: "Organization State"
-      positions:
-        type: array
-        description: "Positions Coached"
-        items:
-          type: string
       years_experience:
         type: integer
         description: "Years of Experience Coaching"
-      level:
-        type: string
-        description: "Level of Experience"
-      level_type:
-        type: string
-        description: "Level of Experience Type"
       opt_in_marketing:
         type: boolean
         description: "Coach has opt in for marketing communication"

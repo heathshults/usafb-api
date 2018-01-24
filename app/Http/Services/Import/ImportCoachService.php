@@ -78,18 +78,21 @@ class ImportCoachService extends ImportService
         'Years Experience' => [
             'type' => 'number',
             'field' => 'years_experience'
-        ],
-        'Positions' => [
-            'type' => 'array',
-            'field' => 'positions'
-        ],
-        'Level' => [
-            'field' => 'level'
-        ],
-        'Level Type' => [
-            'field' => 'level_type'
         ]
     ];
+    
+    /*
+    'Positions' => [
+        'type' => 'array',
+        'field' => 'positions'
+    ],
+    'Level' => [
+        'field' => 'level'
+    ],
+    'Level Type' => [
+        'field' => 'level_type'
+    ]
+    */
 
     // return new record/object (what we're importing)
     public function newRecord()

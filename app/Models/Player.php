@@ -140,8 +140,20 @@ class Player extends BaseModel
             'city' => $this->address->city,
             'state' => $this->address->state,
             'county' => $this->address->county,
-            'postal_code' => $this->address->postal_code
+            'postal_code' => $this->address->postal_code,
+            'level' => null,
+            'level_type' => null,
+            'position' => null
         ];
+        
+        // set registration specific fields if Player has current reg
+        $currentReg = $this->registrations()->where('current', true)->first();
+        if (!is_null($currentReg)) {
+            $body['level'] = $currentReg->level;
+            $body['level_type'] = $currentReg->level_type;
+            $body['position'] = $currentReg->position;
+        }
+        
         return $body;
     }
     

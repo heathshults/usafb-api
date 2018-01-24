@@ -46,9 +46,6 @@ class CoachSeeder extends Seeder
             $coach->years_experience = rand(0,20);
             $coach->organization_name = 'Organization Name '.$i;
             $coach->organization_state = 'TX';
-            $coach->level = 'youth';
-            $coach->level_type = 'youth_flag';
-            $coach->positions = [ 'head_coach', 'quaterback_coach' ];
 
             $address = new Address();
             $address->street_1 = '1234 Main St';
@@ -59,15 +56,15 @@ class CoachSeeder extends Seeder
             $address->postal_code = '75034';
             $address->country = 'US';
             $coach->address()->associate($address);
-            
+
             $coach_registration = new CoachRegistration();            
             $coach_registration->coach_id = $coach->id;
             $coach_registration->id_external = 'external_id_reg_'.$i;
             $coach_registration->id_usafb = 'usafb_id_'.$i;
             $coach_registration->id_salesforce = $coach->id_salesforce;
             $coach_registration->current = true;
-            $coach_registration->positions = $coach->positions;
-            $coach_registration->level = $coach->level;
+            $coach_registration->position = 'head_coach';
+            $coach_registration->level = 'youth';
             $coach_registration->level_type = 'youth_flag';
             $coach_registration->certifications = [ 'CPR' ];
             $coach_registration->organization_name = 'Organization Name '.$i;
