@@ -108,20 +108,19 @@ abstract class ImportService
                         }
                     } else {
                         $result->addResult($row, $record->id, $record->id_usafb);
-                        $result->numImported++;
                     }
                 } else {
                     $errors = $record->errors()->toArray();
                     $compiledErrors = $this->compileErrors($errors);
                     if (!is_null($compiledErrors) && count($compiledErrors) > 0) {
                         $result->addErrors($row, $compiledErrors);
+                    } else {
+                        $result->addErrors($row, 'Unknown error');
                     }
-                    $result->numErrors++;
                 }
             } catch (Exception $ex) {
                 Log::error('Exception occurred: '.$ex->getMessage());
                 $result->addErrors($row, [ $ex->getMessage() ]);
-                $result->numErrors++;
             }
         }
         return $result;
