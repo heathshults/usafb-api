@@ -40,7 +40,7 @@ class CoachRegistration extends BaseModel
         "current",
         "level",
         "level_type",
-        "positions",
+        "position",
         "certifications",
         "organization_name",
         "organization_state",
@@ -61,9 +61,9 @@ class CoachRegistration extends BaseModel
         'current' => 'required|boolean',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
         'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
-        'positions.*' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,'.
+        'position' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,'.
             'offensive_coordinator,special_teams,assistant_coach,tight_end_coach,running_back_coach,'.
-            'defensive_back_coach,defensive_cooridnator',
+            'defensive_back_coach,defensive_cooridnator,not_available',
         'organization_name' => 'required',
         'organization_state' => 'required|size:2',
         'league_name' => 'required',
