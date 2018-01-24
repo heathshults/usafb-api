@@ -56,8 +56,8 @@ class ImportFile extends Command
             $importResult = $importService->importFile($file);
             Log::info('Import completed.');
             Log::info('Number of Records: '.$importResult->numRecords);
-            Log::info('Number Imported: '.$importResult->numImported);
-            Log::info('Number Errors: '.$importResult->numErrors);
+            Log::info('Number Imported: '.$importResult->numImported());
+            Log::info('Number Errors: '.$importResult->numErrors());
             if ($importResult->numErrors > 0) {
                 foreach ($importResult->errors() as $row => $errors) {
                     Log::error('Error on Row #'.$row.' - '.implode(', ', $errors));

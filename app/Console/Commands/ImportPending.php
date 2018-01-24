@@ -90,8 +90,8 @@ class ImportPending extends Command
                 $importServiceResult = $importService->importContent($s3Content);
                 Log::info('Finished importing record from ('.$remoteFileName.').');
                 Log::info('Number of Records: '.$importServiceResult->numRecords);
-                Log::info('Number Imported: '.$importServiceResult->numImported);
-                Log::info('Number Errors: '.$importServiceResult->numErrors);
+                Log::info('Number Imported: '.$importServiceResult->numImported());
+                Log::info('Number Errors: '.$importServiceResult->numErrors());
                 
                 $import->status = Import::STATUS_COMPLETED;
                 $import->num_records = $importServiceResult->numRecords;
