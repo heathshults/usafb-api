@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-use Jenssegers\Mongodb\Eloquent\Builder;
+use App\Traits\ElasticsearchTrait;
+use App\Traits\UsafbRecordTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\Builder;
 use Log;
-
-use App\Traits\ElasticsearchTrait;
 
 /**
 * Coach collection model
@@ -20,6 +20,7 @@ use App\Traits\ElasticsearchTrait;
 class Coach extends BaseModel
 {
     use ElasticsearchTrait;
+    use UsafbRecordTrait;
     
     protected $connection = 'mongodb';
     
@@ -50,10 +51,6 @@ class Coach extends BaseModel
         'years_experience',
         'organization_name',
         'organization_state',
-        'created_at',
-        'created_at_yyyymmdd',
-        'updated_at_yyyymmdd',
-        'updated_at'
     ];
     
     protected $rules = [
@@ -76,14 +73,6 @@ class Coach extends BaseModel
         'address.country' => 'sometimes|alpha|size:2'
     ];
 
-    public function __construct($attributes = [])
-    {
-        if (!$this->exists) {
-            $this->attributes['created_at_yyyymmdd'] = Date('Y-m-d');
-        }
-        parent::__construct($attributes);
-    }
-
     public function registrations()
     {
         return $this->embedsMany('App\Models\CoachRegistration');
@@ -94,7 +83,7 @@ class Coach extends BaseModel
         return $this->embedsOne('App\Models\Address');
     }
     
-    public function toSearchBody()
+    public function searchContent()
     {
         $body = [
             'id' => $this->id,
@@ -126,13 +115,5 @@ class Coach extends BaseModel
         }
         
         return $body;
-    }
-    
-    public static function boot()
-    {
-        parent::boot();
-        self::updating(function ($model) {
-            $model->updated_at_yyyymmdd = Date('Y-m-d');
-        });
     }
 }
