@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Sequence;
 use App\Traits\ElasticsearchTrait;
+use App\Traits\UsafbRecordTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Support\Arr;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
@@ -19,14 +21,20 @@ use Log;
 class Player extends BaseModel
 {
     use ElasticsearchTrait;
+    use UsafbRecordTrait;
 
     // Disable soft deletes for now...
     protected $connection = 'mongodb';
     
     protected $table = 'players';
     
-    protected $dates = [ 'created_at', 'updated_at', 'deleted_at' ];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     
+    // default values
     protected $attributes = [
         'opt_in_marketing' => true
     ];
@@ -55,8 +63,6 @@ class Player extends BaseModel
         'sports',
         'years_experience',
         'guardians',
-        'created_at_yyyymmdd',
-        'updated_at_yyyymmdd'
     ];
 
     protected $rules = [
@@ -74,6 +80,7 @@ class Player extends BaseModel
         'graduation_year' => 'sometimes|digits:4',
         'height_ft' => 'sometimes|numeric|min:3|max:8',
         'height_in' => 'sometimes|numeric|min:0|max:11',
+        'weight' => 'sometimes|numeric|min:0|max:1000',
         'years_experience' => 'sometimes|numeric|min:0|max:50',
         'sports.*' => 'sometimes|in:basketball,baseball,soccer,lacrosse,'.
             'swimming,volleyball,softball,hockey,tennis,golf,rugby,other',
@@ -93,15 +100,6 @@ class Player extends BaseModel
         'guardians.*.address.country' => 'sometimes|alpha|size:2',
         'guardians.*.address.postal_code' => 'required|regex:/\d{5}/',
     ];
-            
-    public function __construct($attributes = [])
-    {
-        parent::__construct($attributes);
-        
-        if (!$this->exists) {
-            $this->attributes['created_at_yyyymmdd'] = Date('Y-m-d');
-        }
-    }
 
     public function registrations()
     {
@@ -123,14 +121,13 @@ class Player extends BaseModel
         return $this->embedsMany('App\Models\Guardian');
     }
     
-    public function toSearchBody()
+    // trait method implementation
+    public function searchContent()
     {
         $body = [
             'id' => $this->id,
             'id_external' => $this->id_external,
             'id_usafb' => $this->id_usafb,
-            'created_at_yyyymmdd' => $this->created_at_yyyymmdd,
-            'updated_at_yyyymmdd' => $this->updated_at_yyyymmdd,
             'name_first' => $this->name_first,
             'name_middle' => $this->name_middle,
             'name_last' => $this->name_last,
@@ -143,7 +140,9 @@ class Player extends BaseModel
             'postal_code' => $this->address->postal_code,
             'level' => null,
             'level_type' => null,
-            'position' => null
+            'position' => null,
+            'created_date' => $this->created_date,
+            'updated_date' => $this->updated_date,
         ];
         
         // set registration specific fields if Player has current reg
@@ -155,13 +154,5 @@ class Player extends BaseModel
         }
         
         return $body;
-    }
-    
-    public static function boot()
-    {
-        parent::boot();
-        self::updating(function ($model) {
-            $model->updated_at_yyyymmdd = Date('Y-m-d');
-        });
     }
 }
