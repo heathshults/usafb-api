@@ -94,9 +94,12 @@ class CoachSeeder extends Seeder
             $schoolName = $this->randValue($cities);
             $position = $this->randValue($positions);
             $season = $this->randValue($seasons);
+
+            $registrationDate = strftime('%Y-%m-%d',strtotime('2016-'.rand(1,12).'-'.rand(1,28)));
             
-            $coach_registration = new CoachRegistration();            
+            $coach_registration = new CoachRegistration();    
             $coach_registration->coach_id = $coach->id;
+            $coach_registration->date = $registrationDate;
             $coach_registration->id_external = 'external_id_reg_'.$i;
             $coach_registration->id_usafb = 'usafb_id_'.$i;
             $coach_registration->id_salesforce = $coach->id_salesforce;
