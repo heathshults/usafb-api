@@ -40,9 +40,15 @@ class Role extends BaseModel
 
     protected $table = 'roles';
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
 
-    protected $fillable = [ 'name', 'permissions' ];
+    protected $fillable = [
+        'name',
+        'permissions',
+    ];
 
     protected $rules = [
         'name' => 'required|unique:roles',
