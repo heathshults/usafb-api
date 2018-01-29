@@ -21,7 +21,9 @@
         "jenssegers/mongodb": "^3.2",
         "elasticsearch/elasticsearch": "~6.0",
         "webpatser/laravel-uuid": "^3.0",
-        "league/csv": "^9.1"
+        "league/csv": "^9.1",
+        "jenssegers/optimus": "^0.2.3",
+        "phpseclib/phpseclib": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
