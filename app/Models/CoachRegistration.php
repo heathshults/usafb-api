@@ -25,7 +25,6 @@ class CoachRegistration extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
     ];
     
     protected $attributes = [
@@ -35,9 +34,8 @@ class CoachRegistration extends BaseModel
     protected $fillable = [
         'id',
         'id_external',
-        'id_usafb',
-        'id_salesforce',
         "current",
+        "date",
         "level",
         "level_type",
         "position",
@@ -53,12 +51,14 @@ class CoachRegistration extends BaseModel
         "team_name",
         "team_gender",
         'created_at',
-        'created_at_yyyymmdd',
-        'updated_at'
+        'updated_at',
+        'created_date',
+        'updated_date',
     ];
     
     protected $rules = [
         'current' => 'required|boolean',
+        'date' => 'required|date',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
         'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
         'position' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,'.
