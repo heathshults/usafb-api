@@ -18,11 +18,15 @@ use Validator;
 
 class PlayerRegistration extends BaseModel
 {
-    protected $dates = ['created_at', 'updated_at' ];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
     
     protected $fillable = [
         'id_external',
         'current',
+        'date',
         'level',
         'level_type',
         'position',
@@ -37,10 +41,10 @@ class PlayerRegistration extends BaseModel
         'team_name',
         'team_gender',
         'created_at',
-        'created_at_yyyymmdd',
-        'updated_at'
+        'updated_at',
     ];
     
+    // default values
     protected $attributes = [
         'current' => true,
         'positions' => []
@@ -48,6 +52,7 @@ class PlayerRegistration extends BaseModel
     
     protected $rules = [
         'current' => 'required|boolean',
+        'date' => 'required|date',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
         'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
         'position' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,'.
@@ -61,15 +66,7 @@ class PlayerRegistration extends BaseModel
         'team_gender' => 'sometimes|in:M,F,NA',
         'school_state' => 'sometimes|size:2'
     ];
-    
-    public function __construct($attributes = [])
-    {
-        if (!$this->exists) {
-            $this->attributes['created_at_yyyymmdd'] = Date('Y-m-d');
-        }
-        parent::__construct($attributes);
-    }
-    
+        
     public function player()
     {
         return $this->belongsTo('Player');
