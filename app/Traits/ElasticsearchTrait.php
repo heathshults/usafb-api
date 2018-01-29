@@ -11,18 +11,18 @@ trait ElasticsearchTrait
         static::observe(ElasticsearchObserver::class);
     }
 
-    public function getSearchIndex()
+    public function searchIndex()
     {
         return $this->getTable();
     }
 
-    public function getSearchType()
+    public function searchType()
     {
         return $this->getTable();
     }
 
-    public function toSearchBody()
+    public function searchContent()
     {
-        return $this->toSearchBody();
+        return $this->searchContent();
     }
 }
