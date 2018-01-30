@@ -27,6 +27,9 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 
+// load tmpdir configuration
+$app->configure('tmpdir');
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings

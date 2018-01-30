@@ -1,0 +1,8 @@
+level_type|level_type_name
+youth_flag|Youth Flag
+7on7|7 on 7
+rookie_tackle|Rookie Tackle
+11_player_tackle|11 Player Tackle
+adult_flag|Adult Flag
+flex|Flex
+other|Other

@@ -24,6 +24,8 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\UserCreate',
         'App\Console\Commands\UserDelete',
         'App\Console\Commands\UserRole',
+        'App\Console\Commands\WarehouseStage',
+        'App\Console\Commands\WarehouseLoad',
     ];
 
     /**

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDimGameTypes extends Migration
+class CreateDimLevelTypes extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateDimGameTypes extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql-dw')->create('dim_game_types', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_level_types', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             // set autoinc primary key            
             $table->increments('id');            
             // columns
-            $table->string('game_type');
-            $table->string('game_type_name');
+            $table->string('level_type');
+            $table->string('level_type_name');
             // add index on gender
-            $table->index('game_type');         
+            $table->index('level_type');         
         });
     }
 
@@ -31,6 +32,6 @@ class CreateDimGameTypes extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql-dw')->drop('dim_game_types');
+        Schema::connection('mysql-dw')->drop('dim_level_types');
     }
 }

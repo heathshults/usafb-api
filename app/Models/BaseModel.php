@@ -37,4 +37,18 @@ class BaseModel extends Eloquent
         }
         return true;
     }
+    
+    public function errorMessages() : array
+    {
+        $errorMessages = [];
+        if (!is_null($this->errors) && count($this->errors)) {
+            $errorMessages = array_map(
+                function ($obj) {
+                    return implode(',', $obj);
+                },
+                array_values($this->errors->toArray())
+            );
+        }
+        return $errorMessages;
+    }
 }

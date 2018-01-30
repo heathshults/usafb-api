@@ -23,11 +23,20 @@ class User extends BaseModel implements RolePermissionInterface
     
     protected $table = 'users';
     
-    protected $guarded = [ 'email', 'role_id' ];
+    protected $guarded = [
+        'email',
+        'role_id',
+    ];
     
-    protected $dates = [ 'created_at', 'updated_at', 'last_login_at' ];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'last_login_at',
+    ];
     
-    protected $attributes = [ 'active' => true ];
+    protected $attributes = [
+        'active' => true,
+    ];
     
     protected $rules = [
         'active' => 'required|boolean',

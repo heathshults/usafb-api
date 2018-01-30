@@ -14,6 +14,7 @@ class CreateDimGenders extends Migration
     public function up()
     {
         Schema::connection('mysql-dw')->create('dim_genders', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             // set autoinc primary key            
             $table->increments('id');            
             // columns

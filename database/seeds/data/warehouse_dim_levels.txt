@@ -1,0 +1,8 @@
+level|level_name
+youth|Youth
+middle_school|Middle School
+freshman|Freshman
+jv|JV
+varsity|Varsity
+college|College
+professional|Professional

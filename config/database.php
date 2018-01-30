@@ -69,6 +69,10 @@ return [
             'prefix'    => env('DW_DB_PREFIX', ''),
             'timezone'  => env('DW_DB_TIMEZONE', '+00:00'),
             'strict'    => env('DW_DB_STRICT_MODE', false),
+            'options'   => [
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+                PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+            ]
         ],
 
         'pgsql' => [
