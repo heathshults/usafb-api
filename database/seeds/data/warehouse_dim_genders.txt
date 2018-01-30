@@ -1,0 +1,4 @@
+gender|gender_name
+M|Male
+F|Female
+NA|N/A

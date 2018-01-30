@@ -1,0 +1,30 @@
+position_type|position|position_name|position_abbreviation
+players|quarterback|Quarterback|QB
+players|center|Center|C
+players|running_back|Running Back|RB
+players|fullback|Fullback|FB
+players|wide_receiver|Wide Receiver|WR
+players|tight_end|Tight End|TE
+players|left_guard|Left Guard|LG
+players|right_guard|Right Guard|RG
+players|left_tackle|Left Tackle|LT
+players|right_tackle|Right Tackle|RT
+players|defensive_tackle|Defensive Tackle|DT
+players|defensive_end|Defensive End|DE
+players|linebacker|Linebacker|LB
+players|safety|Safety|S
+players|cornerback|Cornerback|CB
+players|punter|Punter|P
+players|not_available|Not Available|N/A
+coaches|head_coach|Head Coach|Head
+coaches|quaterback_coach|Quarterback|QB
+coaches|wide_receiver_coach|Wide Receiver|WR
+coaches|linebacker_coach|Linebacker|LB
+coaches|offensive_coordinator|Offensive Coordinator|OC
+coaches|special_teams|Special Teams|ST
+coaches|assistant_coach|Assistant Coach|Asst
+coaches|tight_end_coach|Tight End|TE
+coaches|running_back_coach|Running Back|RB
+coaches|defensive_back_coach|Defensive Back|DB
+coaches|defensive_cooridnator|Defensive Coordinator|DC
+coaches|not_available|Not Available|N/A
