@@ -106,6 +106,15 @@ class Import extends Eloquent
         }
         $stream = fopen('php://memory', 'r+');
         $csvWriter = Writer::createFromStream($stream);
+        $csvWriter->insertOne([
+            'Row',
+            'ID',
+            'External ID',
+            'USAFB ID',
+            'First Name',
+            'Middle Name',
+            'Last Name'
+        ]);
         foreach ($this->results as $result) {
             $csvWriter->insertOne([
                 $result['row'],
@@ -128,6 +137,7 @@ class Import extends Eloquent
         }
         $stream = fopen('php://memory', 'r+');
         $csvWriter = Writer::createFromStream($stream);
+        $csvWriter->insertOne([ 'Row', 'Errors' ]);
         foreach ($this->errors as $error) {
             $csvWriter->insertOne([
                 $error['row'],
