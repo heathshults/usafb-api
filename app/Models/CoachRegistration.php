@@ -60,7 +60,8 @@ class CoachRegistration extends BaseModel
         'current' => 'required|boolean',
         'date' => 'required|date',
         'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional,not_available',
-        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other,not_available',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other,'.
+            'not_available',
         'position' => 'sometimes|in:head_coach,quaterback_coach,wide_receiver_coach,linebacker_coach,'.
             'offensive_coordinator,special_teams,assistant_coach,tight_end_coach,running_back_coach,'.
             'defensive_back_coach,defensive_cooridnator,not_available',
