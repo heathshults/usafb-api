@@ -53,8 +53,9 @@ class PlayerRegistration extends BaseModel
     protected $rules = [
         'current' => 'required|boolean',
         'date' => 'required|date',
-        'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional',
-        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other',
+        'level' => 'required|in:youth,middle_school,freshman,jv,varsity,college,professional,not_available',
+        'level_type' => 'required|in:youth_flag,7on7,rookie_tackle,11_player_tackle,adult_flag,flex,other,'.
+            'not_available',
         'position' => 'required|in:quarterback,center,running_back,fullback,wide_receiver,tight_end,'.
             'left_guard,right_guard,left_tackle,right_tackle,defensive_tackle,defensive_end,linebacker,'.
             'safety,cornerback,punter,not_available',
