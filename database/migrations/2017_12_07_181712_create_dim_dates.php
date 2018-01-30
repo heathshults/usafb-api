@@ -15,6 +15,7 @@ class CreateDimDates extends Migration
     {              
         
         Schema::connection('mysql-dw')->create('dim_dates', function (Blueprint $table) {
+            $table->engine = 'InnoDB';            
             $table->integer('id');
             $table->date('calendar_date');
             $table->integer('calendar_day');
@@ -31,18 +32,23 @@ class CreateDimDates extends Migration
             $table->string('day_of_week_abv_name');
             $table->integer('week_number');
             $table->integer('week_of_month_number');
-            $table->string('month_name');
-            $table->string('month_short_name');
-            $table->integer('month_number');
-            $table->integer('day_of_month_number');
-            $table->integer('day_of_quarter_number');
-            $table->integer('year_number');
-            $table->integer('day_of_year_number');
-            $table->string('year_name');
             $table->string('week_short_name');
+            $table->integer('month_number');            
+            $table->string('month_name');
+            $table->string('month_short_name');            
+            $table->integer('day_of_month_number');
+            $table->integer('quarter_number');
             $table->string('quarter_name');
+            $table->integer('day_of_quarter_number');            
+            $table->integer('year_number');
+            $table->string('year_name');
+            $table->integer('day_of_year_number');
             // set primary key - we'll generate our own unique key and NOT use an autoincrementing field (YYYYMMDD)
             $table->primary('id');
+            
+            $table->index('calendar_date');
+            $table->index('calendar_year');
+            $table->index('quarter_number');                        
         });
     }
 

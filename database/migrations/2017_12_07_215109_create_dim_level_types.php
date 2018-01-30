@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDimLevels extends Migration
+class CreateDimLevelTypes extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateDimLevels extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql-dw')->create('dim_levels', function (Blueprint $table) {
+        Schema::connection('mysql-dw')->create('dim_level_types', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             // set autoinc primary key            
-            $table->increments('id');
+            $table->increments('id');            
             // columns
-            $table->string('level');
-            $table->string('level_name');
-            // add index to level column
-            $table->index('level');
+            $table->string('level_type');
+            $table->string('level_type_name');
+            // add index on gender
+            $table->index('level_type');         
         });
     }
 
@@ -32,6 +32,6 @@ class CreateDimLevels extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql-dw')->drop('dim_levels');
+        Schema::connection('mysql-dw')->drop('dim_level_types');
     }
 }

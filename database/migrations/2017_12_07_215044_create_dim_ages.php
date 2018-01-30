@@ -14,15 +14,14 @@ class CreateDimAges extends Migration
     public function up()
     {
         Schema::connection('mysql-dw')->create('dim_ages', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             // set autoinc primary key
             $table->increments('id');
             // columns
-            $table->string('range');
-            $table->integer('range_min');
-            $table->integer('range_max');
-            $table->string('range_name');
+            $table->integer('age');
+            $table->string('age_group');
             // add index to range column
-            $table->index('range');
+            $table->index('age');
         });
     }
 
